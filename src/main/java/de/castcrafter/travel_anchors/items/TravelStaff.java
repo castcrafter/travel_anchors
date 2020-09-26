@@ -14,7 +14,7 @@ import net.minecraftforge.fml.RegistryObject;
 public class TravelStaff extends Item{
 
     public static final RegistryObject<Item> TRAVEL_STAFF = Registration.ITEMS.register("travel_staff", () ->
-            new Item(new Item.Properties().group(ItemGroup.TOOLS)));
+            new TravelStaff(new Item.Properties().group(ItemGroup.TOOLS)));
 
     public TravelStaff(Properties properties) {
         super(properties);
