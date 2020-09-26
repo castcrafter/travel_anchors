@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "travel_anchors:item/travel_staff"
+  }
+}

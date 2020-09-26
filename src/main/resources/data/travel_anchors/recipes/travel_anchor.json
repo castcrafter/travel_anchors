@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "#O#",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:stone"
+    },
+    "O": {
+      "item": "minecraft:ender_pearl"
+    }
+  },
+  "result": {
+    "item": "travel_anchors:travel_anchor"
+  }
+}
