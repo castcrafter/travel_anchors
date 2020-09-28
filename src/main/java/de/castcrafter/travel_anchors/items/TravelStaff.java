@@ -1,5 +1,7 @@
 package de.castcrafter.travel_anchors.items;
 
+import de.castcrafter.travel_anchors.setup.ModSetup;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -7,13 +9,20 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 
 public class TravelStaff extends Item {
 
-    public TravelStaff(Properties properties) {
-        super(properties);
+    public TravelStaff(){
+        super(new Item.Properties()
+        .maxStackSize(1)
+        .group(ModSetup.ITEM_GROUP));
     }
 
     @Override
@@ -28,5 +37,9 @@ public class TravelStaff extends Item {
             }
         }
         return ActionResult.resultPass(playerIn.getHeldItem(handIn));
+    }
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag flags) {
+        list.add(new TranslationTextComponent("message.travel_staff"));
     }
 }

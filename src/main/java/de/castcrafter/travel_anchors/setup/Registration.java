@@ -3,6 +3,7 @@ package de.castcrafter.travel_anchors.setup;
 import de.castcrafter.travel_anchors.blocks.TravelAnchorBlock;
 import de.castcrafter.travel_anchors.blocks.TravelAnchorContainer;
 import de.castcrafter.travel_anchors.blocks.TravelAnchorTile;
+import de.castcrafter.travel_anchors.items.TravelStaff;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
@@ -43,4 +44,6 @@ public class Registration {
         World world = inv.player.getEntityWorld();
         return new TravelAnchorContainer(windowId, world, pos, inv, inv.player);
     })));
+
+    public static final RegistryObject<Item> TRAVEL_STAFF = ITEMS.register("travel_staff", TravelStaff::new);
 }

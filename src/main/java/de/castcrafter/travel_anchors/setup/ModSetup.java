@@ -9,9 +9,11 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @Mod.EventBusSubscriber(modid = TravelAnchors.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ModSetup {
-    public static final ItemGroup ITEM_GROUP = new ItemGroup("travel_anchor") {
+
+    public static final ItemGroup ITEM_GROUP = new ItemGroup("travel_anchors") {
         @Override
         public ItemStack createIcon() {
+
             return new ItemStack(Registration.TRAVEL_ANCHOR_BLOCK.get());
         }
     };

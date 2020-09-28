@@ -2,11 +2,13 @@ package de.castcrafter.travel_anchors.blocks;
 
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
@@ -21,6 +23,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class TravelAnchorBlock extends Block {
 
@@ -29,6 +32,11 @@ public class TravelAnchorBlock extends Block {
                 .sound(SoundType.METAL)
                 .hardnessAndResistance(2.0f)
         );
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable IBlockReader reader, List<ITextComponent> list, ITooltipFlag flags) {
+        list.add(new TranslationTextComponent("message.travel_anchor_block"));
     }
 
     @Override

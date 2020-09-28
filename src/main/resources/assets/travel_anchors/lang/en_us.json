@@ -1,5 +1,10 @@
 {
   "item.travel_anchors.travel_staff": "Travel Staff",
 
+  "itemGroup.travel_anchors": "Travel Anchors",
+
+  "message.travel_anchor_block": "Look at Block with a Travel Staff to teleport.",
+  "message.travel_staff": "Shift+Rightklick to short range Teleport. Look at Travelanchor to warp.",
+
   "block.travel_anchors.travel_anchor": "Travel Anchor"
 }
