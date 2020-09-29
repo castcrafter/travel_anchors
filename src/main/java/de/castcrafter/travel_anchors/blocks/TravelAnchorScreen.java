@@ -24,7 +24,6 @@ public class TravelAnchorScreen extends ContainerScreen<TravelAnchorContainer> {
         this.minecraft.getTextureManager().bindTexture(GUI);
         int relX = (this.width - this.xSize) / 2;
         int relY = (this.height - this.ySize) / 2;
-//        this.blit(relX, relY, 0, 0, this.xSize, this.ySize);
         this.blit(matrixStack, relX, relY, 0, 0, this.xSize, this.ySize);
     }
 

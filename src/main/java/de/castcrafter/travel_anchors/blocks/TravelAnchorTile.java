@@ -4,6 +4,8 @@ import de.castcrafter.travel_anchors.items.TravelStaff;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
+import javax.annotation.Nonnull;
+
 import static de.castcrafter.travel_anchors.setup.Registration.TRAVEL_ANCHOR_TILE;
 
 public class TravelAnchorTile extends TileEntity implements ITickableTileEntity {

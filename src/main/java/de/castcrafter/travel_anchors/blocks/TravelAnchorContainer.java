@@ -66,6 +66,8 @@ public class TravelAnchorContainer extends Container {
     public boolean canInteractWith(PlayerEntity playerIn) {
         return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()), playerEntity, Registration.TRAVEL_ANCHOR_BLOCK.get());
     }
+
+    //Shift Slot logic
     @Override
     public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
