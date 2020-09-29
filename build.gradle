@@ -15,7 +15,7 @@ apply plugin: 'maven-publish'
 
 version = '1.0'
 group = 'de.castcrafter.travel_anchors' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'travel_anchors'
+archivesBaseName = 'TravelAnchors'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
