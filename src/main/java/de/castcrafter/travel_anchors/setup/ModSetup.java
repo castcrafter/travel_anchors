@@ -18,6 +18,6 @@ public class ModSetup {
         }
     };
     public static void init(final FMLCommonSetupEvent event) {
-        Networking.registerMessages();
+        Networking.registerPackets();
     }
 }
