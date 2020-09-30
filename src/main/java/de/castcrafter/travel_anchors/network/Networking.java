@@ -1,33 +1,37 @@
 package de.castcrafter.travel_anchors.network;
 
 import de.castcrafter.travel_anchors.TravelAnchors;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
+import java.util.Optional;
+
 public class Networking {
 
-    private static SimpleChannel INSTANCE;
-    private static int ID = 0;
+    private static final String PROTOCOL_VERSION = "1";
+    private static int discriminator = 0;
+    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
+            new ResourceLocation(TravelAnchors.MODID, "netchannel"),
+            () -> PROTOCOL_VERSION,
+            PROTOCOL_VERSION::equals,
+            PROTOCOL_VERSION::equals
+    );
 
-    private static int nextID() {
-        return ID++;
+    public static void registerPackets() {
+        register(new AnchorNameChangeHandler(), NetworkDirection.PLAY_TO_SERVER);
     }
 
-    public static void registerMessages() {
-        INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation(TravelAnchors.MODID, "travelanchor"),
-                () -> "1.0",
-                s -> true,
-                s -> true);
+    private static <T> void register(PacketHandler<T> handler, NetworkDirection direction) {
+        INSTANCE.registerMessage(discriminator++, handler.messageClass(), handler::encode, handler::decode, handler::handle, Optional.of(direction));
     }
 
-    public static void sendToClient(Object packet, ServerPlayerEntity player) {
-        INSTANCE.sendTo(packet, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
-    }
-
-    public static void sendToServer(Object packet) {
-        INSTANCE.sendToServer(packet);
+    public static void sendNameChange(World world, BlockPos pos, String name) {
+        if (world.isRemote) {
+            INSTANCE.sendToServer(new AnchorNameChangeHandler.AnchorNameChangeMessage(pos, name));
+        }
     }
 }
