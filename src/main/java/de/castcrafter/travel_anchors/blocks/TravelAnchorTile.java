@@ -1,24 +1,32 @@
 package de.castcrafter.travel_anchors.blocks;
 
-import de.castcrafter.travel_anchors.items.TravelStaff;
-import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-
-import javax.annotation.Nonnull;
 
 import static de.castcrafter.travel_anchors.setup.Registration.TRAVEL_ANCHOR_TILE;
 
-public class TravelAnchorTile extends TileEntity implements ITickableTileEntity {
+public class TravelAnchorTile extends TileEntity {
+
+    public String name;
 
     public TravelAnchorTile(){
         super(TRAVEL_ANCHOR_TILE.get());
     }
 
+
+
+    //Hier drunter geht gar nix mehr! :(
     @Override
-    public void tick(){
-        if(world.isRemote){
-            return;
-        }
-        System.out.println("ticking");
+    public void read(BlockState state, CompoundNBT nbt) {
+        name = nbt.getString("name");
+        super.read(state, nbt);
     }
+
+    @Override
+    public CompoundNBT write(CompoundNBT compound) {
+        compound.putString("name", name);
+        return super.write(compound);
+    }
+
 }

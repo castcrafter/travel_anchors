@@ -6,5 +6,8 @@
   "message.travel_anchor_block": "Look at Block with a Travel Staff to teleport.",
   "message.travel_staff": "Shift+Rightklick to short range Teleport. Look at Travelanchor to warp.",
 
-  "block.travel_anchors.travel_anchor": "Travel Anchor"
+  "block.travel_anchors.travel_anchor": "Travel Anchor",
+
+  "screen.travelanchor.travelanchor": "Travel Anchor",
+  "screen.travelanchor.search": "Search"
 }
