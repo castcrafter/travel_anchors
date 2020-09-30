@@ -24,7 +24,7 @@ public class TravelAnchorContainer extends Container {
         this.playerEntity = player;
         this.playerInventory = new InvWrapper(playerInventory);
 
-        layoutPlayerInventorySlots(10, 51);
+        layoutPlayerInventorySlots(8, 51);
     }
 
     private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {

@@ -26,6 +26,7 @@ public class TravelAnchorScreen extends ContainerScreen<TravelAnchorContainer> {
 
     @Override
     public void init() {
+        super.init();
         this.getMinecraft().keyboardListener.enableRepeatEvents(true);
         this.textFieldWidget = new TextFieldWidget(this.font, this.width / 2 - 50, this.height /2 -63, 100, 15, new TranslationTextComponent("screen.travelanchor.search"));
         this.textFieldWidget.setMaxStringLength(32767);
@@ -39,6 +40,13 @@ public class TravelAnchorScreen extends ContainerScreen<TravelAnchorContainer> {
         int relX = (this.width - this.xSize) / 2;
         int relY = (this.height - this.ySize) / 2;
         this.blit(matrixStack, relX, relY, 0, 0, this.xSize, this.ySize);
+    }
+
+    @Override
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
+        String s = this.title.getString();
+        this.font.drawString(matrixStack, s, (float) (this.xSize / 2 - this.font.getStringWidth(s) / 2), 6.0F, 0x404040);
+        this.font.drawString(matrixStack, this.playerInventory.getDisplayName().getString(), 8, (float) (this.ySize - 126), 0x404040);
     }
 
     @Override
