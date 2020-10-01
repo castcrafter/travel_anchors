@@ -22,6 +22,7 @@ public class Networking {
     );
 
     public static void registerPackets() {
+        System.out.println("REGISTERRRRRRRRRRRRRRRRRRRR");
         register(new AnchorNameChangeHandler(), NetworkDirection.PLAY_TO_SERVER);
     }
 

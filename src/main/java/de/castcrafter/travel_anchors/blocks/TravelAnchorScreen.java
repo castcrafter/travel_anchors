@@ -21,11 +21,9 @@ public class TravelAnchorScreen extends ContainerScreen<TravelAnchorContainer> {
 
     private static final ResourceLocation GUI = new ResourceLocation(TravelAnchors.MODID, "textures/gui/travel_anchor.png");
     private TextFieldWidget textFieldWidget;
-    private final TravelAnchorTile tile;
 
     public TravelAnchorScreen(TravelAnchorContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
         super(screenContainer, inv, titleIn);
-        this.tile = screenContainer.tileEntity;
     }
 
     @Override
@@ -35,6 +33,7 @@ public class TravelAnchorScreen extends ContainerScreen<TravelAnchorContainer> {
         this.textFieldWidget = new TextFieldWidget(this.font, this.width / 2 - 50, this.height /2 -63, 100, 15, new TranslationTextComponent("screen.travelanchor.search"));
         this.textFieldWidget.setMaxStringLength(32767);
         this.textFieldWidget.changeFocus(true);
+        this.textFieldWidget.setText(container.tileEntity.name);
     }
 
     @Override
@@ -72,7 +71,7 @@ public class TravelAnchorScreen extends ContainerScreen<TravelAnchorContainer> {
         super.onClose();
         this.getMinecraft().keyboardListener.enableRepeatEvents(false);
         if(Minecraft.getInstance().world != null){
-            Networking.sendNameChange(Minecraft.getInstance().world, this.tile.getPos(), this.textFieldWidget.getText());
+            Networking.sendNameChange(container.tileEntity.getWorld(), container.tileEntity.getPos(), this.textFieldWidget.getText());
         }
 
     }

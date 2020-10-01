@@ -13,7 +13,7 @@ public class AnchorNameChangeHandler implements PacketHandler<AnchorNameChangeHa
 
     @Override
     public Class<AnchorNameChangeMessage> messageClass() {
-        return null;
+        return AnchorNameChangeMessage.class;
     }
 
     @Override
