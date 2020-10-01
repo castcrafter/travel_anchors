@@ -22,11 +22,10 @@ public class Networking {
     );
 
     public static void registerPackets() {
-        System.out.println("REGISTERRRRRRRRRRRRRRRRRRRR");
         register(new AnchorNameChangeHandler(), NetworkDirection.PLAY_TO_SERVER);
     }
 
-    private static <T> void register(PacketHandler<T> handler, NetworkDirection direction) {
+    private static <T> void register(PacketHandler<T> handler, @SuppressWarnings("SameParameterValue") NetworkDirection direction) {
         INSTANCE.registerMessage(discriminator++, handler.messageClass(), handler::encode, handler::decode, handler::handle, Optional.of(direction));
     }
 

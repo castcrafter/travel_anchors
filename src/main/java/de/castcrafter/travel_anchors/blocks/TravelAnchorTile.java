@@ -2,35 +2,39 @@ package de.castcrafter.travel_anchors.blocks;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+
+import javax.annotation.Nonnull;
 
 import static de.castcrafter.travel_anchors.setup.Registration.TRAVEL_ANCHOR_TILE;
 
-public class TravelAnchorTile extends TileEntity implements ITickableTileEntity {
+public class TravelAnchorTile extends TileEntity {
 
-    public String name = "";
+    private String name = "";
 
-    public TravelAnchorTile(){
+    public TravelAnchorTile() {
         super(TRAVEL_ANCHOR_TILE.get());
     }
 
     @Override
-    public void tick() {
-        if(this.world != null && this.world.isRemote){
-            System.out.println("Name:" + name);
-        }
-    }
-
-    @Override
-    public void read(BlockState state, CompoundNBT nbt) {
-        name = nbt.getString("name");
+    public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
         super.read(state, nbt);
+        this.name = nbt.getString("travel_anchor_name");
     }
 
+    @Nonnull
     @Override
     public CompoundNBT write(CompoundNBT compound) {
-        compound.putString("name", name);
+        compound.putString("travel_anchor_name", this.name);
         return super.write(compound);
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+        this.markDirty();
     }
 }
