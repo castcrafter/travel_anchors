@@ -3,6 +3,8 @@ package de.castcrafter.travel_anchors.blocks;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.castcrafter.travel_anchors.TravelAnchors;
+import de.castcrafter.travel_anchors.network.Networking;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -19,9 +21,11 @@ public class TravelAnchorScreen extends ContainerScreen<TravelAnchorContainer> {
 
     private static final ResourceLocation GUI = new ResourceLocation(TravelAnchors.MODID, "textures/gui/travel_anchor.png");
     private TextFieldWidget textFieldWidget;
+    private final TravelAnchorTile tile;
 
     public TravelAnchorScreen(TravelAnchorContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
         super(screenContainer, inv, titleIn);
+        this.tile = screenContainer.tileEntity;
     }
 
     @Override
@@ -62,10 +66,15 @@ public class TravelAnchorScreen extends ContainerScreen<TravelAnchorContainer> {
     public IGuiEventListener getListener() {
         return this.textFieldWidget;
     }
+
     @Override
     public void onClose() {
         super.onClose();
         this.getMinecraft().keyboardListener.enableRepeatEvents(false);
+        if(Minecraft.getInstance().world != null){
+            Networking.sendNameChange(Minecraft.getInstance().world, this.tile.getPos(), this.textFieldWidget.getText());
+        }
+
     }
 
     @Override

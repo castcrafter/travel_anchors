@@ -4,7 +4,6 @@ import de.castcrafter.travel_anchors.setup.Registration;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -14,13 +13,13 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 
 public class TravelAnchorContainer extends Container {
 
-    private TileEntity tileEntity;
+    public TravelAnchorTile tileEntity;
     private final PlayerEntity playerEntity;
     private final IItemHandler playerInventory;
 
     public TravelAnchorContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory,PlayerEntity player){
         super(Registration.TRAVEL_ANCHOR_CONTAINER.get(),windowId);
-        tileEntity = world.getTileEntity(pos);
+        tileEntity = (TravelAnchorTile) world.getTileEntity(pos);
         this.playerEntity = player;
         this.playerInventory = new InvWrapper(playerInventory);
 
