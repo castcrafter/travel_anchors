@@ -2,8 +2,7 @@ package de.castcrafter.travel_anchors.blocks;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -22,25 +21,22 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class TravelAnchorBlock extends Block {
+@SuppressWarnings("deprecation")
+public class TravelAnchorBlock extends Block implements ITileEntityProvider {
 
-    public TravelAnchorBlock(){
-        super(Properties.create(Material.IRON)
-                .sound(SoundType.METAL)
-                .hardnessAndResistance(2.0f)
-        );
+    public TravelAnchorBlock(Properties properties) {
+        super(properties);
     }
 
-    //Adds Tooltip
     @Override
-    public void addInformation(ItemStack stack, @Nullable IBlockReader reader, List<ITextComponent> list, ITooltipFlag flags) {
-        list.add(new TranslationTextComponent("message.travel_anchor_block"));
+    public void addInformation(@Nonnull ItemStack stack, @Nullable IBlockReader world, List<ITextComponent> tooltip, @Nonnull ITooltipFlag flags) {
+        tooltip.add(new TranslationTextComponent("tooltip.travel_anchors.travel_anchor_block"));
     }
 
-    //Tile Entity
     @Override
     public boolean hasTileEntity(BlockState state) {
         return true;
@@ -52,27 +48,34 @@ public class TravelAnchorBlock extends Block {
         return new TravelAnchorTile();
     }
 
-
-    //creates gui
+    @Nullable
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
+    public TileEntity createNewTileEntity(@Nonnull IBlockReader world) {
+        return new TravelAnchorTile();
+    }
+
+    @Nonnull
+    @Override
+    public ActionResultType onBlockActivated(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult trace) {
         if (!world.isRemote) {
-            TileEntity tileEntity = world.getTileEntity(pos);
-            if (tileEntity instanceof TravelAnchorTile) {
+            TileEntity tile = world.getTileEntity(pos);
+            if (tile == null) {
+                throw new IllegalStateException("Expected a tile entity of type TravelAnchorTile but got none.");
+            } else if (tile instanceof TravelAnchorTile) {
                 INamedContainerProvider containerProvider = new INamedContainerProvider() {
                     @Override
                     public ITextComponent getDisplayName() {
-                        return new TranslationTextComponent("screen.travelanchor.travelanchor");
+                        return new TranslationTextComponent("screen.travel_anchors.travel_anchor");
                     }
 
                     @Override
-                    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-                        return new TravelAnchorContainer(i, world, pos, playerInventory, playerEntity);
+                    public Container createMenu(int window, @Nonnull PlayerInventory inventory, @Nonnull PlayerEntity player) {
+                        return new TravelAnchorContainer(window, world, pos, inventory, player);
                     }
                 };
-                NetworkHooks.openGui((ServerPlayerEntity) player, containerProvider, tileEntity.getPos());
+                NetworkHooks.openGui((ServerPlayerEntity) player, containerProvider, tile.getPos());
             } else {
-                throw new IllegalStateException("Our named container provider is missing!");
+                throw new IllegalStateException("Expected a tile entity of type TravelAnchorTile but got " + tile.getClass() + ".");
             }
         }
         return ActionResultType.SUCCESS;

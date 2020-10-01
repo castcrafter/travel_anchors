@@ -33,10 +33,11 @@ public class AnchorNameChangeHandler implements PacketHandler<AnchorNameChangeHa
             if (ctx.get().getSender() != null) {
                 //noinspection ConstantConditions
                 ServerWorld world = ctx.get().getSender().getServerWorld();
+                //noinspection deprecation
                 if (world.isBlockLoaded(msg.pos)) {
                     TileEntity te = world.getTileEntity(msg.pos);
                     if (te instanceof TravelAnchorTile) {
-                        ((TravelAnchorTile) te).name = msg.name;
+                        ((TravelAnchorTile) te).setName(msg.name);
                         te.markDirty();
                     }
                 }
