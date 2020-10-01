@@ -18,7 +18,7 @@ public class TravelAnchorTile extends TileEntity implements ITickableTileEntity 
     @Override
     public void tick() {
         if(this.world != null && this.world.isRemote){
-            System.out.println(this.name);
+            System.out.println("Name:" + name);
         }
     }
 

@@ -15,6 +15,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.event.KeyEvent;
 
 
 public class TravelAnchorScreen extends ContainerScreen<TravelAnchorContainer> {
@@ -74,6 +75,14 @@ public class TravelAnchorScreen extends ContainerScreen<TravelAnchorContainer> {
             Networking.sendNameChange(container.tileEntity.getWorld(), container.tileEntity.getPos(), this.textFieldWidget.getText());
         }
 
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == KeyEvent.VK_E) {
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
