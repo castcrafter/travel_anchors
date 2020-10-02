@@ -1,5 +1,6 @@
 package de.castcrafter.travel_anchors.blocks;
 
+import de.castcrafter.travel_anchors.TravelAnchorList;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -35,6 +36,7 @@ public class TravelAnchorTile extends TileEntity {
 
     public void setName(String name) {
         this.name = name;
+        TravelAnchorList.get(world).setAnchor(pos, name);
         this.markDirty();
     }
 }
