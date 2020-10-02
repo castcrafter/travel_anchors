@@ -11,25 +11,21 @@ public class WorldData extends WorldSavedData implements Supplier {
 
     public CompoundNBT data = new CompoundNBT();
 
-    public WorldData()
-    {
+    public WorldData() {
         super(TravelAnchors.MODID);
     }
 
-    public WorldData(String name)
-    {
+    public WorldData(String name) {
         super(name);
     }
 
     @Override
-    public void read(CompoundNBT nbt)
-    {
+    public void read(CompoundNBT nbt) {
         data = nbt.getCompound("DatenNamen");
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT nbt)
-    {
+    public CompoundNBT write(CompoundNBT nbt) {
         nbt.put("DatenNamen", data);
         return nbt;
     }
@@ -39,8 +35,7 @@ public class WorldData extends WorldSavedData implements Supplier {
         Supplier<WorldData> sup = new WorldData();
         WorldData saver = (WorldData) storage.getOrCreate(sup, TravelAnchors.MODID);
 
-        if (saver == null)
-        {
+        if (saver == null) {
             saver = new WorldData();
             storage.set(saver);
         }
@@ -48,8 +43,7 @@ public class WorldData extends WorldSavedData implements Supplier {
     }
 
     @Override
-    public Object get()
-    {
+    public Object get() {
         return this;
     }
 }

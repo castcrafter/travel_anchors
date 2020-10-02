@@ -47,24 +47,20 @@ public class TravelAnchors {
     private void clientSetup(final FMLClientSetupEvent event) {
         ScreenManager.registerFactory(Registration.TRAVEL_ANCHOR_CONTAINER.get(), TravelAnchorScreen::new);
     }
-    public void onWorldLoaded(WorldEvent.Load event)
-    {
-        if (!event.getWorld().isRemote() && event.getWorld() instanceof ServerWorld)
-        {
+
+    public void onWorldLoaded(WorldEvent.Load event) {
+        if (!event.getWorld().isRemote() && event.getWorld() instanceof ServerWorld) {
             WorldData saver = WorldData.get((ServerWorld) event.getWorld());
 
-            if(saver.data.contains("MyData"))
-            {
+            if (saver.data.contains("MyData")) {
                 LOGGER.debug("Found my data: " + saver.data.get("MyData"));
                 //hier data zeug
             }
         }
     }
 
-    public void onWorldSaved(WorldEvent.Save event)
-    {
-        if (!event.getWorld().isRemote() && event.getWorld() instanceof ServerWorld)
-        {
+    public void onWorldSaved(WorldEvent.Save event) {
+        if (!event.getWorld().isRemote() && event.getWorld() instanceof ServerWorld) {
             WorldData saver = WorldData.get((ServerWorld) event.getWorld());
             CompoundNBT myData = new CompoundNBT();
             myData.putInt("MyData", 0); //hier wieder data zeug

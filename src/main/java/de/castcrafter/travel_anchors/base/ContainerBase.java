@@ -24,10 +24,10 @@ import javax.annotation.Nullable;
  * There are some things you need to pay attention to if you want to use this:
  * Always register player inventory slots with layoutPlayerInventorySlots
  * Register input slots, THEN output slots and THEN player inventory.
- *
+ * <p>
  * Call the super constructor with
- *  firstOutputSlot    =  the number of input slot you have / the first output slot number
- *  firstInventorySlot =  the number of input slots and output slots you have / the first player inventory slot number.
+ * firstOutputSlot    =  the number of input slot you have / the first output slot number
+ * firstInventorySlot =  the number of input slots and output slots you have / the first player inventory slot number.
  */
 public abstract class ContainerBase<T extends TileEntity> extends Container {
 
@@ -162,7 +162,7 @@ public abstract class ContainerBase<T extends TileEntity> extends Container {
         }
 
         if (stack.isStackable()) {
-            while(!stack.isEmpty()) {
+            while (!stack.isEmpty()) {
                 if (reverseDirection) {
                     if (i < startIndex) {
                         break;
@@ -204,7 +204,7 @@ public abstract class ContainerBase<T extends TileEntity> extends Container {
                 i = startIndex;
             }
 
-            while(true) {
+            while (true) {
                 if (reverseDirection) {
                     if (i < startIndex) {
                         break;
@@ -238,7 +238,7 @@ public abstract class ContainerBase<T extends TileEntity> extends Container {
         return flag;
     }
 
-    public static <T extends  Container> ContainerType<T> createContainerType(Function5<Integer, World, BlockPos, PlayerInventory, PlayerEntity, T> constructor) {
+    public static <T extends Container> ContainerType<T> createContainerType(Function5<Integer, World, BlockPos, PlayerInventory, PlayerEntity, T> constructor) {
         return IForgeContainerType.create((windowId1, inv, data) -> {
             BlockPos pos1 = data.readBlockPos();
             World world1 = inv.player.getEntityWorld();
