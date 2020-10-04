@@ -58,11 +58,12 @@ public class TravelStaff extends Item {
         BlockPos anchor = BlockPos.ZERO;
 
         //Vector between player & anchor
-        Vector3d vector_between = new Vector3d(player.getPositionVec().x - anchor.getX(), player.getPositionVec().y - anchor.getY(), player.getPositionVec().z - anchor.getZ());
-        vector_between.normalize();
-        System.out.println("Between: " + vector_between);
+        Vector3d blockVec = new Vector3d(anchor.getX() + 0.5 - player.getPosX(), anchor.getY() + 0.5 - player.getPosY(), anchor.getZ() + 0.5 - player.getPosZ()).normalize();
+        Vector3d lookVec = Vector3d.fromPitchYaw(player.rotationPitch, player.rotationYaw).normalize();
 
-        //vector player is looking
+        System.out.println("Angle:" + Math.acos(lookVec.dotProduct(blockVec)));
+
+        /*//vector player is looking
         Vector3d looking = player.getLookVec();
         looking.normalize();
         System.out.println("Looking: " + looking);
@@ -76,7 +77,7 @@ public class TravelStaff extends Item {
         double length_looking = looking.length();
 
         System.out.println("test_length: " + length_test);
-        System.out.println("looking_length: " + length_looking);
+        System.out.println("looking_length: " + length_looking);*/
 
         return ActionResult.resultPass(player.getHeldItem(hand));
     }
