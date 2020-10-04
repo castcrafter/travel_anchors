@@ -1,88 +1,83 @@
 package de.castcrafter.travel_anchors.items;
 
-import de.castcrafter.travel_anchors.TravelAnchorList;
-import de.castcrafter.travel_anchors.blocks.TravelAnchorTile;
-import jdk.nashorn.internal.ir.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.zip.DeflaterOutputStream;
 
 
 public class TravelStaff extends Item {
+
+    private static int max_distance = 20;
+    private static int max_angle = 10;
+    private double distance;
+    private double angle;
+    private double smallest;
+    private double new_smallest;
+
+    private BlockPos anchor = BlockPos.ZERO;
 
     public TravelStaff(Properties properties) {
         super(properties);
     }
 
     @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+        super.inventoryTick(stack, world, entity, itemSlot, isSelected);
+
+        if (isSelected == true){
+            for(int i = 0; i < 2; i++){
+                BlockPos anchor = BlockPos.ZERO; //anchors aus der Liste
+
+                Vector3d blockVec = new Vector3d(anchor.getX() + 0.5 - entity.getPosX(), anchor.getY() + entity.getYOffset() - entity.getPosY(), anchor.getZ() + 0.5 - entity.getPosZ());
+                Vector3d lookVec = Vector3d.fromPitchYaw(entity.rotationPitch, entity.rotationYaw).normalize();
+
+                this.distance = blockVec.length();
+                Vector3d blockVec_n = blockVec.normalize();
+                this.angle = Math.toDegrees(Math.acos(lookVec.dotProduct(blockVec_n)));
+
+                if(angle < 180){
+                    this.smallest = angle;
+                    if(angle < smallest){
+                        this.new_smallest = angle;
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     @Nonnull
     public ActionResult<ItemStack> onItemRightClick(@Nonnull World world, @Nonnull PlayerEntity player, @Nonnull Hand hand) {
 
-        // TODO needs rewrite
-
-        /*BlockRayTraceResult trace = rayTrace(world, player, RayTraceContext.FluidMode.NONE);
-
-        if (!world.isRemote) {
-            System.out.println(world.getBlockState(trace.getPos()).getBlock());
-            if (player.isSneaking()) {
-                if (trace != null && world.getBlockState(trace.getPos()).getBlock() == Registration.TRAVEL_ANCHOR_BLOCK.get()) {
-                    player.setPositionAndUpdate(trace.getHitVec().x, trace.getHitVec().y + 1, trace.getHitVec().z);
-                } else {
-                    Vector3d pos = player.getPositionVec();
-                    float yaw = player.rotationYaw * ((float) Math.PI / 180F);
-                    float pitch = player.rotationPitch * ((float) Math.PI / 180F);
-                    player.setPositionAndUpdate(pos.x - MathHelper.sin(yaw) * 5, pos.y + -MathHelper.sin(pitch) * 5, pos.z + MathHelper.cos(yaw) * 5);
-                }
-                return ActionResult.resultSuccess(player.getHeldItem(hand));
+        if(!world.isRemote){
+            if(smallest <= max_angle && distance <= max_distance){
+                //anchor muss der mit dem kleinsten winkel sein
+                player.setPositionAndUpdate(anchor.getX() + 0.5, anchor.getY() + 1, anchor.getZ() + 0.5);
+                player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1F, 1F);
             }
-        }*/
-
-        //Travel Anchor pos auf 0,0,0 zum testen
-        BlockPos anchor = BlockPos.ZERO;
-
-        //Vector between player & anchor
-        Vector3d blockVec = new Vector3d(anchor.getX() + 0.5 - player.getPosX(), anchor.getY() + 0.5 - player.getPosY(), anchor.getZ() + 0.5 - player.getPosZ()).normalize();
-        Vector3d lookVec = Vector3d.fromPitchYaw(player.rotationPitch, player.rotationYaw).normalize();
-
-        System.out.println("Angle:" + Math.acos(lookVec.dotProduct(blockVec)));
-
-        /*//vector player is looking
-        Vector3d looking = player.getLookVec();
-        looking.normalize();
-        System.out.println("Looking: " + looking);
-
-        //scalar product of both vectors
-        double dot = vector_between.dotProduct(looking);
-        System.out.println("dot_calculated" + dot);
-
-        //length of booth vecotrs
-        double length_test = vector_between.length();
-        double length_looking = looking.length();
-
-        System.out.println("test_length: " + length_test);
-        System.out.println("looking_length: " + length_looking);*/
-
-        return ActionResult.resultPass(player.getHeldItem(hand));
+            if(distance > max_distance){
+                Minecraft.getInstance().player.sendChatMessage("Zu weit weg du huan");
+            }
+        }
+        return ActionResult.resultSuccess(player.getHeldItem(hand));
     }
-
-
 
     @Override
     public void addInformation(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, @Nonnull ITooltipFlag flags) {
