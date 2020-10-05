@@ -12,6 +12,7 @@ import net.minecraft.item.ItemUseContext;
 import net.minecraft.network.play.server.STitlePacket;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -38,7 +39,7 @@ public class TravelStaff extends Item {
     public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context) {
         if (context.getPlayer() != null && context.getWorld().getBlockState(context.getPos()).getBlock() == Registration.TRAVEL_ANCHOR_BLOCK.get()) {
             onItemRightClick(context.getWorld(), context.getPlayer(), context.getHand());
-            return ActionResultType.CONSUME;
+            return ActionResultType.SUCCESS;
         } else {
             return ActionResultType.PASS;
         }
@@ -49,26 +50,40 @@ public class TravelStaff extends Item {
     public ActionResult<ItemStack> onItemRightClick(@Nonnull World world, @Nonnull PlayerEntity player, @Nonnull Hand hand) {
         if (!world.isRemote) {
             Vector3d positionVec = player.getPositionVec();
-            Optional<Pair<BlockPos, String>> anchor = TravelAnchorList.get(world).getAnchorsAround(player.getPositionVec(), MAX_DISTANCE_SQ).map(p -> {
-                System.out.println(p);
-                return p;
-            }).min((p1, p2) -> {
-                double angle1 = Math.abs(getAngleRadians(positionVec, p1.getLeft(), player.rotationYaw, player.rotationPitch));
-                double angle2 = Math.abs(getAngleRadians(positionVec, p2.getLeft(), player.rotationYaw, player.rotationPitch));
-                return Double.compare(angle1, angle2);
-            }).filter(p -> Math.abs(getAngleRadians(positionVec, p.getLeft(), player.rotationYaw, player.rotationPitch)) <= MAX_ANGLE)
-              .filter(p -> canTeleport(world, p.getLeft()));
-            if (anchor.isPresent()) {
-                player.setPositionAndUpdate(anchor.get().getLeft().getX() + 0.5, anchor.get().getLeft().getY() + 1, anchor.get().getLeft().getZ() + 0.5);
-                player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1F, 1F);
-                if (player instanceof ServerPlayerEntity) {
-                    ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.tp.success", anchor.get().getRight()), 10, 60, 10));
+            if(player.isSneaking()){
+                float yaw = player.rotationYaw * ((float) Math.PI / 180F);
+                float pitch = player.rotationPitch * ((float) Math.PI / 180F);
+                BlockPos target = new BlockPos(positionVec.x - MathHelper.sin(yaw) * 7, positionVec.y + -MathHelper.sin(pitch) * 7, positionVec.z + MathHelper.cos(yaw) * 7);
+                if(canTeleport(world, target)){
+                    player.setPositionAndUpdate(target.getX(), target.getY(), target.getZ());
+                    player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1F, 1F);
                 }
-            } else if (player instanceof ServerPlayerEntity) {
-                ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.tp.fail"), 10, 60, 10));
+                else {
+                    ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.hop.fail"), 10, 60, 10));
+                }
+            }
+            else {
+                Optional<Pair<BlockPos, String>> anchor = TravelAnchorList.get(world).getAnchorsAround(player.getPositionVec(), MAX_DISTANCE_SQ).map(p -> {
+                    System.out.println(p);
+                    return p;
+                }).min((p1, p2) -> {
+                    double angle1 = Math.abs(getAngleRadians(positionVec, p1.getLeft(), player.rotationYaw, player.rotationPitch));
+                    double angle2 = Math.abs(getAngleRadians(positionVec, p2.getLeft(), player.rotationYaw, player.rotationPitch));
+                    return Double.compare(angle1, angle2);
+                }).filter(p -> Math.abs(getAngleRadians(positionVec, p.getLeft(), player.rotationYaw, player.rotationPitch)) <= MAX_ANGLE)
+                        .filter(p -> canTeleport(world, p.getLeft()));
+                if (anchor.isPresent()) {
+                    player.setPositionAndUpdate(anchor.get().getLeft().getX() + 0.5, anchor.get().getLeft().getY() + 1, anchor.get().getLeft().getZ() + 0.5);
+                    player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1F, 1F);
+                    if (player instanceof ServerPlayerEntity) {
+                        ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.tp.success", anchor.get().getRight()), 10, 60, 10));
+                    }
+                } else if (player instanceof ServerPlayerEntity) {
+                    ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.tp.fail"), 10, 60, 10));
+                }
             }
         }
-        return ActionResult.resultConsume(player.getHeldItem(hand));
+        return ActionResult.resultSuccess(player.getHeldItem(hand));
     }
 
     @Override

@@ -12,5 +12,6 @@
   "tooltip.travel_anchors.travel_staff": "Sneak + Right-Click to short range Teleport. Look at Travelanchor to warp.",
 
   "travel_anchors.tp.success": "Teleported to %s.",
-  "travel_anchors.tp.fail": "No travel anchor found."
+  "travel_anchors.tp.fail": "No travel anchor found.",
+  "travel_anchors.hop.fail": "Destination obstructed."
 }
