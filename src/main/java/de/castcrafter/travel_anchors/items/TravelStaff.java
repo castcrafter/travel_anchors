@@ -1,5 +1,6 @@
 package de.castcrafter.travel_anchors.items;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -13,8 +14,8 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -24,12 +25,8 @@ import java.util.List;
 
 public class TravelStaff extends Item {
 
-    private static int max_distance = 20;
-    private static int max_angle = 10;
     private double distance;
-    private double angle;
-    private double smallest;
-    private double new_smallest;
+    private double smallest = 180;
 
     private BlockPos anchor = BlockPos.ZERO;
 
@@ -42,21 +39,19 @@ public class TravelStaff extends Item {
         super.inventoryTick(stack, world, entity, itemSlot, isSelected);
 
         if (isSelected == true){
-            for(int i = 0; i < 2; i++){
-                BlockPos anchor = BlockPos.ZERO; //anchors aus der Liste
+
+            for(int i = 0; i < 2 /*list size*/; i++){
+                BlockPos anchor = BlockPos.ZERO; //anchor of list
 
                 Vector3d blockVec = new Vector3d(anchor.getX() + 0.5 - entity.getPosX(), anchor.getY() + entity.getYOffset() - entity.getPosY(), anchor.getZ() + 0.5 - entity.getPosZ());
                 Vector3d lookVec = Vector3d.fromPitchYaw(entity.rotationPitch, entity.rotationYaw).normalize();
 
                 this.distance = blockVec.length();
                 Vector3d blockVec_n = blockVec.normalize();
-                this.angle = Math.toDegrees(Math.acos(lookVec.dotProduct(blockVec_n)));
+                double angle = Math.toDegrees(Math.acos(lookVec.dotProduct(blockVec_n)));
 
-                if(angle < 180){
-                    this.smallest = angle;
-                    if(angle < smallest){
-                        this.new_smallest = angle;
-                    }
+                if(angle < smallest){
+                    smallest = angle;
                 }
             }
         }
@@ -66,14 +61,20 @@ public class TravelStaff extends Item {
     @Nonnull
     public ActionResult<ItemStack> onItemRightClick(@Nonnull World world, @Nonnull PlayerEntity player, @Nonnull Hand hand) {
 
+        int max_angle = 10; //will be a config value
+        int max_distance = 20; //will be a config value
+
         if(!world.isRemote){
-            if(smallest <= max_angle && distance <= max_distance){
-                //anchor muss der mit dem kleinsten winkel sein
+            if(smallest <= max_angle && distance <= max_distance && isClear(world, anchor)){
+                //needs to be anchor with smallest angle
                 player.setPositionAndUpdate(anchor.getX() + 0.5, anchor.getY() + 1, anchor.getZ() + 0.5);
                 player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1F, 1F);
             }
-            if(distance > max_distance){
-                Minecraft.getInstance().player.sendChatMessage("Zu weit weg du huan");
+            else if(distance > max_distance){
+                Minecraft.getInstance().player.sendChatMessage("Anchor out of reach");
+            }
+            else if(!isClear(world, anchor)){
+                Minecraft.getInstance().player.sendChatMessage("Anchor is obstructed");
             }
         }
         return ActionResult.resultSuccess(player.getHeldItem(hand));
@@ -82,6 +83,14 @@ public class TravelStaff extends Item {
     @Override
     public void addInformation(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, @Nonnull ITooltipFlag flags) {
         tooltip.add(new TranslationTextComponent("tooltip.travel_anchors.travel_staff"));
+    }
+
+    public static boolean isClear(IBlockReader world, BlockPos target) {
+        return isClear(world.getBlockState(target.up(1))) && isClear(world.getBlockState(target.up(2)));
+    }
+
+    private static boolean isClear(BlockState blockState) {
+        return !blockState.getMaterial().isSolid();
     }
 }
 
