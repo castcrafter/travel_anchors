@@ -32,6 +32,7 @@ public class TravelAnchors {
     };
 
     public TravelAnchors() {
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.SERVER_CONFIG);
         ServerConfig.loadConfig(ServerConfig.SERVER_CONFIG, FMLPaths.GAMEDIR.get().resolve(FMLConfig.defaultConfigPath()).resolve(MODID + "-server.toml"));
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);

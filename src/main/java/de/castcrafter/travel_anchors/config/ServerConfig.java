@@ -2,6 +2,7 @@ package de.castcrafter.travel_anchors.config;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
+import de.castcrafter.travel_anchors.TravelAnchors;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.nio.file.Path;
@@ -21,13 +22,14 @@ public class ServerConfig {
     public static void init(ForgeConfigSpec.Builder builder){
         builder.push("travel-anchor-settings");
         MAX_ANGLE = builder.comment("The maximum angle you can look at the Travel Anchor to teleport.")
-                .defineInRange("maxAngle", 30, 1, Double.MAX_VALUE);
+                .defineInRange("maxAngle", 35, 1, Double.MAX_VALUE);
         MAX_DISTANCE = builder.comment("The maximum distance you are allowed to teleport.")
-                .defineInRange("maxDistance", 20, 1, Double.MAX_VALUE);
+                .defineInRange("maxDistance", 25, 1, Double.MAX_VALUE);
         builder.pop();
     }
 
     public static void loadConfig(ForgeConfigSpec spec, Path path){
+        TravelAnchors.LOGGER.debug("Loading config file {}", path);
         final CommentedFileConfig configData = CommentedFileConfig.builder(path).sync().autosave().writingMode(WritingMode.REPLACE).build();
         configData.load();
         spec.setConfig(configData);

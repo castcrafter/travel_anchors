@@ -1,6 +1,7 @@
 package de.castcrafter.travel_anchors.items;
 
 import de.castcrafter.travel_anchors.TravelAnchorList;
+import de.castcrafter.travel_anchors.config.ServerConfig;
 import de.castcrafter.travel_anchors.setup.Registration;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -18,6 +19,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -28,8 +30,8 @@ import java.util.Optional;
 
 public class TravelStaff extends Item {
 
-    public static final double MAX_ANGLE = Math.toRadians(30);
-    public static final double MAX_DISTANCE_SQ = Math.pow(20, 2);
+    public static final double MAX_ANGLE = Math.toRadians(ServerConfig.MAX_ANGLE.get());
+    public static final double MAX_DISTANCE_SQ = Math.pow(ServerConfig.MAX_DISTANCE.get(), 2);
 
     public TravelStaff(Properties properties) {
         super(properties);
