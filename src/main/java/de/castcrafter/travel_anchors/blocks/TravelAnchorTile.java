@@ -21,6 +21,9 @@ public class TravelAnchorTile extends TileEntity {
     public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
         super.read(state, nbt);
         this.name = nbt.getString("travel_anchor_name");
+        if (world != null && pos != null) {
+            TravelAnchorList.get(world).setAnchor(pos, name);
+        }
     }
 
     @Nonnull

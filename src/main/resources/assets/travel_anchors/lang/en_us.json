@@ -9,5 +9,8 @@
   "screen.travel_anchors.search": "Search",
 
   "tooltip.travel_anchors.travel_anchor_block": "Look at this with a Travel Staff to teleport.",
-  "tooltip.travel_anchors.travel_staff": "Sneak + Right-Click to short range Teleport. Look at Travelanchor to warp."
+  "tooltip.travel_anchors.travel_staff": "Sneak + Right-Click to short range Teleport. Look at Travelanchor to warp.",
+
+  "travel_anchors.tp.success": "Teleported to %s.",
+  "travel_anchors.tp.fail": "No travel anchor found."
 }

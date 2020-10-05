@@ -82,9 +82,9 @@ public class TravelAnchorList extends WorldSavedData {
         return anchors.getOrDefault(pos.toImmutable(), null);
     }
 
-    public Stream<Pair<BlockPos, String>> getAnchorsAround(Vector3d pos) {
+    public Stream<Pair<BlockPos, String>> getAnchorsAround(Vector3d pos, double maxDistanceSq) {
         return anchors.entrySet().stream()
-                .filter(entry -> entry.getKey().distanceSq(pos.x, pos.y, pos.z, true) < 2500)
+                .filter(entry -> entry.getKey().distanceSq(pos.x, pos.y, pos.z, true) < maxDistanceSq)
                 .map(entry -> Pair.of(entry.getKey(), entry.getValue()));
     }
 }
