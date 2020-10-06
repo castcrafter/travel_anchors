@@ -1,5 +1,6 @@
 package de.castcrafter.travel_anchors.items;
 
+import de.castcrafter.travel_anchors.TeleportHandler;
 import de.castcrafter.travel_anchors.TravelAnchorList;
 import de.castcrafter.travel_anchors.config.ServerConfig;
 import de.castcrafter.travel_anchors.setup.Registration;
@@ -23,6 +24,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.text.TabExpander;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,33 +53,35 @@ public class TravelStaff extends Item {
         if (!world.isRemote) {
             Vector3d positionVec = player.getPositionVec();
             if(player.isSneaking()){
-                float yaw = player.rotationYaw * ((float) Math.PI / 180F);
-                float pitch = player.rotationPitch * ((float) Math.PI / 180F);
-                BlockPos target = new BlockPos(positionVec.x - MathHelper.sin(yaw) * 7, positionVec.y + -MathHelper.sin(pitch) * 7, positionVec.z + MathHelper.cos(yaw) * 7);
-                if(canTeleport(world, target)){
-                    player.setPositionAndUpdate(target.getX(), target.getY(), target.getZ());
-                    player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1F, 1F);
-                }
-                else {
-                    ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.hop.fail"), 10, 60, 10));
-                }
+                TeleportHandler.shortTeleport(world, player);
+//                float yaw = player.rotationYaw * ((float) Math.PI / 180F);
+//                float pitch = player.rotationPitch * ((float) Math.PI / 180F);
+//                BlockPos target = new BlockPos(positionVec.x - MathHelper.sin(yaw) * 7, positionVec.y + -MathHelper.sin(pitch) * 7, positionVec.z + MathHelper.cos(yaw) * 7);
+//                if(canTeleport(world, target)){
+//                    player.setPositionAndUpdate(target.getX(), target.getY(), target.getZ());
+//                    player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1F, 1F);
+//                }
+//                else {
+//                    ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.hop.fail"), 10, 60, 10));
+//                }
             }
             else {
-                Optional<Pair<BlockPos, String>> anchor = TravelAnchorList.get(world).getAnchorsAround(player.getPositionVec(), Math.pow(ServerConfig.MAX_DISTANCE.get(), 2)).min((p1, p2) -> {
-                    double angle1 = Math.abs(getAngleRadians(positionVec, p1.getLeft(), player.rotationYaw, player.rotationPitch));
-                    double angle2 = Math.abs(getAngleRadians(positionVec, p2.getLeft(), player.rotationYaw, player.rotationPitch));
-                    return Double.compare(angle1, angle2);
-                }).filter(p -> Math.abs(getAngleRadians(positionVec, p.getLeft(), player.rotationYaw, player.rotationPitch)) <= Math.toRadians(ServerConfig.MAX_ANGLE.get()))
-                        .filter(p -> canTeleport(world, p.getLeft()));
-                if (anchor.isPresent()) {
-                    player.setPositionAndUpdate(anchor.get().getLeft().getX() + 0.5, anchor.get().getLeft().getY() + 1, anchor.get().getLeft().getZ() + 0.5);
-                    player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1F, 1F);
-                    if (player instanceof ServerPlayerEntity) {
-                        ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.tp.success", anchor.get().getRight()), 10, 60, 10));
-                    }
-                } else if (player instanceof ServerPlayerEntity) {
-                    ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.tp.fail"), 10, 60, 10));
-                }
+                TeleportHandler.anchorTeleport(world, player);
+//                Optional<Pair<BlockPos, String>> anchor = TravelAnchorList.get(world).getAnchorsAround(player.getPositionVec(), Math.pow(ServerConfig.MAX_DISTANCE.get(), 2)).min((p1, p2) -> {
+//                    double angle1 = Math.abs(getAngleRadians(positionVec, p1.getLeft(), player.rotationYaw, player.rotationPitch));
+//                    double angle2 = Math.abs(getAngleRadians(positionVec, p2.getLeft(), player.rotationYaw, player.rotationPitch));
+//                    return Double.compare(angle1, angle2);
+//                }).filter(p -> Math.abs(getAngleRadians(positionVec, p.getLeft(), player.rotationYaw, player.rotationPitch)) <= Math.toRadians(ServerConfig.MAX_ANGLE.get()))
+//                        .filter(p -> canTeleport(world, p.getLeft()));
+//                if (anchor.isPresent()) {
+//                    player.setPositionAndUpdate(anchor.get().getLeft().getX() + 0.5, anchor.get().getLeft().getY() + 1, anchor.get().getLeft().getZ() + 0.5);
+//                    player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1F, 1F);
+//                    if (player instanceof ServerPlayerEntity) {
+//                        ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.tp.success", anchor.get().getRight()), 10, 60, 10));
+//                    }
+//                } else if (player instanceof ServerPlayerEntity) {
+//                    ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.tp.fail"), 10, 60, 10));
+//                }
             }
         }
         return ActionResult.resultSuccess(player.getHeldItem(hand));
@@ -88,18 +92,17 @@ public class TravelStaff extends Item {
         tooltip.add(new TranslationTextComponent("tooltip.travel_anchors.travel_staff"));
     }
 
-    public static boolean canTeleport(IBlockReader world, BlockPos target) {
-        return canTeleport(world.getBlockState(target.up(1))) && canTeleport(world.getBlockState(target.up(2)));
-    }
-
-    private static boolean canTeleport(BlockState blockState) {
-        return !blockState.getMaterial().isSolid();
-    }
-
-    private static double getAngleRadians(Vector3d positionVec, BlockPos anchor, float yaw, float pitch) {
-        Vector3d blockVec = new Vector3d(anchor.getX() + 0.5 - positionVec.x, anchor.getY() + 0.5 - positionVec.y, anchor.getZ() + 0.5 - positionVec.z).normalize();
-        Vector3d lookVec = Vector3d.fromPitchYaw(pitch, yaw).normalize();
-        return Math.acos(lookVec.dotProduct(blockVec));
-    }
+//    public static boolean canTeleport(IBlockReader world, BlockPos target) {
+//        return canTeleport(world.getBlockState(target.up(1))) && canTeleport(world.getBlockState(target.up(2)));
+//    }
+//
+//    private static boolean canTeleport(BlockState blockState) {
+//        return !blockState.getMaterial().isSolid();
+//    }
+//
+//    private static double getAngleRadians(Vector3d positionVec, BlockPos anchor, float yaw, float pitch) {
+//        Vector3d blockVec = new Vector3d(anchor.getX() + 0.5 - positionVec.x, anchor.getY() + 0.5 - positionVec.y, anchor.getZ() + 0.5 - positionVec.z).normalize();
+//        Vector3d lookVec = Vector3d.fromPitchYaw(pitch, yaw).normalize();
+//        return Math.acos(lookVec.dotProduct(blockVec));
+//    }
 }
-
