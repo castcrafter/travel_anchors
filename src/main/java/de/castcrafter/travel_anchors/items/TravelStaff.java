@@ -19,7 +19,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -27,11 +26,10 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-
 public class TravelStaff extends Item {
 
-    public static final double MAX_ANGLE = Math.toRadians(ServerConfig.MAX_ANGLE.get());
-    public static final double MAX_DISTANCE_SQ = Math.pow(ServerConfig.MAX_DISTANCE.get(), 2);
+    //public static final double MAX_ANGLE = Math.toRadians(ServerConfig.MAX_ANGLE.get());
+    //public static final double MAX_DISTANCE_SQ = ;
 
     public TravelStaff(Properties properties) {
         super(properties);
@@ -65,14 +63,11 @@ public class TravelStaff extends Item {
                 }
             }
             else {
-                Optional<Pair<BlockPos, String>> anchor = TravelAnchorList.get(world).getAnchorsAround(player.getPositionVec(), MAX_DISTANCE_SQ).map(p -> {
-                    System.out.println(p);
-                    return p;
-                }).min((p1, p2) -> {
+                Optional<Pair<BlockPos, String>> anchor = TravelAnchorList.get(world).getAnchorsAround(player.getPositionVec(), Math.pow(ServerConfig.MAX_DISTANCE.get(), 2)).min((p1, p2) -> {
                     double angle1 = Math.abs(getAngleRadians(positionVec, p1.getLeft(), player.rotationYaw, player.rotationPitch));
                     double angle2 = Math.abs(getAngleRadians(positionVec, p2.getLeft(), player.rotationYaw, player.rotationPitch));
                     return Double.compare(angle1, angle2);
-                }).filter(p -> Math.abs(getAngleRadians(positionVec, p.getLeft(), player.rotationYaw, player.rotationPitch)) <= MAX_ANGLE)
+                }).filter(p -> Math.abs(getAngleRadians(positionVec, p.getLeft(), player.rotationYaw, player.rotationPitch)) <= Math.toRadians(ServerConfig.MAX_ANGLE.get()))
                         .filter(p -> canTeleport(world, p.getLeft()));
                 if (anchor.isPresent()) {
                     player.setPositionAndUpdate(anchor.get().getLeft().getX() + 0.5, anchor.get().getLeft().getY() + 1, anchor.get().getLeft().getZ() + 0.5);
