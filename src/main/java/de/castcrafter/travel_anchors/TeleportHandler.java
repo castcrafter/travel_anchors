@@ -1,5 +1,6 @@
 package de.castcrafter.travel_anchors;
 
+import com.google.common.eventbus.Subscribe;
 import de.castcrafter.travel_anchors.blocks.TravelAnchorBlock;
 import de.castcrafter.travel_anchors.blocks.TravelAnchorTile;
 import de.castcrafter.travel_anchors.config.ServerConfig;
@@ -19,6 +20,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.tuple.Pair;
@@ -26,23 +28,17 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.Optional;
 
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = TravelAnchors.MODID)
+@Mod.EventBusSubscriber(modid = TravelAnchors.MODID)
 public class TeleportHandler {
 
-//    public static final double MAX_ANGLE = Math.toRadians(ServerConfig.MAX_ANGLE.get());
-//    public static final double MAX_DISTANCE_SQ = Math.pow(ServerConfig.MAX_DISTANCE.get(), 2);
-
     @SubscribeEvent
-    public static void onInput(InputEvent event) {
-        ClientPlayerEntity player = Minecraft.getInstance().player;
-        World world = Minecraft.getInstance().world;
-//        BlockPos posBelow = player.getPosition().down();
-//        BlockPos pos = new BlockPos(player.getPosX(), player.getPosY() -1, player.getPosZ());
-        if (player == null || player.isSpectator() || !player.isAlive()) return;
-
-        if(player.movementInput.jump && isAnchor(player.world.getBlockState(player.getPosition().down()))){
-            System.out.println("anchor unter dir");
-            anchorTeleport(world, player);
+    public static void onInput(LivingEvent.LivingJumpEvent event) {
+        if(event.getEntityLiving() instanceof ServerPlayerEntity){
+            ServerPlayerEntity player = (ServerPlayerEntity) event.getEntityLiving();
+            if(isAnchor(player.world.getBlockState(player.getPosition().down()))){
+                System.out.println("anchor unter dir");
+                anchorTeleport(Minecraft.getInstance().world, player);
+            }
         }
     }
 
@@ -57,6 +53,7 @@ public class TeleportHandler {
                     .filter(p -> canTeleport(world, p.getLeft()));
             if (anchor.isPresent()) {
                 player.setPositionAndUpdate(anchor.get().getLeft().getX() + 0.5, anchor.get().getLeft().getY() + 1, anchor.get().getLeft().getZ() + 0.5);
+                player.fallDistance = 0;
                 player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1F, 1F);
                 if (player instanceof ServerPlayerEntity) {
                     ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.tp.success", anchor.get().getRight()), 10, 60, 10));

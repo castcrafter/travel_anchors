@@ -2,11 +2,13 @@ package de.castcrafter.travel_anchors;
 
 import de.castcrafter.travel_anchors.blocks.TravelAnchorScreen;
 import de.castcrafter.travel_anchors.config.ServerConfig;
+import de.castcrafter.travel_anchors.enchantments.RangeEnchantment;
 import de.castcrafter.travel_anchors.network.Networking;
 import de.castcrafter.travel_anchors.setup.Registration;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
