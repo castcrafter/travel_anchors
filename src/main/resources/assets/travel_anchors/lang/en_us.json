@@ -3,6 +3,9 @@
 
   "item.travel_anchors.travel_staff": "Travel Staff",
 
+  "enchantment.travel_anchors.range_ench": "Range",
+  "enchantment.travel_anchors.teleportation_ench": "Teleportation",
+
   "block.travel_anchors.travel_anchor": "Travel Anchor",
 
   "screen.travel_anchors.travel_anchor": "Travel Anchor",

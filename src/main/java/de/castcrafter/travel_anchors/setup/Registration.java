@@ -6,6 +6,7 @@ import de.castcrafter.travel_anchors.blocks.TravelAnchorBlock;
 import de.castcrafter.travel_anchors.blocks.TravelAnchorContainer;
 import de.castcrafter.travel_anchors.blocks.TravelAnchorTile;
 import de.castcrafter.travel_anchors.enchantments.RangeEnchantment;
+import de.castcrafter.travel_anchors.enchantments.TeleportationEnchantment;
 import de.castcrafter.travel_anchors.items.TravelStaff;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -50,6 +51,7 @@ public class Registration {
 
     public static final RegistryObject<ContainerType<TravelAnchorContainer>> TRAVEL_ANCHOR_CONTAINER = CONTAINERS.register("travel_anchor", () -> ContainerBase.createContainerType(TravelAnchorContainer::new));
 
-    public static final RegistryObject<Enchantment> RANGE_ENCHANTMENT = ENCHANTMENTS.register("range", () -> new RangeEnchantment(Enchantment.Rarity.RARE, EnchantmentType.WEAPON, new EquipmentSlotType[]{EquipmentSlotType.MAINHAND}));
+    public static final RegistryObject<Enchantment> RANGE_ENCHANTMENT = ENCHANTMENTS.register("range_ench", () -> new RangeEnchantment(Enchantment.Rarity.RARE, EnchantmentType.BREAKABLE, new EquipmentSlotType[]{EquipmentSlotType.MAINHAND, EquipmentSlotType.OFFHAND}));
+    public static final RegistryObject<Enchantment> TELEPORTATION_ENCHANTMENT = ENCHANTMENTS.register("teleportation_ench", () -> new TeleportationEnchantment(Enchantment.Rarity.RARE, EnchantmentType.BREAKABLE, new EquipmentSlotType[]{EquipmentSlotType.MAINHAND, EquipmentSlotType.OFFHAND}));
 }
 

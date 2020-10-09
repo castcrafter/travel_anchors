@@ -1,12 +1,10 @@
 package de.castcrafter.travel_anchors;
 
-import com.google.common.eventbus.Subscribe;
 import de.castcrafter.travel_anchors.blocks.TravelAnchorBlock;
-import de.castcrafter.travel_anchors.blocks.TravelAnchorTile;
 import de.castcrafter.travel_anchors.config.ServerConfig;
+import de.castcrafter.travel_anchors.enchantments.RangeEnchantment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.play.server.STitlePacket;
@@ -18,8 +16,6 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -32,20 +28,20 @@ import java.util.Optional;
 public class TeleportHandler {
 
     @SubscribeEvent
-    public static void onInput(LivingEvent.LivingJumpEvent event) {
+    public static void onJump(LivingEvent.LivingJumpEvent event) {
         if(event.getEntityLiving() instanceof ServerPlayerEntity){
             ServerPlayerEntity player = (ServerPlayerEntity) event.getEntityLiving();
             if(isAnchor(player.world.getBlockState(player.getPosition().down()))){
-                System.out.println("anchor unter dir");
-                anchorTeleport(Minecraft.getInstance().world, player);
+                anchorTeleport(event.getEntityLiving().world, player);
             }
         }
     }
 
     public static void anchorTeleport(World world, PlayerEntity player){
+        double MaxDistance = RangeEnchantment.getMaxDistance(player);
         Vector3d positionVec = player.getPositionVec();
         if(!player.isSneaking()){
-            Optional<Pair<BlockPos, String>> anchor = TravelAnchorList.get(world).getAnchorsAround(player.getPositionVec(), Math.pow(ServerConfig.MAX_DISTANCE.get(), 2)).min((p1, p2) -> {
+            Optional<Pair<BlockPos, String>> anchor = TravelAnchorList.get(world).getAnchorsAround(player.getPositionVec(), Math.pow(MaxDistance, 2)).min((p1, p2) -> {
                 double angle1 = Math.abs(getAngleRadians(positionVec, p1.getLeft(), player.rotationYaw, player.rotationPitch));
                 double angle2 = Math.abs(getAngleRadians(positionVec, p2.getLeft(), player.rotationYaw, player.rotationPitch));
                 return Double.compare(angle1, angle2);
