@@ -1,32 +1,23 @@
 package de.castcrafter.travel_anchors.items;
 
 import de.castcrafter.travel_anchors.TeleportHandler;
-import de.castcrafter.travel_anchors.TravelAnchorList;
-import de.castcrafter.travel_anchors.config.ServerConfig;
 import de.castcrafter.travel_anchors.setup.Registration;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
-import net.minecraft.network.play.server.STitlePacket;
-import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.text.TabExpander;
 import java.util.List;
-import java.util.Optional;
 
 public class TravelStaff extends Item {
 

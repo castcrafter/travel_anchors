@@ -4,7 +4,6 @@ import de.castcrafter.travel_anchors.blocks.TravelAnchorBlock;
 import de.castcrafter.travel_anchors.config.ServerConfig;
 import de.castcrafter.travel_anchors.enchantments.RangeEnchantment;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.play.server.STitlePacket;

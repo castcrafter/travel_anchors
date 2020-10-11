@@ -2,6 +2,7 @@ package de.castcrafter.travel_anchors.enchantments;
 
 import de.castcrafter.travel_anchors.config.ServerConfig;
 import de.castcrafter.travel_anchors.setup.Registration;
+import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentType;
@@ -9,6 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import net.minecraftforge.event.world.NoteBlockEvent;
 
 public class RangeEnchantment extends Enchantment {
 

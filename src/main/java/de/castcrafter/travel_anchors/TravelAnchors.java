@@ -2,13 +2,13 @@ package de.castcrafter.travel_anchors;
 
 import de.castcrafter.travel_anchors.blocks.TravelAnchorScreen;
 import de.castcrafter.travel_anchors.config.ServerConfig;
-import de.castcrafter.travel_anchors.enchantments.RangeEnchantment;
 import de.castcrafter.travel_anchors.network.Networking;
+import de.castcrafter.travel_anchors.render.SpecialRender;
 import de.castcrafter.travel_anchors.setup.Registration;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -25,6 +25,7 @@ public class TravelAnchors {
 
     public static final String MODID = "travel_anchors";
     public static final Logger LOGGER = LogManager.getLogger();
+    public static Minecraft mc = Minecraft.getInstance();
 
     public static final ItemGroup ITEM_GROUP = new ItemGroup("travel_anchors") {
         @Override
@@ -50,5 +51,6 @@ public class TravelAnchors {
 
     private void clientSetup(final FMLClientSetupEvent event) {
         ScreenManager.registerFactory(Registration.TRAVEL_ANCHOR_CONTAINER.get(), TravelAnchorScreen::new);
+        SpecialRender.register();
     }
 }
