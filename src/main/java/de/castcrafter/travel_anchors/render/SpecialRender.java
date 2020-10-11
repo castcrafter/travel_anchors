@@ -21,11 +21,14 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.world.NoteBlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import sun.java2d.pipe.TextRenderer;
 import org.lwjgl.opengl.GL11;
+
+import static de.castcrafter.travel_anchors.TeleportHandler.isAnchor;
 
 @Mod.EventBusSubscriber(modid = TravelAnchors.MODID)
 public class SpecialRender extends TileEntityRenderer<TravelAnchorTile> {
@@ -39,7 +42,8 @@ public class SpecialRender extends TileEntityRenderer<TravelAnchorTile> {
 
     @Override
     public void render(TravelAnchorTile tileEntity, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
-        if(holdingItem){
+        PlayerEntity player = Minecraft.getInstance().player;
+        if(holdingItem || isAnchor(player.world.getBlockState(player.getPosition().down()))){
             String text = "Test";
             renderText(text, matrixStack, buffer);
         }
