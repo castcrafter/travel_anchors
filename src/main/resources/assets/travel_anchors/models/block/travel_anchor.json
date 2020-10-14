@@ -4,3 +4,7 @@
     "all": "travel_anchors:block/travel_anchor"
   }
 }
+
+{
+  "loader" : "travel_anchors:loader"
+}

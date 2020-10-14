@@ -5,3 +5,9 @@
     }
   }
 }
+
+{
+  "variants": {
+    "": { "model": "travel_anchors:block/travel_anchor" }
+  }
+}
