@@ -1,7 +1,5 @@
 package de.castcrafter.travel_anchors.blocks.mimic;
 
-import javafx.util.Pair;
-import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;

@@ -15,6 +15,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -47,6 +48,7 @@ public class TravelAnchors {
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(SpecialRender::bakeModels);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loaderSetup);
 
         Registration.init();
@@ -62,6 +64,7 @@ public class TravelAnchors {
         SpecialRender.register();
         RenderTypeLookup.setRenderLayer(Registration.TRAVEL_ANCHOR_BLOCK.get(), (RenderType) -> true);
         Minecraft.getInstance().getBlockColors().register(new Color(), Registration.TRAVEL_ANCHOR_BLOCK.get());
+        ModelLoader.addSpecialModel(SpecialRender.ANCHOR_MODEL);
     }
 
     private void loaderSetup(final ModelRegistryEvent event){

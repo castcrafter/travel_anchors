@@ -1,10 +1,7 @@
 package de.castcrafter.travel_anchors.blocks;
 
 import de.castcrafter.travel_anchors.TravelAnchorList;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CauldronBlock;
-import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.*;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -127,6 +124,11 @@ public class TravelAnchorBlock extends Block implements ITileEntityProvider {
     public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
         super.onReplaced(state, world, pos, newState, isMoving);
         TravelAnchorList.get(world).setAnchor(pos, null);
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 }
 
