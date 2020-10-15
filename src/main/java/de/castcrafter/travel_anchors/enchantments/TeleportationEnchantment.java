@@ -3,6 +3,7 @@ package de.castcrafter.travel_anchors.enchantments;
 import de.castcrafter.travel_anchors.TeleportHandler;
 import de.castcrafter.travel_anchors.TravelAnchors;
 import de.castcrafter.travel_anchors.setup.Registration;
+import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentType;
@@ -39,5 +40,11 @@ public class TeleportationEnchantment extends Enchantment {
             }
             player.swingArm(event.getHand());
         }
+    }
+
+    public static boolean hasTeleportation(){
+        PlayerEntity player = Minecraft.getInstance().player;
+        int lvl = EnchantmentHelper.getEnchantmentLevel(Registration.TELEPORTATION_ENCHANTMENT.get(), player.getHeldItemMainhand());
+        return lvl != 0;
     }
 }

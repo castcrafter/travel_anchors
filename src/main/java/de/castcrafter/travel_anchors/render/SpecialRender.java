@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import de.castcrafter.travel_anchors.TravelAnchorList;
 import de.castcrafter.travel_anchors.TravelAnchors;
 import de.castcrafter.travel_anchors.blocks.TravelAnchorTile;
+import de.castcrafter.travel_anchors.enchantments.TeleportationEnchantment;
 import de.castcrafter.travel_anchors.setup.Registration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -58,7 +59,7 @@ public class SpecialRender extends TileEntityRenderer<TravelAnchorTile> {
         }
 
         PlayerEntity player = Minecraft.getInstance().player;
-        if(holdingItem || isAnchor(player.world.getBlockState(player.getPosition().down()))){
+        if(holdingItem || isAnchor(player.world.getBlockState(player.getPosition().down())) || TeleportationEnchantment.hasTeleportation()){
             String text = "Test";
             renderText(text, matrixStack, buffer);
         }
