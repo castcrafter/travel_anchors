@@ -24,7 +24,6 @@ public class TravelAnchorTile extends TileEntity {
 
     private String name = "";
 
-    //Mimic Stuff
     public static final ModelProperty<BlockState> MIMIC = new ModelProperty<>();
     private BlockState mimic;
 
@@ -42,6 +41,7 @@ public class TravelAnchorTile extends TileEntity {
         return mimic;
     }
 
+    @Nonnull
     @Override
     public CompoundNBT getUpdateTag() {
         CompoundNBT tag = super.getUpdateTag();
@@ -98,6 +98,7 @@ public class TravelAnchorTile extends TileEntity {
     @Override
     public CompoundNBT write(CompoundNBT compound) {
         compound.putString("travel_anchor_name", this.name);
+        writeMimic(compound);
         return super.write(compound);
     }
     private void writeMimic(CompoundNBT tag) {

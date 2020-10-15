@@ -20,7 +20,6 @@ import javax.annotation.Nullable;
 
 public class TravelAnchorScreen extends ContainerScreen<TravelAnchorContainer> {
 
-    private static String oldName = "";
     private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(TravelAnchors.MODID, "textures/gui/travel_anchor.png");
     private TextFieldWidget textFieldWidget;
 
@@ -35,7 +34,7 @@ public class TravelAnchorScreen extends ContainerScreen<TravelAnchorContainer> {
         this.textFieldWidget = new TextFieldWidget(this.font, this.width / 2 - 50, this.height / 2 - 63, 100, 15, new TranslationTextComponent("screen.travel_anchors.search"));
         this.textFieldWidget.setMaxStringLength(32767);
         this.textFieldWidget.changeFocus(true);
-        this.textFieldWidget.setText(oldName);
+        this.textFieldWidget.setText(this.container.tile.getName());
     }
 
     @Override
@@ -74,7 +73,6 @@ public class TravelAnchorScreen extends ContainerScreen<TravelAnchorContainer> {
         this.getMinecraft().keyboardListener.enableRepeatEvents(false);
         if (Minecraft.getInstance().world != null) {
             Networking.sendNameChange(this.container.getWorld(), this.container.getPos(), this.textFieldWidget.getText());
-            oldName = this.textFieldWidget.getText();
         }
 
     }

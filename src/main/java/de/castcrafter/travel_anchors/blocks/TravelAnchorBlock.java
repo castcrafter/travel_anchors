@@ -1,6 +1,7 @@
 package de.castcrafter.travel_anchors.blocks;
 
 import de.castcrafter.travel_anchors.TravelAnchorList;
+import de.castcrafter.travel_anchors.setup.Registration;
 import net.minecraft.block.*;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,19 +32,17 @@ import java.util.List;
 @SuppressWarnings("deprecation")
 public class TravelAnchorBlock extends Block implements ITileEntityProvider {
 
-    private static final VoxelShape SHAPE = VoxelShapes.create(.2, .2, .2, .8, .8, .8);
+    private static final VoxelShape SHAPE = VoxelShapes.create(0, .001, 0, 1, 1, 1);
 
     public TravelAnchorBlock(Properties properties) {
         super(properties);
     }
 
-
-    //Mimic Stuff
     @Override
     public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TravelAnchorTile) {
-            BlockState mimic = ((TravelAnchorTile) te).getMimic();
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof TravelAnchorTile) {
+            BlockState mimic = ((TravelAnchorTile) tile).getMimic();
             if (mimic != null) {
                 return mimic.getLightValue(world, pos);
             }
@@ -52,9 +51,9 @@ public class TravelAnchorBlock extends Block implements ITileEntityProvider {
     }
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
-        TileEntity te = reader.getTileEntity(pos);
-        if (te instanceof TravelAnchorTile) {
-            BlockState mimic = ((TravelAnchorTile) te).getMimic();
+        TileEntity tile = reader.getTileEntity(pos);
+        if (tile instanceof TravelAnchorTile) {
+            BlockState mimic = ((TravelAnchorTile) tile).getMimic();
             if (mimic != null) {
                 return mimic.getShape(reader, pos, context);
             }
@@ -89,7 +88,7 @@ public class TravelAnchorBlock extends Block implements ITileEntityProvider {
     public ActionResultType onBlockActivated(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult trace) {
         if (!world.isRemote) {
             ItemStack item = player.getHeldItem(Hand.OFF_HAND);
-            if(!item.isEmpty() && item.getItem() instanceof BlockItem){
+            if(!item.isEmpty() && item.getItem() instanceof BlockItem && !(((BlockItem) item.getItem()).getBlock() instanceof TravelAnchorBlock)){
                 TileEntity te = world.getTileEntity(pos);
                 if (te instanceof TravelAnchorTile) {
                     BlockState mimicState = ((BlockItem) item.getItem()).getBlock().getDefaultState();
