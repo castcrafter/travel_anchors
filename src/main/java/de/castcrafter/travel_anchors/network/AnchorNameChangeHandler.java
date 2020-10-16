@@ -1,6 +1,6 @@
 package de.castcrafter.travel_anchors.network;
 
-import de.castcrafter.travel_anchors.block.TravelAnchorTile;
+import de.castcrafter.travel_anchors.block.TileTravelAnchor;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -17,8 +17,8 @@ public class AnchorNameChangeHandler {
                 //noinspection deprecation
                 if (world.isBlockLoaded(msg.pos)) {
                     TileEntity te = world.getTileEntity(msg.pos);
-                    if (te instanceof TravelAnchorTile) {
-                        ((TravelAnchorTile) te).setName(msg.name);
+                    if (te instanceof TileTravelAnchor) {
+                        ((TileTravelAnchor) te).setName(msg.name);
                         te.markDirty();
                     }
                 }

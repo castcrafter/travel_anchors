@@ -33,19 +33,19 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-public class TravelAnchorBlock extends Block implements ITileEntityProvider {
+public class BlockTravelAnchor extends Block implements ITileEntityProvider {
 
     private static final VoxelShape SHAPE = VoxelShapes.create(0, .001, 0, 1, 1, 1);
 
-    public TravelAnchorBlock(Properties properties) {
+    public BlockTravelAnchor(Properties properties) {
         super(properties);
     }
 
     @Override
     public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof TravelAnchorTile) {
-            BlockState mimic = ((TravelAnchorTile) tile).getMimic();
+        if (tile instanceof TileTravelAnchor) {
+            BlockState mimic = ((TileTravelAnchor) tile).getMimic();
             if (mimic != null) {
                 return mimic.getLightValue(world, pos);
             }
@@ -57,8 +57,8 @@ public class TravelAnchorBlock extends Block implements ITileEntityProvider {
     @Override
     public VoxelShape getShape(@Nonnull BlockState state, IBlockReader reader, @Nonnull BlockPos pos, @Nonnull ISelectionContext context) {
         TileEntity tile = reader.getTileEntity(pos);
-        if (tile instanceof TravelAnchorTile) {
-            BlockState mimic = ((TravelAnchorTile) tile).getMimic();
+        if (tile instanceof TileTravelAnchor) {
+            BlockState mimic = ((TileTravelAnchor) tile).getMimic();
             if (mimic != null) {
                 return mimic.getShape(reader, pos, context);
             }
@@ -79,13 +79,13 @@ public class TravelAnchorBlock extends Block implements ITileEntityProvider {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new TravelAnchorTile();
+        return new TileTravelAnchor();
     }
 
     @Nullable
     @Override
     public TileEntity createNewTileEntity(@Nonnull IBlockReader world) {
-        return new TravelAnchorTile();
+        return new TileTravelAnchor();
     }
 
     @Nonnull
@@ -95,12 +95,12 @@ public class TravelAnchorBlock extends Block implements ITileEntityProvider {
             ItemStack item = player.getHeldItem(Hand.OFF_HAND);
             if (!item.isEmpty() && item.getItem() instanceof BlockItem && player.getHeldItem(Hand.MAIN_HAND).isEmpty()) {
                 TileEntity te = world.getTileEntity(pos);
-                if (te instanceof TravelAnchorTile) {
+                if (te instanceof TileTravelAnchor) {
                     BlockState mimicState = ((BlockItem) item.getItem()).getBlock().getStateForPlacement(new BlockItemUseContext(player, Hand.OFF_HAND, item, trace));
                     if (mimicState == null || mimicState.getBlock() == this) {
-                        ((TravelAnchorTile) te).setMimic(null);
+                        ((TileTravelAnchor) te).setMimic(null);
                     } else {
-                        ((TravelAnchorTile) te).setMimic(mimicState);
+                        ((TileTravelAnchor) te).setMimic(mimicState);
                     }
                 }
                 return ActionResultType.SUCCESS;
@@ -108,7 +108,7 @@ public class TravelAnchorBlock extends Block implements ITileEntityProvider {
             TileEntity tile = world.getTileEntity(pos);
             if (tile == null) {
                 throw new IllegalStateException("Expected a tile entity of type TravelAnchorTile but got none.");
-            } else if (tile instanceof TravelAnchorTile) {
+            } else if (tile instanceof TileTravelAnchor) {
                 INamedContainerProvider containerProvider = new INamedContainerProvider() {
                     @Override
                     public ITextComponent getDisplayName() {
@@ -117,7 +117,7 @@ public class TravelAnchorBlock extends Block implements ITileEntityProvider {
 
                     @Override
                     public Container createMenu(int window, @Nonnull PlayerInventory inventory, @Nonnull PlayerEntity player) {
-                        return new TravelAnchorContainer(window, world, pos, inventory, player);
+                        return new ContainerTravelAnchor(window, world, pos, inventory, player);
                     }
                 };
                 NetworkHooks.openGui((ServerPlayerEntity) player, containerProvider, tile.getPos());

@@ -2,12 +2,12 @@ package de.castcrafter.travel_anchors.setup;
 
 import de.castcrafter.travel_anchors.TravelAnchors;
 import de.castcrafter.travel_anchors.base.ContainerBase;
-import de.castcrafter.travel_anchors.block.TravelAnchorBlock;
-import de.castcrafter.travel_anchors.block.TravelAnchorContainer;
-import de.castcrafter.travel_anchors.block.TravelAnchorTile;
+import de.castcrafter.travel_anchors.block.BlockTravelAnchor;
+import de.castcrafter.travel_anchors.block.ContainerTravelAnchor;
+import de.castcrafter.travel_anchors.block.TileTravelAnchor;
 import de.castcrafter.travel_anchors.enchantments.RangeEnchantment;
 import de.castcrafter.travel_anchors.enchantments.TeleportationEnchantment;
-import de.castcrafter.travel_anchors.item.TravelStaff;
+import de.castcrafter.travel_anchors.item.ItemTravelStaff;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -42,15 +42,15 @@ public class Registration {
         ENCHANTMENTS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
-    public static final RegistryObject<TravelAnchorBlock> TRAVEL_ANCHOR_BLOCK = BLOCKS.register("travel_anchor", () -> new TravelAnchorBlock(AbstractBlock.Properties.create(Material.IRON).sound(SoundType.METAL).hardnessAndResistance(2.0f)));
+    public static final RegistryObject<BlockTravelAnchor> TRAVEL_ANCHOR_BLOCK = BLOCKS.register("travel_anchor", () -> new BlockTravelAnchor(AbstractBlock.Properties.create(Material.IRON).sound(SoundType.METAL).hardnessAndResistance(2.0f)));
 
     public static final RegistryObject<Item> TRAVEL_ANCHOR_ITEM = ITEMS.register("travel_anchor", () -> new BlockItem(TRAVEL_ANCHOR_BLOCK.get(), new Item.Properties().group(TravelAnchors.ITEM_GROUP)));
-    public static final RegistryObject<Item> TRAVEL_STAFF = ITEMS.register("travel_staff", () -> new TravelStaff(new Item.Properties().group(TravelAnchors.ITEM_GROUP).maxStackSize(1)));
+    public static final RegistryObject<Item> TRAVEL_STAFF = ITEMS.register("travel_staff", () -> new ItemTravelStaff(new Item.Properties().group(TravelAnchors.ITEM_GROUP).maxStackSize(1)));
 
     @SuppressWarnings("ConstantConditions")
-    public static final RegistryObject<TileEntityType<TravelAnchorTile>> TRAVEL_ANCHOR_TILE = TILES.register("travel_anchor", () -> TileEntityType.Builder.create(TravelAnchorTile::new, TRAVEL_ANCHOR_BLOCK.get()).build(null));
+    public static final RegistryObject<TileEntityType<TileTravelAnchor>> TRAVEL_ANCHOR_TILE = TILES.register("travel_anchor", () -> TileEntityType.Builder.create(TileTravelAnchor::new, TRAVEL_ANCHOR_BLOCK.get()).build(null));
 
-    public static final RegistryObject<ContainerType<TravelAnchorContainer>> TRAVEL_ANCHOR_CONTAINER = CONTAINERS.register("travel_anchor", () -> ContainerBase.createContainerType(TravelAnchorContainer::new));
+    public static final RegistryObject<ContainerType<ContainerTravelAnchor>> TRAVEL_ANCHOR_CONTAINER = CONTAINERS.register("travel_anchor", () -> ContainerBase.createContainerType(ContainerTravelAnchor::new));
 
     public static final RegistryObject<Enchantment> RANGE_ENCHANTMENT = ENCHANTMENTS.register("range", () -> new RangeEnchantment(Enchantment.Rarity.RARE, EnchantmentType.BREAKABLE, new EquipmentSlotType[]{EquipmentSlotType.MAINHAND, EquipmentSlotType.OFFHAND}));
     public static final RegistryObject<Enchantment> TELEPORTATION_ENCHANTMENT = ENCHANTMENTS.register("teleportation", () -> new TeleportationEnchantment(Enchantment.Rarity.RARE, EnchantmentType.BREAKABLE, new EquipmentSlotType[]{EquipmentSlotType.MAINHAND, EquipmentSlotType.OFFHAND}));

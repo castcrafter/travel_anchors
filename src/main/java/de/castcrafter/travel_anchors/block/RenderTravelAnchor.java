@@ -1,10 +1,9 @@
-package de.castcrafter.travel_anchors.render;
+package de.castcrafter.travel_anchors.block;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import de.castcrafter.travel_anchors.TeleportHandler;
 import de.castcrafter.travel_anchors.TravelAnchors;
-import de.castcrafter.travel_anchors.block.TravelAnchorTile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderTypeLookup;
@@ -23,19 +22,19 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 
-public class SpecialRender extends TileEntityRenderer<TravelAnchorTile> {
+public class RenderTravelAnchor extends TileEntityRenderer<TileTravelAnchor> {
 
     public static final ResourceLocation ANCHOR_MODEL = new ResourceLocation(TravelAnchors.MODID, "block/travel_anchor");
     private static IBakedModel ANCHOR_MODEL_BAKED = null;
 
     public static final ResourceLocation ANCHOR = new ResourceLocation(TravelAnchors.MODID, "textures/block/travel_anchor_port.png");
 
-    public SpecialRender(TileEntityRendererDispatcher rendererDispatcherIn) {
+    public RenderTravelAnchor(TileEntityRendererDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
     }
 
     @Override
-    public void render(TravelAnchorTile tileEntity, float partialTicks, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
+    public void render(TileTravelAnchor tileEntity, float partialTicks, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
         //noinspection deprecation
         if (tileEntity.getMimic() == null || tileEntity.getMimic().getBlock() == tileEntity.getBlockState().getBlock() || tileEntity.getMimic().isAir()) {
             IVertexBuilder vertexBuffer = buffer.getBuffer(RenderTypeLookup.func_239220_a_(tileEntity.getBlockState(), false));

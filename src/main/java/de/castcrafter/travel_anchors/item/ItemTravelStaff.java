@@ -12,9 +12,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class TravelStaff extends Item {
+public class ItemTravelStaff extends Item {
 
-    public TravelStaff(Properties properties) {
+    public ItemTravelStaff(Properties properties) {
         super(properties);
     }
 

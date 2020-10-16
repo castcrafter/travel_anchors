@@ -1,9 +1,9 @@
 package de.castcrafter.travel_anchors;
 
-import de.castcrafter.travel_anchors.block.TravelAnchorScreen;
+import de.castcrafter.travel_anchors.block.ScreenTravelAnchor;
 import de.castcrafter.travel_anchors.config.ServerConfig;
 import de.castcrafter.travel_anchors.network.Networking;
-import de.castcrafter.travel_anchors.render.SpecialRender;
+import de.castcrafter.travel_anchors.block.RenderTravelAnchor;
 import de.castcrafter.travel_anchors.setup.Registration;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
@@ -47,7 +47,7 @@ public class TravelAnchors {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         DistExecutor.unsafeRunForDist(() -> () -> {
             FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(SpecialRender::bakeModels);
+            FMLJavaModLoadingContext.get().getModEventBus().addListener(RenderTravelAnchor::bakeModels);
             return null;
         }, () -> () -> null);
 
@@ -66,10 +66,10 @@ public class TravelAnchors {
         RenderTypeLookup.setRenderLayer(Registration.TRAVEL_ANCHOR_BLOCK.get(), (RenderType) -> true);
         RenderTypeLookup.setRenderLayer(Registration.TRAVEL_ANCHOR_BLOCK.get(), RenderType.getCutoutMipped());
 
-        ScreenManager.registerFactory(Registration.TRAVEL_ANCHOR_CONTAINER.get(), TravelAnchorScreen::new);
+        ScreenManager.registerFactory(Registration.TRAVEL_ANCHOR_CONTAINER.get(), ScreenTravelAnchor::new);
 
-        ModelLoader.addSpecialModel(SpecialRender.ANCHOR_MODEL);
+        ModelLoader.addSpecialModel(RenderTravelAnchor.ANCHOR_MODEL);
 
-        ClientRegistry.bindTileEntityRenderer(Registration.TRAVEL_ANCHOR_TILE.get(), SpecialRender::new);
+        ClientRegistry.bindTileEntityRenderer(Registration.TRAVEL_ANCHOR_TILE.get(), RenderTravelAnchor::new);
     }
 }

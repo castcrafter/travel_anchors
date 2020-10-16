@@ -14,14 +14,14 @@ import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
 
-public class TravelAnchorTile extends TileEntity {
+public class TileTravelAnchor extends TileEntity {
 
     public static final ModelProperty<BlockState> MIMIC = new ModelProperty<>();
 
     private String name = "";
     private BlockState mimic = null;
 
-    public TravelAnchorTile() {
+    public TileTravelAnchor() {
         super(Registration.TRAVEL_ANCHOR_TILE.get());
     }
 
