@@ -1,4 +1,4 @@
-package de.castcrafter.travel_anchors.blocks;
+package de.castcrafter.travel_anchors.block;
 
 import de.castcrafter.travel_anchors.TravelAnchorList;
 import de.castcrafter.travel_anchors.setup.Registration;
@@ -10,9 +10,11 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -88,11 +90,15 @@ public class TravelAnchorBlock extends Block implements ITileEntityProvider {
     public ActionResultType onBlockActivated(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult trace) {
         if (!world.isRemote) {
             ItemStack item = player.getHeldItem(Hand.OFF_HAND);
-            if(!item.isEmpty() && item.getItem() instanceof BlockItem && !(((BlockItem) item.getItem()).getBlock() instanceof TravelAnchorBlock)){
+            if(!item.isEmpty() && item.getItem() instanceof BlockItem && player.getHeldItem(Hand.MAIN_HAND).isEmpty()) {
                 TileEntity te = world.getTileEntity(pos);
                 if (te instanceof TravelAnchorTile) {
-                    BlockState mimicState = ((BlockItem) item.getItem()).getBlock().getDefaultState();
-                    ((TravelAnchorTile) te).setMimic(mimicState);
+                    BlockState mimicState = ((BlockItem) item.getItem()).getBlock().getStateForPlacement(new BlockItemUseContext(player, Hand.OFF_HAND, item, trace));
+                    if (mimicState == null || mimicState.getBlock() == this) {
+                        ((TravelAnchorTile) te).setMimic(null);
+                    } else {
+                        ((TravelAnchorTile) te).setMimic(mimicState);
+                    }
                 }
                 return ActionResultType.SUCCESS;
             }
@@ -122,7 +128,7 @@ public class TravelAnchorBlock extends Block implements ITileEntityProvider {
     @Override
     public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
         super.onReplaced(state, world, pos, newState, isMoving);
-        TravelAnchorList.get(world).setAnchor(pos, null);
+        TravelAnchorList.get(world).setAnchor(world, pos, null);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package de.castcrafter.travel_anchors;
 
-import de.castcrafter.travel_anchors.blocks.TravelAnchorScreen;
+import de.castcrafter.travel_anchors.block.TravelAnchorScreen;
 import de.castcrafter.travel_anchors.config.ServerConfig;
 import de.castcrafter.travel_anchors.network.Networking;
 import de.castcrafter.travel_anchors.render.SpecialRender;
@@ -10,8 +10,13 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -40,8 +45,13 @@ public class TravelAnchors {
         ServerConfig.loadConfig(ServerConfig.SERVER_CONFIG, FMLPaths.GAMEDIR.get().resolve(FMLConfig.defaultConfigPath()).resolve(MODID + "-server.toml"));
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(SpecialRender::bakeModels);
+        DistExecutor.unsafeRunForDist(() -> () -> {
+            FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
+            FMLJavaModLoadingContext.get().getModEventBus().addListener(SpecialRender::bakeModels);
+            return null;
+        }, () -> () -> null);
+
+        MinecraftForge.EVENT_BUS.register(new EventListener());
 
         Registration.init();
     }
@@ -51,11 +61,15 @@ public class TravelAnchors {
         Networking.registerPackets();
     }
 
+    @OnlyIn(Dist.CLIENT)
     private void clientSetup(final FMLClientSetupEvent event) {
-        ScreenManager.registerFactory(Registration.TRAVEL_ANCHOR_CONTAINER.get(), TravelAnchorScreen::new);
-        SpecialRender.register();
         RenderTypeLookup.setRenderLayer(Registration.TRAVEL_ANCHOR_BLOCK.get(), (RenderType) -> true);
         RenderTypeLookup.setRenderLayer(Registration.TRAVEL_ANCHOR_BLOCK.get(), RenderType.getCutoutMipped());
+
+        ScreenManager.registerFactory(Registration.TRAVEL_ANCHOR_CONTAINER.get(), TravelAnchorScreen::new);
+
         ModelLoader.addSpecialModel(SpecialRender.ANCHOR_MODEL);
+
+        ClientRegistry.bindTileEntityRenderer(Registration.TRAVEL_ANCHOR_TILE.get(), SpecialRender::new);
     }
 }

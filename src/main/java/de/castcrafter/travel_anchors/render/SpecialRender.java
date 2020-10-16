@@ -1,47 +1,32 @@
 package de.castcrafter.travel_anchors.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import de.castcrafter.travel_anchors.TravelAnchorList;
+import de.castcrafter.travel_anchors.TeleportHandler;
 import de.castcrafter.travel_anchors.TravelAnchors;
-import de.castcrafter.travel_anchors.blocks.TravelAnchorTile;
-import de.castcrafter.travel_anchors.enchantments.TeleportationEnchantment;
-import de.castcrafter.travel_anchors.setup.Registration;
+import de.castcrafter.travel_anchors.block.TravelAnchorTile;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.world.NoteBlockEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.Mod;
-import org.lwjgl.opengl.GL11;
+import org.apache.commons.lang3.tuple.Pair;
 
-import static de.castcrafter.travel_anchors.TeleportHandler.isAnchor;
-
-@Mod.EventBusSubscriber(modid = TravelAnchors.MODID)
 public class SpecialRender extends TileEntityRenderer<TravelAnchorTile> {
 
     public static final ResourceLocation ANCHOR_MODEL = new ResourceLocation(TravelAnchors.MODID, "block/travel_anchor");
     private static IBakedModel ANCHOR_MODEL_BAKED = null;
 
     public static final ResourceLocation ANCHOR = new ResourceLocation(TravelAnchors.MODID, "textures/block/travel_anchor_port.png");
-    private static boolean holdingItem = false;
 
     public SpecialRender(TileEntityRendererDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
@@ -55,17 +40,46 @@ public class SpecialRender extends TileEntityRenderer<TravelAnchorTile> {
                     .renderModelBrightnessColor(matrixStack.getLast(), vertexBuffer, tileEntity.getBlockState(),
                             ANCHOR_MODEL_BAKED, 1, 1, 1, combinedLight, combinedOverlay);
         } else {
-            Minecraft.getInstance().getBlockRendererDispatcher().renderBlock(tileEntity.getMimic(), matrixStack, buffer, combinedLight, combinedOverlay);
+            Minecraft.getInstance().getBlockRendererDispatcher().renderBlock(tileEntity.getMimic(), matrixStack, buffer, combinedLight, combinedOverlay, tileEntity.getModelData());
         }
 
-        PlayerEntity player = Minecraft.getInstance().player;
-        if(holdingItem || isAnchor(player.world.getBlockState(player.getPosition().down())) || TeleportationEnchantment.hasTeleportation()){
-            String text = "Test";
-            renderText(text, matrixStack, buffer);
+        if (Minecraft.getInstance().world != null && Minecraft.getInstance().player != null && !Minecraft.getInstance().player.isSneaking() && TeleportHandler.canPlayerTeleport(Minecraft.getInstance().player)) {
+
+            Pair<BlockPos, String> anchor = TeleportHandler.getAnchorToTeleport(Minecraft.getInstance().world, Minecraft.getInstance().player, Minecraft.getInstance().player.getPosition().toImmutable().down());
+
+            BlockPos pos = tileEntity.getPos();
+            float scale = (float) (Math.sqrt(0.0006 * Minecraft.getInstance().player.getPositionVec().distanceTo(new Vector3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5))));
+            if (scale < 0.04f) {
+                scale = 0.04f;
+            }
+            IFormattableTextComponent tc = new StringTextComponent(tileEntity.getName());
+            int color = 0xFFFFFF;
+            if (anchor != null && anchor.getLeft().equals(tileEntity.getPos())) {
+                scale = 1.3f * scale;
+                tc = tc.mergeStyle(TextFormatting.GOLD);
+                color = TextFormatting.GOLD.getColor() == null ? 0xFFFFFF : TextFormatting.GOLD.getColor();
+            }
+
+            matrixStack.push();
+
+            matrixStack.translate(0.5, 1.05 + (scale * Minecraft.getInstance().fontRenderer.FONT_HEIGHT), 0.5);
+            matrixStack.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
+            matrixStack.scale(-scale, -scale, scale);
+
+            Matrix4f matrix4f = matrixStack.getLast().getMatrix();
+
+            float textOpacitySetting = Minecraft.getInstance().gameSettings.getTextBackgroundOpacity(0.5f);
+            int alpha = (int) (textOpacitySetting * 255.0F) << 24;
+            float halfWidth = (float) (-Minecraft.getInstance().fontRenderer.getStringPropertyWidth(tc) / 2);
+
+            Minecraft.getInstance().fontRenderer.func_238416_a_(tc, halfWidth, 0, color, false, matrix4f, buffer, true, alpha, combinedLight);
+            Minecraft.getInstance().fontRenderer.func_238416_a_(tc, halfWidth, 0, color, false, matrix4f, buffer, false, 0, combinedLight);
+
+            matrixStack.pop();
         }
     }
 
-    public static void renderText(String text, MatrixStack matrixStack, IRenderTypeBuffer buffer) {
+    /*public static void renderText(String text, MatrixStack matrixStack, IRenderTypeBuffer buffer) {
         float widthHalf = Minecraft.getInstance().fontRenderer.getStringWidth(text) / 2f;
         float heightHalf = Minecraft.getInstance().fontRenderer.FONT_HEIGHT / 2f;
 
@@ -88,16 +102,7 @@ public class SpecialRender extends TileEntityRenderer<TravelAnchorTile> {
         Minecraft.getInstance().fontRenderer.drawString(matrixStack, text, -widthHalf, -heightHalf, 0xFFFFFF);
         RenderSystem.disableBlend();
         matrixStack.pop();
-    }
-
-    @SubscribeEvent
-    public static void checkItem(TickEvent.PlayerTickEvent event){
-        PlayerEntity player = event.player;
-        holdingItem = player.getHeldItem(Hand.MAIN_HAND).getItem() == Registration.TRAVEL_STAFF.get() || player.getHeldItem(Hand.OFF_HAND).getItem() == Registration.TRAVEL_STAFF.get();
-    }
-    public static void register(){
-        ClientRegistry.bindTileEntityRenderer(Registration.TRAVEL_ANCHOR_TILE.get(), SpecialRender::new);
-    }
+    }*/
 
     public static void bakeModels(final ModelBakeEvent event) {
         ANCHOR_MODEL_BAKED = event.getModelRegistry().get(ANCHOR_MODEL);

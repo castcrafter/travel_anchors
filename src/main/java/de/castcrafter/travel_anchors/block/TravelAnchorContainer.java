@@ -1,4 +1,4 @@
-package de.castcrafter.travel_anchors.blocks;
+package de.castcrafter.travel_anchors.block;
 
 import de.castcrafter.travel_anchors.base.ContainerBase;
 import de.castcrafter.travel_anchors.setup.Registration;

@@ -1,4 +1,4 @@
-package de.castcrafter.travel_anchors.blocks;
+package de.castcrafter.travel_anchors.block;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;

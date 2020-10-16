@@ -24,27 +24,4 @@ public class TeleportationEnchantment extends Enchantment {
     public int getMaxLevel() {
         return 1;
     }
-
-    @SubscribeEvent
-    public static void onRightClick(PlayerInteractEvent.RightClickItem event){
-        PlayerEntity player = event.getPlayer();
-        World world = event.getWorld();
-        int lvl = EnchantmentHelper.getEnchantmentLevel(Registration.TELEPORTATION_ENCHANTMENT.get(), event.getItemStack());
-        if(lvl == 0) return;
-        else{
-            if(player.isSneaking()){
-                TeleportHandler.shortTeleport(world, player);
-            }
-            else{
-                TeleportHandler.anchorTeleport(world, player);
-            }
-            player.swingArm(event.getHand());
-        }
-    }
-
-    public static boolean hasTeleportation(){
-        PlayerEntity player = Minecraft.getInstance().player;
-        int lvl = EnchantmentHelper.getEnchantmentLevel(Registration.TELEPORTATION_ENCHANTMENT.get(), player.getHeldItemMainhand());
-        return lvl != 0;
-    }
 }
