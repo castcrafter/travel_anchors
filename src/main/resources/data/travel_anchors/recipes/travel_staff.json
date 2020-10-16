@@ -1,14 +1,11 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "X#X",
-    "#O#",
-    "X#X"
+    "  O",
+    " # ",
+    "#  "
   ],
   "key": {
-    "X": {
-      "item": "minecraft:iron_block"
-    },
     "#": {
       "item": "minecraft:iron_ingot"
     },
@@ -17,6 +14,6 @@
     }
   },
   "result": {
-    "item": "travel_anchors:travel_anchor"
+    "item": "travel_anchors:travel_staff"
   }
 }
