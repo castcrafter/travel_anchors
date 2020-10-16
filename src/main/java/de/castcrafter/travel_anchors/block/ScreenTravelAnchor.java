@@ -1,4 +1,4 @@
-package de.castcrafter.travel_anchors.blocks;
+package de.castcrafter.travel_anchors.block;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -18,12 +18,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 
-public class TravelAnchorScreen extends ContainerScreen<TravelAnchorContainer> {
+public class ScreenTravelAnchor extends ContainerScreen<ContainerTravelAnchor> {
 
     private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(TravelAnchors.MODID, "textures/gui/travel_anchor.png");
     private TextFieldWidget textFieldWidget;
 
-    public TravelAnchorScreen(TravelAnchorContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
+    public ScreenTravelAnchor(ContainerTravelAnchor screenContainer, PlayerInventory inv, ITextComponent titleIn) {
         super(screenContainer, inv, titleIn);
     }
 

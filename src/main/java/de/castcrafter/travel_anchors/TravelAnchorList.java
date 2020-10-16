@@ -1,11 +1,6 @@
 package de.castcrafter.travel_anchors;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
+import de.castcrafter.travel_anchors.network.Networking;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.BlockPos;
@@ -19,15 +14,20 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
 
 public class TravelAnchorList extends WorldSavedData {
+
+    private static final TravelAnchorList clientInstance = new TravelAnchorList();
 
     public static TravelAnchorList get(World world) {
         if (!world.isRemote) {
             DimensionSavedDataManager storage = ((ServerWorld) world).getSavedData();
             return storage.getOrCreate(TravelAnchorList::new, TravelAnchors.MODID);
         } else {
-            return new TravelAnchorList();
+            return clientInstance;
         }
     }
 
@@ -39,17 +39,22 @@ public class TravelAnchorList extends WorldSavedData {
         super(name);
     }
 
-    private final HashMap<BlockPos, String> anchors = new HashMap<>();
+    public final HashMap<BlockPos, String> anchors = new HashMap<>();
 
     @Override
     public void read(@Nonnull CompoundNBT nbt) {
-        anchors.clear();
+        this.anchors.clear();
         if (nbt.contains("anchors", Constants.NBT.TAG_LIST)) {
             ListNBT list = nbt.getList("anchors", Constants.NBT.TAG_COMPOUND);
             for (int i = 0; i < list.size(); i++) {
-                CompoundNBT entryNBT = new CompoundNBT();
-                BlockPos pos = new BlockPos(entryNBT.getInt("x"), entryNBT.getInt("y"), entryNBT.getInt("z")).toImmutable();
-                anchors.put(pos, entryNBT.getString("name"));
+                CompoundNBT entryNBT = list.getCompound(i);
+                if (entryNBT.contains("x") && entryNBT.contains("y") && entryNBT.contains("z") && entryNBT.contains("name")) {
+                    BlockPos pos = new BlockPos(entryNBT.getInt("x"), entryNBT.getInt("y"), entryNBT.getInt("z")).toImmutable();
+                    String name = entryNBT.getString("name");
+                    if (!name.isEmpty()) {
+                        this.anchors.put(pos, entryNBT.getString("name"));
+                    }
+                }
             }
         }
     }
@@ -58,7 +63,7 @@ public class TravelAnchorList extends WorldSavedData {
     @Override
     public CompoundNBT write(@Nonnull CompoundNBT nbt) {
         ListNBT list = new ListNBT();
-        for (Map.Entry<BlockPos, String> entry : anchors.entrySet()) {
+        for (Map.Entry<BlockPos, String> entry : this.anchors.entrySet()) {
             CompoundNBT entryNBT = new CompoundNBT();
             entryNBT.putInt("x", entry.getKey().getX());
             entryNBT.putInt("y", entry.getKey().getY());
@@ -70,20 +75,35 @@ public class TravelAnchorList extends WorldSavedData {
         return nbt;
     }
 
-    public void setAnchor(BlockPos pos, @Nullable String name) {
-        if (name == null || name.trim().isEmpty()) {
-            anchors.remove(pos.toImmutable());
-        } else {
-            anchors.put(pos.toImmutable(), name);
+    public void setAnchor(World world, BlockPos pos, @Nullable String name) {
+        if (!world.isRemote) {
+            boolean needsUpdate = false;
+            BlockPos immutablePos = pos.toImmutable();
+            if (name == null || name.trim().isEmpty()) {
+                if (this.anchors.containsKey(immutablePos)) {
+                    this.anchors.remove(immutablePos);
+                    needsUpdate = true;
+                }
+            } else {
+                String oldName = this.anchors.getOrDefault(immutablePos, null);
+                if (oldName == null || !oldName.equals(name)) {
+                    this.anchors.put(pos.toImmutable(), name);
+                    needsUpdate = true;
+                }
+            }
+            this.markDirty();
+            if (needsUpdate) {
+                Networking.updateTravelAnchorList(world, this);
+            }
         }
     }
 
     public String getAnchor(BlockPos pos) {
-        return anchors.getOrDefault(pos.toImmutable(), null);
+        return this.anchors.getOrDefault(pos.toImmutable(), null);
     }
 
     public Stream<Pair<BlockPos, String>> getAnchorsAround(Vector3d pos, double maxDistanceSq) {
-        return anchors.entrySet().stream()
+        return this.anchors.entrySet().stream()
                 .filter(entry -> entry.getKey().distanceSq(pos.x, pos.y, pos.z, true) < maxDistanceSq)
                 .map(entry -> Pair.of(entry.getKey(), entry.getValue()));
     }
