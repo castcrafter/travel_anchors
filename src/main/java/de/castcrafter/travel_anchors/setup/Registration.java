@@ -28,6 +28,9 @@ import static de.castcrafter.travel_anchors.TravelAnchors.MODID;
 
 public class Registration {
 
+    public static final EnchantmentType TELEPORTABLE = EnchantmentType.create(TravelAnchors.MODID + "_teleportable",
+            item -> item == Registration.TRAVEL_STAFF.get() || EnchantmentType.BREAKABLE.canEnchantItem(item));
+
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     private static final DeferredRegister<TileEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, MODID);
@@ -47,12 +50,11 @@ public class Registration {
     public static final RegistryObject<Item> TRAVEL_ANCHOR_ITEM = ITEMS.register("travel_anchor", () -> new BlockItem(TRAVEL_ANCHOR_BLOCK.get(), new Item.Properties().group(TravelAnchors.ITEM_GROUP)));
     public static final RegistryObject<Item> TRAVEL_STAFF = ITEMS.register("travel_staff", () -> new ItemTravelStaff(new Item.Properties().group(TravelAnchors.ITEM_GROUP).maxStackSize(1)));
 
-    @SuppressWarnings("ConstantConditions")
     public static final RegistryObject<TileEntityType<TileTravelAnchor>> TRAVEL_ANCHOR_TILE = TILES.register("travel_anchor", () -> TileEntityType.Builder.create(TileTravelAnchor::new, TRAVEL_ANCHOR_BLOCK.get()).build(null));
 
     public static final RegistryObject<ContainerType<ContainerTravelAnchor>> TRAVEL_ANCHOR_CONTAINER = CONTAINERS.register("travel_anchor", () -> ContainerBase.createContainerType(ContainerTravelAnchor::new));
 
-    public static final RegistryObject<Enchantment> RANGE_ENCHANTMENT = ENCHANTMENTS.register("range", () -> new RangeEnchantment(Enchantment.Rarity.RARE, EnchantmentType.BREAKABLE, new EquipmentSlotType[]{EquipmentSlotType.MAINHAND, EquipmentSlotType.OFFHAND}));
+    public static final RegistryObject<Enchantment> RANGE_ENCHANTMENT = ENCHANTMENTS.register("range", () -> new RangeEnchantment(Enchantment.Rarity.RARE, TELEPORTABLE, new EquipmentSlotType[]{EquipmentSlotType.MAINHAND, EquipmentSlotType.OFFHAND}));
     public static final RegistryObject<Enchantment> TELEPORTATION_ENCHANTMENT = ENCHANTMENTS.register("teleportation", () -> new TeleportationEnchantment(Enchantment.Rarity.RARE, EnchantmentType.BREAKABLE, new EquipmentSlotType[]{EquipmentSlotType.MAINHAND, EquipmentSlotType.OFFHAND}));
 }
 
