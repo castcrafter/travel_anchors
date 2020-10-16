@@ -1,8 +1,10 @@
 package de.castcrafter.travel_anchors.block;
 
 import de.castcrafter.travel_anchors.TravelAnchorList;
-import de.castcrafter.travel_anchors.setup.Registration;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -14,7 +16,6 @@ import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -51,8 +52,10 @@ public class TravelAnchorBlock extends Block implements ITileEntityProvider {
         }
         return super.getLightValue(state, world, pos);
     }
+
+    @Nonnull
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(@Nonnull BlockState state, IBlockReader reader, @Nonnull BlockPos pos, @Nonnull ISelectionContext context) {
         TileEntity tile = reader.getTileEntity(pos);
         if (tile instanceof TravelAnchorTile) {
             BlockState mimic = ((TravelAnchorTile) tile).getMimic();
@@ -90,7 +93,7 @@ public class TravelAnchorBlock extends Block implements ITileEntityProvider {
     public ActionResultType onBlockActivated(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult trace) {
         if (!world.isRemote) {
             ItemStack item = player.getHeldItem(Hand.OFF_HAND);
-            if(!item.isEmpty() && item.getItem() instanceof BlockItem && player.getHeldItem(Hand.MAIN_HAND).isEmpty()) {
+            if (!item.isEmpty() && item.getItem() instanceof BlockItem && player.getHeldItem(Hand.MAIN_HAND).isEmpty()) {
                 TileEntity te = world.getTileEntity(pos);
                 if (te instanceof TravelAnchorTile) {
                     BlockState mimicState = ((BlockItem) item.getItem()).getBlock().getStateForPlacement(new BlockItemUseContext(player, Hand.OFF_HAND, item, trace));
@@ -126,13 +129,14 @@ public class TravelAnchorBlock extends Block implements ITileEntityProvider {
     }
 
     @Override
-    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onReplaced(@Nonnull BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
         super.onReplaced(state, world, pos, newState, isMoving);
         TravelAnchorList.get(world).setAnchor(world, pos, null);
     }
 
+    @Nonnull
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderType(@Nonnull BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 }

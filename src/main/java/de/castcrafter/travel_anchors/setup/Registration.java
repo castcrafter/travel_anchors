@@ -47,6 +47,7 @@ public class Registration {
     public static final RegistryObject<Item> TRAVEL_ANCHOR_ITEM = ITEMS.register("travel_anchor", () -> new BlockItem(TRAVEL_ANCHOR_BLOCK.get(), new Item.Properties().group(TravelAnchors.ITEM_GROUP)));
     public static final RegistryObject<Item> TRAVEL_STAFF = ITEMS.register("travel_staff", () -> new TravelStaff(new Item.Properties().group(TravelAnchors.ITEM_GROUP).maxStackSize(1)));
 
+    @SuppressWarnings("ConstantConditions")
     public static final RegistryObject<TileEntityType<TravelAnchorTile>> TRAVEL_ANCHOR_TILE = TILES.register("travel_anchor", () -> TileEntityType.Builder.create(TravelAnchorTile::new, TRAVEL_ANCHOR_BLOCK.get()).build(null));
 
     public static final RegistryObject<ContainerType<TravelAnchorContainer>> TRAVEL_ANCHOR_CONTAINER = CONTAINERS.register("travel_anchor", () -> ContainerBase.createContainerType(TravelAnchorContainer::new));

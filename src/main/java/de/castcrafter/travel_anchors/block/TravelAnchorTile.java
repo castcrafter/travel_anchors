@@ -29,7 +29,7 @@ public class TravelAnchorTile extends TileEntity {
     @Override
     public CompoundNBT write(CompoundNBT nbt) {
         nbt.putString("travel_anchor_name", this.name);
-        writeMimic(nbt);
+        this.writeMimic(nbt);
         return super.write(nbt);
     }
 
@@ -37,9 +37,9 @@ public class TravelAnchorTile extends TileEntity {
     public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
         super.read(state, nbt);
         this.name = nbt.getString("travel_anchor_name");
-        readMimic(nbt);
-        if (world != null && pos != null) {
-            TravelAnchorList.get(world).setAnchor(world, pos, name);
+        this.readMimic(nbt);
+        if (this.world != null && this.pos != null) {
+            TravelAnchorList.get(this.world).setAnchor(this.world, this.pos, this.name);
         }
     }
 
@@ -48,25 +48,25 @@ public class TravelAnchorTile extends TileEntity {
     public CompoundNBT getUpdateTag() {
         CompoundNBT nbt = super.getUpdateTag();
         nbt.putString("travel_anchor_name", this.name);
-        writeMimic(nbt);
+        this.writeMimic(nbt);
         return nbt;
     }
 
     @Override
     public void handleUpdateTag(BlockState state, CompoundNBT nbt) {
         this.name = nbt.getString("travel_anchor_name");
-        readMimic(nbt);
+        this.readMimic(nbt);
     }
 
     private void writeMimic(CompoundNBT tag) {
-        if (mimic != null) {
-            tag.put("mimic", NBTUtil.writeBlockState(mimic));
+        if (this.mimic != null) {
+            tag.put("mimic", NBTUtil.writeBlockState(this.mimic));
         }
     }
 
     private void readMimic(CompoundNBT tag) {
         if (tag.contains("mimic")) {
-            mimic = NBTUtil.readBlockState(tag.getCompound("mimic"));
+            this.mimic = NBTUtil.readBlockState(tag.getCompound("mimic"));
         }
     }
 
@@ -76,30 +76,32 @@ public class TravelAnchorTile extends TileEntity {
 
     public void setName(String name) {
         this.name = name;
-        TravelAnchorList.get(world).setAnchor(world, pos, name);
-        this.markDirty();
-        if (world != null && pos != null && !world.isRemote) {
-            Networking.updateTE(world, pos);
+        if (this.world != null) {
+            TravelAnchorList.get(this.world).setAnchor(this.world, this.pos, name);
+            this.markDirty();
+            if (this.world != null && this.pos != null && !this.world.isRemote) {
+                Networking.updateTE(this.world, this.pos);
+            }
         }
     }
 
     public BlockState getMimic() {
-        return mimic;
+        return this.mimic;
     }
 
     public void setMimic(BlockState mimic) {
         this.mimic = mimic;
-        markDirty();
-        if (world != null && pos != null && !world.isRemote) {
-            world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
-            Networking.updateTE(world, pos);
+        this.markDirty();
+        if (this.world != null && this.pos != null && !this.world.isRemote) {
+            this.world.notifyBlockUpdate(this.pos, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+            Networking.updateTE(this.world, this.pos);
         }
     }
 
     @Override
     public void onLoad() {
-        if (world != null && pos != null && world.isRemote) {
-            Networking.requestTE(world, pos);
+        if (this.world != null && this.pos != null && this.world.isRemote) {
+            Networking.requestTE(this.world, this.pos);
         }
     }
 
@@ -107,7 +109,7 @@ public class TravelAnchorTile extends TileEntity {
     @Override
     public IModelData getModelData() {
         return new ModelDataMap.Builder()
-                .withInitial(MIMIC, mimic)
+                .withInitial(MIMIC, this.mimic)
                 .build();
     }
 }

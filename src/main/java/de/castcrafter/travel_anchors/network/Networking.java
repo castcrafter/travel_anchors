@@ -38,13 +38,15 @@ public class Networking {
         register(new TeRequestSerializer(), () -> TeRequestHandler::handle, NetworkDirection.PLAY_TO_SERVER);
         register(new AnchorNameChangeSerializer(), () -> AnchorNameChangeHandler::handle, NetworkDirection.PLAY_TO_SERVER);
         register(new AnchorListUpdateSerializer(), () -> AnchorListUpdateHandler::handle, NetworkDirection.PLAY_TO_CLIENT);
+        register(new ClientEventSerializer(), () -> ClientEventHandler::handle, NetworkDirection.PLAY_TO_SERVER);
     }
 
     private static <T> void register(PacketSerializer<T> serializer, Supplier<BiConsumer<T, Supplier<NetworkEvent.Context>>> handler, NetworkDirection direction) {
         Objects.requireNonNull(direction);
         BiConsumer<T, Supplier<NetworkEvent.Context>> realHandler;
         if (direction == NetworkDirection.PLAY_TO_CLIENT || direction == NetworkDirection.LOGIN_TO_CLIENT) {
-            realHandler = DistExecutor.unsafeRunForDist(() -> handler, () -> () -> (msg, ctx) -> {});
+            realHandler = DistExecutor.unsafeRunForDist(() -> handler, () -> () -> (msg, ctx) -> {
+            });
         } else {
             realHandler = handler.get();
         }
@@ -98,6 +100,12 @@ public class Networking {
     public static void updateTravelAnchorList(PlayerEntity player) {
         if (!player.getEntityWorld().isRemote && player instanceof ServerPlayerEntity) {
             INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new AnchorListUpdateSerializer.AnchorListUpdateMessage(TravelAnchorList.get(player.getEntityWorld()).write(new CompoundNBT())));
+        }
+    }
+
+    public static void sendClientEventToServer(World world, ClientEventSerializer.ClientEvent event) {
+        if (world.isRemote) {
+            INSTANCE.sendToServer(event);
         }
     }
 }

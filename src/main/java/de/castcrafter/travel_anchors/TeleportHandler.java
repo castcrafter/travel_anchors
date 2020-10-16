@@ -2,7 +2,6 @@ package de.castcrafter.travel_anchors;
 
 import de.castcrafter.travel_anchors.config.ServerConfig;
 import de.castcrafter.travel_anchors.setup.Registration;
-import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -28,7 +27,9 @@ public class TeleportHandler {
         Pair<BlockPos, String> anchor = getAnchorToTeleport(world, player, except);
 
         if (anchor != null) {
-            player.setPositionAndUpdate(anchor.getLeft().getX() + 0.5, anchor.getLeft().getY() + 1, anchor.getLeft().getZ() + 0.5);
+            if (!player.getEntityWorld().isRemote) {
+                player.setPositionAndUpdate(anchor.getLeft().getX() + 0.5, anchor.getLeft().getY() + 1, anchor.getLeft().getZ() + 0.5);
+            }
             player.fallDistance = 0;
             player.swing(Hand.MAIN_HAND, true);
             player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1F, 1F);
@@ -51,10 +52,10 @@ public class TeleportHandler {
             Optional<Pair<BlockPos, String>> anchor = TravelAnchorList.get(world).getAnchorsAround(player.getPositionVec(), Math.pow(maxDistance, 2))
                     .filter(pair -> except == null || !except.equals(pair.getLeft()))
                     .min((p1, p2) -> {
-                double angle1 = Math.abs(getAngleRadians(positionVec, p1.getLeft(), player.rotationYaw, player.rotationPitch));
-                double angle2 = Math.abs(getAngleRadians(positionVec, p2.getLeft(), player.rotationYaw, player.rotationPitch));
-                return Double.compare(angle1, angle2);
-            }).filter(p -> Math.abs(getAngleRadians(positionVec, p.getLeft(), player.rotationYaw, player.rotationPitch)) <= Math.toRadians(ServerConfig.MAX_ANGLE.get()))
+                        double angle1 = Math.abs(getAngleRadians(positionVec, p1.getLeft(), player.rotationYaw, player.rotationPitch));
+                        double angle2 = Math.abs(getAngleRadians(positionVec, p2.getLeft(), player.rotationYaw, player.rotationPitch));
+                        return Double.compare(angle1, angle2);
+                    }).filter(p -> Math.abs(getAngleRadians(positionVec, p.getLeft(), player.rotationYaw, player.rotationPitch)) <= Math.toRadians(ServerConfig.MAX_ANGLE.get()))
                     .filter(p -> canTeleportTo(world, p.getLeft()));
             return anchor.orElse(null);
         } else {
@@ -68,7 +69,9 @@ public class TeleportHandler {
         float pitch = player.rotationPitch * ((float) Math.PI / 180F);
         BlockPos target = new BlockPos(positionVec.x - MathHelper.sin(yaw) * 7, positionVec.y + -MathHelper.sin(pitch) * 7, positionVec.z + MathHelper.cos(yaw) * 7);
         if (canTeleportTo(world, target)) {
-            player.setPositionAndUpdate(target.getX(), target.getY(), target.getZ());
+            if (!player.getEntityWorld().isRemote) {
+                player.setPositionAndUpdate(target.getX(), target.getY(), target.getZ());
+            }
             player.fallDistance = 0;
             player.swing(Hand.MAIN_HAND, true);
             player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1F, 1F);

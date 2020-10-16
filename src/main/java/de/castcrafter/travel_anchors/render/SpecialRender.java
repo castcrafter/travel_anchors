@@ -21,6 +21,8 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
+
 public class SpecialRender extends TileEntityRenderer<TravelAnchorTile> {
 
     public static final ResourceLocation ANCHOR_MODEL = new ResourceLocation(TravelAnchors.MODID, "block/travel_anchor");
@@ -33,9 +35,11 @@ public class SpecialRender extends TileEntityRenderer<TravelAnchorTile> {
     }
 
     @Override
-    public void render(TravelAnchorTile tileEntity, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
+    public void render(TravelAnchorTile tileEntity, float partialTicks, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
+        //noinspection deprecation
         if (tileEntity.getMimic() == null || tileEntity.getMimic().getBlock() == tileEntity.getBlockState().getBlock() || tileEntity.getMimic().isAir()) {
             IVertexBuilder vertexBuffer = buffer.getBuffer(RenderTypeLookup.func_239220_a_(tileEntity.getBlockState(), false));
+            //noinspection deprecation
             Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelRenderer()
                     .renderModelBrightnessColor(matrixStack.getLast(), vertexBuffer, tileEntity.getBlockState(),
                             ANCHOR_MODEL_BAKED, 1, 1, 1, combinedLight, combinedOverlay);

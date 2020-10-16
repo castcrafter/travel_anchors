@@ -43,7 +43,7 @@ public class TravelAnchorList extends WorldSavedData {
 
     @Override
     public void read(@Nonnull CompoundNBT nbt) {
-        anchors.clear();
+        this.anchors.clear();
         if (nbt.contains("anchors", Constants.NBT.TAG_LIST)) {
             ListNBT list = nbt.getList("anchors", Constants.NBT.TAG_COMPOUND);
             for (int i = 0; i < list.size(); i++) {
@@ -52,7 +52,7 @@ public class TravelAnchorList extends WorldSavedData {
                     BlockPos pos = new BlockPos(entryNBT.getInt("x"), entryNBT.getInt("y"), entryNBT.getInt("z")).toImmutable();
                     String name = entryNBT.getString("name");
                     if (!name.isEmpty()) {
-                        anchors.put(pos, entryNBT.getString("name"));
+                        this.anchors.put(pos, entryNBT.getString("name"));
                     }
                 }
             }
@@ -63,7 +63,7 @@ public class TravelAnchorList extends WorldSavedData {
     @Override
     public CompoundNBT write(@Nonnull CompoundNBT nbt) {
         ListNBT list = new ListNBT();
-        for (Map.Entry<BlockPos, String> entry : anchors.entrySet()) {
+        for (Map.Entry<BlockPos, String> entry : this.anchors.entrySet()) {
             CompoundNBT entryNBT = new CompoundNBT();
             entryNBT.putInt("x", entry.getKey().getX());
             entryNBT.putInt("y", entry.getKey().getY());
@@ -80,18 +80,18 @@ public class TravelAnchorList extends WorldSavedData {
             boolean needsUpdate = false;
             BlockPos immutablePos = pos.toImmutable();
             if (name == null || name.trim().isEmpty()) {
-                if (anchors.containsKey(immutablePos)) {
-                    anchors.remove(immutablePos);
+                if (this.anchors.containsKey(immutablePos)) {
+                    this.anchors.remove(immutablePos);
                     needsUpdate = true;
                 }
             } else {
-                String oldName = anchors.getOrDefault(immutablePos, null);
+                String oldName = this.anchors.getOrDefault(immutablePos, null);
                 if (oldName == null || !oldName.equals(name)) {
-                    anchors.put(pos.toImmutable(), name);
+                    this.anchors.put(pos.toImmutable(), name);
                     needsUpdate = true;
                 }
             }
-            markDirty();
+            this.markDirty();
             if (needsUpdate) {
                 Networking.updateTravelAnchorList(world, this);
             }
@@ -99,11 +99,11 @@ public class TravelAnchorList extends WorldSavedData {
     }
 
     public String getAnchor(BlockPos pos) {
-        return anchors.getOrDefault(pos.toImmutable(), null);
+        return this.anchors.getOrDefault(pos.toImmutable(), null);
     }
 
     public Stream<Pair<BlockPos, String>> getAnchorsAround(Vector3d pos, double maxDistanceSq) {
-        return anchors.entrySet().stream()
+        return this.anchors.entrySet().stream()
                 .filter(entry -> entry.getKey().distanceSq(pos.x, pos.y, pos.z, true) < maxDistanceSq)
                 .map(entry -> Pair.of(entry.getKey(), entry.getValue()));
     }
