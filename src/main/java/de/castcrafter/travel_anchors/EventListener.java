@@ -29,8 +29,8 @@ public class EventListener {
     public void onRightClick(PlayerInteractEvent.RightClickItem event) {
         World world = event.getWorld();
         PlayerEntity player = event.getPlayer();
-        if (TeleportHandler.canPlayerTeleport(player) && !event.getItemStack().isEmpty()) {
-            if (player.isSneaking() && TeleportHandler.canItemTeleport(player)) {
+        if (TeleportHandler.canPlayerTeleport(player, event.getHand()) && !event.getItemStack().isEmpty()) {
+            if (player.isSneaking() && TeleportHandler.canItemTeleport(player, event.getHand())) {
                 if (TeleportHandler.shortTeleport(world, player)) {
                     event.setResult(Event.Result.DENY);
                     event.setCancellationResult(ActionResultType.SUCCESS);
@@ -49,7 +49,7 @@ public class EventListener {
     public void onEmptyClick(PlayerInteractEvent.RightClickEmpty event) {
         World world = event.getWorld();
         PlayerEntity player = event.getPlayer();
-        if (TeleportHandler.canBlockTeleport(player) && !player.isSneaking() && event.getHand() == Hand.MAIN_HAND) {
+        if (TeleportHandler.canBlockTeleport(player) && !player.isSneaking() && event.getHand() == Hand.MAIN_HAND && event.getItemStack().isEmpty()) {
             Networking.sendClientEventToServer(world, ClientEventSerializer.ClientEvent.EMPTY_HAND_INTERACT);
             event.setResult(Event.Result.DENY);
             event.setCancellationResult(ActionResultType.SUCCESS);
@@ -58,7 +58,7 @@ public class EventListener {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
-        if (TeleportHandler.canPlayerTeleport(event.getPlayer()) && TeleportHandler.getAnchorToTeleport(event.getWorld(), event.getPlayer(), event.getPlayer().getPosition().toImmutable().down()) != null) {
+        if (TeleportHandler.canPlayerTeleport(event.getPlayer(), event.getHand()) && TeleportHandler.getAnchorToTeleport(event.getWorld(), event.getPlayer(), event.getPlayer().getPosition().toImmutable().down()) != null) {
             if (event.getItemStack().isEmpty()) {
                 // We need to handle it here it i's empty. Because minecraft.
                 if (TeleportHandler.anchorTeleport(event.getWorld(), event.getPlayer(), event.getPlayer().getPosition().toImmutable().down())) {

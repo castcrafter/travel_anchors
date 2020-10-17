@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Matrix4f;
@@ -46,26 +47,30 @@ public class RenderTravelAnchor extends TileEntityRenderer<TileTravelAnchor> {
             Minecraft.getInstance().getBlockRendererDispatcher().renderBlock(tileEntity.getMimic(), matrixStack, buffer, combinedLight, combinedOverlay, tileEntity.getModelData());
         }
 
-        if (Minecraft.getInstance().world != null && Minecraft.getInstance().player != null && !Minecraft.getInstance().player.isSneaking() && TeleportHandler.canPlayerTeleport(Minecraft.getInstance().player)) {
+        if (Minecraft.getInstance().world != null && Minecraft.getInstance().player != null && !Minecraft.getInstance().player.isSneaking()
+                && (TeleportHandler.canPlayerTeleport(Minecraft.getInstance().player, Hand.MAIN_HAND) || TeleportHandler.canPlayerTeleport(Minecraft.getInstance().player, Hand.OFF_HAND))) {
 
             Pair<BlockPos, String> anchor = TeleportHandler.getAnchorToTeleport(Minecraft.getInstance().world, Minecraft.getInstance().player, Minecraft.getInstance().player.getPosition().toImmutable().down());
 
             BlockPos pos = tileEntity.getPos();
-            float scale = (float) (Math.sqrt(0.0006 * Minecraft.getInstance().player.getPositionVec().distanceTo(new Vector3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5))));
-            if (scale < 0.04f) {
-                scale = 0.04f;
+            double doubleScale = Math.sqrt(0.0004 * Minecraft.getInstance().player.getPositionVec().distanceTo(new Vector3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5)));
+            if (doubleScale < 0.04f) {
+                doubleScale = 0.04f;
             }
+            doubleScale = doubleScale * (Minecraft.getInstance().gameSettings.fov / 70d);
+            float scale = (float) doubleScale;
+
             IFormattableTextComponent tc = new StringTextComponent(tileEntity.getName());
             int color = 0xFFFFFF;
             if (anchor != null && anchor.getLeft().equals(tileEntity.getPos())) {
-                scale = 1.3f * scale;
+                doubleScale = 1.3f * doubleScale;
                 tc = tc.mergeStyle(TextFormatting.GOLD);
                 color = TextFormatting.GOLD.getColor() == null ? 0xFFFFFF : TextFormatting.GOLD.getColor();
             }
 
             matrixStack.push();
 
-            matrixStack.translate(0.5, 1.05 + (scale * Minecraft.getInstance().fontRenderer.FONT_HEIGHT), 0.5);
+            matrixStack.translate(0.5, 1.05 + (doubleScale * Minecraft.getInstance().fontRenderer.FONT_HEIGHT), 0.5);
             matrixStack.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
             matrixStack.scale(-scale, -scale, scale);
 
@@ -81,31 +86,6 @@ public class RenderTravelAnchor extends TileEntityRenderer<TileTravelAnchor> {
             matrixStack.pop();
         }
     }
-
-    /*public static void renderText(String text, MatrixStack matrixStack, IRenderTypeBuffer buffer) {
-        float widthHalf = Minecraft.getInstance().fontRenderer.getStringWidth(text) / 2f;
-        float heightHalf = Minecraft.getInstance().fontRenderer.FONT_HEIGHT / 2f;
-
-        matrixStack.push();
-        FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-        matrixStack.translate(0.5, 1.5, 0.5);
-        matrixStack.scale(-0.1f, -0.1f, -0.1f);
-        matrixStack.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
-
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        //noinspection deprecation
-        GlStateManager.color4f(0.8f, 0.8f, 1f, 1);
-        Minecraft.getInstance().getTextureManager().bindTexture(ANCHOR);
-        AbstractGui.blit(matrixStack, -8, 2, 0, 0, 16, 16, 16, 16);
-
-        //noinspection deprecation
-        GlStateManager.color4f(1, 1, 1, 1);
-
-        Minecraft.getInstance().fontRenderer.drawString(matrixStack, text, -widthHalf, -heightHalf, 0xFFFFFF);
-        RenderSystem.disableBlend();
-        matrixStack.pop();
-    }*/
 
     public static void bakeModels(final ModelBakeEvent event) {
         ANCHOR_MODEL_BAKED = event.getModelRegistry().get(ANCHOR_MODEL);

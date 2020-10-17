@@ -90,8 +90,8 @@ public class TeleportHandler {
                 && target.getY() > 0;
     }
 
-    public static boolean canPlayerTeleport(PlayerEntity player) {
-        return canItemTeleport(player) || canBlockTeleport(player);
+    public static boolean canPlayerTeleport(PlayerEntity player, Hand hand) {
+        return canItemTeleport(player, hand) || canBlockTeleport(player);
     }
 
     public static boolean canBlockTeleport(PlayerEntity player) {
@@ -99,9 +99,9 @@ public class TeleportHandler {
                 && !player.isSneaking());
     }
 
-    public static boolean canItemTeleport(PlayerEntity player) {
-        return player.getHeldItem(Hand.MAIN_HAND).getItem() == Registration.TRAVEL_STAFF.get()
-                || EnchantmentHelper.getEnchantmentLevel(Registration.TELEPORTATION_ENCHANTMENT.get(), player.getHeldItem(Hand.MAIN_HAND)) >= 1;
+    public static boolean canItemTeleport(PlayerEntity player, Hand hand) {
+        return player.getHeldItem(hand).getItem() == Registration.TRAVEL_STAFF.get()
+                || EnchantmentHelper.getEnchantmentLevel(Registration.TELEPORTATION_ENCHANTMENT.get(), player.getHeldItem(hand)) >= 1;
     }
 
     private static double getAngleRadians(Vector3d positionVec, BlockPos anchor, float yaw, float pitch) {
