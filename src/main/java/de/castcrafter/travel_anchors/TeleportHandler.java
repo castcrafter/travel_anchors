@@ -111,7 +111,7 @@ public class TeleportHandler {
 
     public static double getMaxDistance(PlayerEntity player) {
         int mainHandLevel = EnchantmentHelper.getEnchantmentLevel(Registration.RANGE_ENCHANTMENT.get(), player.getHeldItem(Hand.MAIN_HAND));
-        int offHandLevel = EnchantmentHelper.getEnchantmentLevel(Registration.RANGE_ENCHANTMENT.get(), player.getHeldItem(Hand.MAIN_HAND));
+        int offHandLevel = EnchantmentHelper.getEnchantmentLevel(Registration.RANGE_ENCHANTMENT.get(), player.getHeldItem(Hand.OFF_HAND));
         int lvl = Math.max(mainHandLevel, offHandLevel);
         return ServerConfig.MAX_DISTANCE.get() * (1 + (lvl / 2d));
     }
