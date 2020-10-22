@@ -5,7 +5,6 @@ import de.castcrafter.travel_anchors.setup.Registration;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.STitlePacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
@@ -46,9 +45,9 @@ public class TeleportHandler {
     }
 
     public static Pair<BlockPos, String> getAnchorToTeleport(World world, PlayerEntity player, @Nullable BlockPos except) {
-        double maxDistance = getMaxDistance(player);
-        Vector3d positionVec = player.getPositionVec();
         if (!player.isSneaking()) {
+            double maxDistance = getMaxDistance(player);
+            Vector3d positionVec = player.getPositionVec().add(0, player.getEyeHeight(), 0);
             Optional<Pair<BlockPos, String>> anchor = TravelAnchorList.get(world).getAnchorsAround(player.getPositionVec(), Math.pow(maxDistance, 2))
                     .filter(pair -> except == null || !except.equals(pair.getLeft()))
                     .min((p1, p2) -> {
@@ -105,14 +104,15 @@ public class TeleportHandler {
     }
 
     private static double getAngleRadians(Vector3d positionVec, BlockPos anchor, float yaw, float pitch) {
-        Vector3d blockVec = new Vector3d(anchor.getX() + 0.5 - positionVec.x, anchor.getY() - positionVec.y, anchor.getZ() + 0.5 - positionVec.z).normalize();
+        Vector3d blockVec = new Vector3d(anchor.getX() + 0.5 - positionVec.x, anchor.getY() + 1.0 - positionVec.y, anchor.getZ() + 0.5 - positionVec.z).normalize();
         Vector3d lookVec = Vector3d.fromPitchYaw(pitch, yaw).normalize();
         return Math.acos(lookVec.dotProduct(blockVec));
     }
 
     public static double getMaxDistance(PlayerEntity player) {
-        ItemStack stack = player.getHeldItem(Hand.MAIN_HAND);
-        int lvl = EnchantmentHelper.getEnchantmentLevel(Registration.RANGE_ENCHANTMENT.get(), stack);
+        int mainHandLevel = EnchantmentHelper.getEnchantmentLevel(Registration.RANGE_ENCHANTMENT.get(), player.getHeldItem(Hand.MAIN_HAND));
+        int offHandLevel = EnchantmentHelper.getEnchantmentLevel(Registration.RANGE_ENCHANTMENT.get(), player.getHeldItem(Hand.MAIN_HAND));
+        int lvl = Math.max(mainHandLevel, offHandLevel);
         return ServerConfig.MAX_DISTANCE.get() * (1 + (lvl / 2d));
     }
 }
