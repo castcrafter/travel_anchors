@@ -31,7 +31,7 @@ public class EventListener {
         PlayerEntity player = event.getPlayer();
         if (TeleportHandler.canPlayerTeleport(player, event.getHand()) && !event.getItemStack().isEmpty()) {
             if (player.isSneaking() && TeleportHandler.canItemTeleport(player, event.getHand())) {
-                if (TeleportHandler.shortTeleport(world, player)) {
+                if (TeleportHandler.shortTeleport(world, player, event.getHand())) {
                     event.setResult(Event.Result.DENY);
                     event.setCancellationResult(ActionResultType.SUCCESS);
                     player.getCooldownTracker().setCooldown(event.getItemStack().getItem(), 30);
