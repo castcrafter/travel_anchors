@@ -22,7 +22,7 @@ import java.util.Optional;
 
 public class TeleportHandler {
 
-    public static boolean anchorTeleport(World world, PlayerEntity player, @Nullable BlockPos except) {
+    public static boolean anchorTeleport(World world, PlayerEntity player, @Nullable BlockPos except, @Nullable Hand hand) {
         Pair<BlockPos, String> anchor = getAnchorToTeleport(world, player, except);
 
         if (anchor != null) {
@@ -30,7 +30,9 @@ public class TeleportHandler {
                 player.setPositionAndUpdate(anchor.getLeft().getX() + 0.5, anchor.getLeft().getY() + 1, anchor.getLeft().getZ() + 0.5);
             }
             player.fallDistance = 0;
-            player.swing(Hand.MAIN_HAND, true);
+            if (hand != null) {
+                player.swing(hand, true);
+            }
             player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1F, 1F);
             if (player instanceof ServerPlayerEntity) {
                 ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.tp.success", anchor.getRight()), 10, 60, 10));
