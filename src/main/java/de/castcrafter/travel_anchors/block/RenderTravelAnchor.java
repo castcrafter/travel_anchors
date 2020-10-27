@@ -79,8 +79,8 @@ public class RenderTravelAnchor extends TileEntityRenderer<TileTravelAnchor> {
             int alpha = (int) (textOpacitySetting * 255.0F) << 24;
             float halfWidth = (float) (-Minecraft.getInstance().fontRenderer.getStringPropertyWidth(tc) / 2);
 
-            Minecraft.getInstance().fontRenderer.func_238416_a_(tc, halfWidth, 0, color, false, matrix4f, buffer, true, alpha, combinedLight);
-            Minecraft.getInstance().fontRenderer.func_238416_a_(tc, halfWidth, 0, color, false, matrix4f, buffer, false, 0, combinedLight);
+            Minecraft.getInstance().fontRenderer.func_243247_a(tc, halfWidth, 0, color, false, matrix4f, buffer, true, alpha, combinedLight);
+            Minecraft.getInstance().fontRenderer.func_243247_a(tc, halfWidth, 0, color, false, matrix4f, buffer, false, 0, combinedLight);
 
             matrixStack.pop();
         }
