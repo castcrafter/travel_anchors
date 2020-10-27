@@ -21,7 +21,7 @@ import java.util.Optional;
 
 public class TeleportHandler {
 
-    public static boolean anchorTeleport(World world, PlayerEntity player, @Nullable BlockPos except) {
+    public static boolean anchorTeleport(World world, PlayerEntity player, @Nullable BlockPos except, @Nullable Hand hand) {
         Pair<BlockPos, String> anchor = getAnchorToTeleport(world, player, except);
 
         if (anchor != null) {
@@ -29,7 +29,9 @@ public class TeleportHandler {
                 player.setPositionAndUpdate(anchor.getLeft().getX() + 0.5, anchor.getLeft().getY() + 1, anchor.getLeft().getZ() + 0.5);
             }
             player.fallDistance = 0;
-            player.swing(Hand.MAIN_HAND, true);
+            if (hand != null) {
+                player.swing(hand, true);
+            }
             player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1F, 1F);
             if (player instanceof ServerPlayerEntity) {
                 ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.tp.success", anchor.getRight()), 10, 60, 10));
@@ -61,17 +63,17 @@ public class TeleportHandler {
         }
     }
 
-    public static boolean shortTeleport(World world, PlayerEntity player) {
-        Vector3d positionVec = player.getPositionVec();
+    public static boolean shortTeleport(World world, PlayerEntity player, Hand hand) {
+        Vector3d positionVec = player.getPositionVec().add(0, player.getEyeHeight(), 0);
         float yaw = player.rotationYaw * ((float) Math.PI / 180F);
         float pitch = player.rotationPitch * ((float) Math.PI / 180F);
         BlockPos target = new BlockPos(positionVec.x - MathHelper.sin(yaw) * 7, positionVec.y + -MathHelper.sin(pitch) * 7, positionVec.z + MathHelper.cos(yaw) * 7);
-        if (canTeleportTo(world, target)) {
+        if (canTeleportTo(world, target.down())) { //to use the same check as the anchors use the position below
             if (!player.getEntityWorld().isRemote) {
                 player.setPositionAndUpdate(target.getX(), target.getY(), target.getZ());
             }
             player.fallDistance = 0;
-            player.swing(Hand.MAIN_HAND, true);
+            player.swing(hand, true);
             player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1F, 1F);
             return true;
         } else {
