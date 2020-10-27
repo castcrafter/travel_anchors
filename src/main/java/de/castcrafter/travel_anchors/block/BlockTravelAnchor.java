@@ -1,18 +1,16 @@
 package de.castcrafter.travel_anchors.block;
 
 import de.castcrafter.travel_anchors.TravelAnchorList;
-import net.minecraft.block.Block;
+import io.github.noeppi_noeppi.libx.mod.ModX;
+import io.github.noeppi_noeppi.libx.mod.registration.BlockGUI;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
@@ -26,19 +24,22 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-public class BlockTravelAnchor extends Block implements ITileEntityProvider {
+public class BlockTravelAnchor extends BlockGUI<TileTravelAnchor, ContainerTravelAnchor> {
 
-    private static final VoxelShape SHAPE = VoxelShapes.create(0, .001, 0, 1, 1, 1);
+    private static final VoxelShape SHAPE = VoxelShapes.create(0, 0, 0, 1, 1, 1);
 
-    public BlockTravelAnchor(Properties properties) {
-        super(properties);
+    public BlockTravelAnchor(ModX mod, Class<TileTravelAnchor> teClass, ContainerType<ContainerTravelAnchor> container, Properties properties) {
+        super(mod, teClass, container, properties);
+    }
+
+    public BlockTravelAnchor(ModX mod, Class<TileTravelAnchor> teClass, ContainerType<ContainerTravelAnchor> container, Properties properties, Item.Properties itemProperties) {
+        super(mod, teClass, container, properties, itemProperties);
     }
 
     @Override
@@ -71,32 +72,15 @@ public class BlockTravelAnchor extends Block implements ITileEntityProvider {
         tooltip.add(new TranslationTextComponent("tooltip.travel_anchors.travel_anchor_block"));
     }
 
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
-    @Nullable
-    @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new TileTravelAnchor();
-    }
-
-    @Nullable
-    @Override
-    public TileEntity createNewTileEntity(@Nonnull IBlockReader world) {
-        return new TileTravelAnchor();
-    }
-
     @Nonnull
     @Override
-    public ActionResultType onBlockActivated(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult trace) {
+    public ActionResultType onBlockActivated(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult hit) {
         if (!world.isRemote) {
             ItemStack item = player.getHeldItem(Hand.OFF_HAND);
             if (!item.isEmpty() && item.getItem() instanceof BlockItem && player.getHeldItem(Hand.MAIN_HAND).isEmpty()) {
                 TileEntity te = world.getTileEntity(pos);
                 if (te instanceof TileTravelAnchor) {
-                    BlockState mimicState = ((BlockItem) item.getItem()).getBlock().getStateForPlacement(new BlockItemUseContext(player, Hand.OFF_HAND, item, trace));
+                    BlockState mimicState = ((BlockItem) item.getItem()).getBlock().getStateForPlacement(new BlockItemUseContext(player, Hand.OFF_HAND, item, hit));
                     if (mimicState == null || mimicState.getBlock() == this) {
                         ((TileTravelAnchor) te).setMimic(null);
                     } else {
@@ -105,25 +89,7 @@ public class BlockTravelAnchor extends Block implements ITileEntityProvider {
                 }
                 return ActionResultType.SUCCESS;
             }
-            TileEntity tile = world.getTileEntity(pos);
-            if (tile == null) {
-                throw new IllegalStateException("Expected a tile entity of type TravelAnchorTile but got none.");
-            } else if (tile instanceof TileTravelAnchor) {
-                INamedContainerProvider containerProvider = new INamedContainerProvider() {
-                    @Override
-                    public ITextComponent getDisplayName() {
-                        return new TranslationTextComponent("screen.travel_anchors.travel_anchor");
-                    }
-
-                    @Override
-                    public Container createMenu(int window, @Nonnull PlayerInventory inventory, @Nonnull PlayerEntity player) {
-                        return new ContainerTravelAnchor(window, world, pos, inventory, player);
-                    }
-                };
-                NetworkHooks.openGui((ServerPlayerEntity) player, containerProvider, tile.getPos());
-            } else {
-                throw new IllegalStateException("Expected a tile entity of type TravelAnchorTile but got " + tile.getClass() + ".");
-            }
+            super.onBlockActivated(state, world, pos, player, hand, hit);
         }
         return ActionResultType.SUCCESS;
     }

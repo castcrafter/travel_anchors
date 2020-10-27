@@ -19,13 +19,15 @@ import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 
 public class RenderTravelAnchor extends TileEntityRenderer<TileTravelAnchor> {
 
-    public static final ResourceLocation ANCHOR_MODEL = new ResourceLocation(TravelAnchors.MODID, "block/travel_anchor");
+    public static final ResourceLocation ANCHOR_MODEL = new ResourceLocation(TravelAnchors.getInstance().modid, "block/travel_anchor");
     private static IBakedModel ANCHOR_MODEL_BAKED = null;
 
     public RenderTravelAnchor(TileEntityRendererDispatcher rendererDispatcherIn) {
@@ -84,6 +86,10 @@ public class RenderTravelAnchor extends TileEntityRenderer<TileTravelAnchor> {
 
             matrixStack.pop();
         }
+    }
+
+    public static void registerModels(final ModelRegistryEvent event) {
+        ModelLoader.addSpecialModel(RenderTravelAnchor.ANCHOR_MODEL);
     }
 
     public static void bakeModels(final ModelBakeEvent event) {

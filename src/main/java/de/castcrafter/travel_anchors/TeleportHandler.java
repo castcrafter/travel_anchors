@@ -1,7 +1,6 @@
 package de.castcrafter.travel_anchors;
 
 import de.castcrafter.travel_anchors.config.ServerConfig;
-import de.castcrafter.travel_anchors.setup.Registration;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -94,13 +93,13 @@ public class TeleportHandler {
     }
 
     public static boolean canBlockTeleport(PlayerEntity player) {
-        return (player.getEntityWorld().getBlockState(player.getPosition().toImmutable().down()).getBlock() == Registration.TRAVEL_ANCHOR_BLOCK.get()
+        return (player.getEntityWorld().getBlockState(player.getPosition().toImmutable().down()).getBlock() == ModComponents.travelAnchor
                 && !player.isSneaking());
     }
 
     public static boolean canItemTeleport(PlayerEntity player, Hand hand) {
-        return player.getHeldItem(hand).getItem() == Registration.TRAVEL_STAFF.get()
-                || EnchantmentHelper.getEnchantmentLevel(Registration.TELEPORTATION_ENCHANTMENT.get(), player.getHeldItem(hand)) >= 1;
+        return player.getHeldItem(hand).getItem() == ModComponents.travelStaff
+                || EnchantmentHelper.getEnchantmentLevel(ModEnchantments.teleportation, player.getHeldItem(hand)) >= 1;
     }
 
     private static double getAngleRadians(Vector3d positionVec, BlockPos anchor, float yaw, float pitch) {
@@ -110,8 +109,8 @@ public class TeleportHandler {
     }
 
     public static double getMaxDistance(PlayerEntity player) {
-        int mainHandLevel = EnchantmentHelper.getEnchantmentLevel(Registration.RANGE_ENCHANTMENT.get(), player.getHeldItem(Hand.MAIN_HAND));
-        int offHandLevel = EnchantmentHelper.getEnchantmentLevel(Registration.RANGE_ENCHANTMENT.get(), player.getHeldItem(Hand.OFF_HAND));
+        int mainHandLevel = EnchantmentHelper.getEnchantmentLevel(ModEnchantments.range, player.getHeldItem(Hand.MAIN_HAND));
+        int offHandLevel = EnchantmentHelper.getEnchantmentLevel(ModEnchantments.range, player.getHeldItem(Hand.OFF_HAND));
         int lvl = Math.max(mainHandLevel, offHandLevel);
         return ServerConfig.MAX_DISTANCE.get() * (1 + (lvl / 2d));
     }
