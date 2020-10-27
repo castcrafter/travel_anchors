@@ -1,11 +1,14 @@
 package de.castcrafter.travel_anchors;
 
+import com.google.gson.JsonElement;
 import de.castcrafter.travel_anchors.network.ClientEventSerializer;
 import de.castcrafter.travel_anchors.network.Networking;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
