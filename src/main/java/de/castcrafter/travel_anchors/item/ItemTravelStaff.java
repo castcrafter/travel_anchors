@@ -1,7 +1,8 @@
 package de.castcrafter.travel_anchors.item;
 
+import io.github.noeppi_noeppi.libx.mod.ModX;
+import io.github.noeppi_noeppi.libx.mod.registration.ItemBase;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -12,10 +13,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemTravelStaff extends Item {
-
-    public ItemTravelStaff(Properties properties) {
-        super(properties);
+public class ItemTravelStaff extends ItemBase {
+    public ItemTravelStaff(ModX mod, Properties properties) {
+        super(mod, properties);
     }
 
     @Override

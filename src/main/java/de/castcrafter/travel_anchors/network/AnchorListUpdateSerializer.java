@@ -1,5 +1,6 @@
 package de.castcrafter.travel_anchors.network;
 
+import io.github.noeppi_noeppi.libx.network.PacketSerializer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 

@@ -1,6 +1,5 @@
 package de.castcrafter.travel_anchors;
 
-import de.castcrafter.travel_anchors.network.Networking;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.BlockPos;
@@ -25,14 +24,14 @@ public class TravelAnchorList extends WorldSavedData {
     public static TravelAnchorList get(World world) {
         if (!world.isRemote) {
             DimensionSavedDataManager storage = ((ServerWorld) world).getSavedData();
-            return storage.getOrCreate(TravelAnchorList::new, TravelAnchors.MODID);
+            return storage.getOrCreate(TravelAnchorList::new, TravelAnchors.getInstance().modid);
         } else {
             return clientInstance;
         }
     }
 
     public TravelAnchorList() {
-        super(TravelAnchors.MODID);
+        super(TravelAnchors.getInstance().modid);
     }
 
     public TravelAnchorList(String name) {
@@ -93,7 +92,7 @@ public class TravelAnchorList extends WorldSavedData {
             }
             this.markDirty();
             if (needsUpdate) {
-                Networking.updateTravelAnchorList(world, this);
+                TravelAnchors.getNetwork().updateTravelAnchorList(world, this);
             }
         }
     }

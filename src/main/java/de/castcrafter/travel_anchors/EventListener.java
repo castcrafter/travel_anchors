@@ -1,7 +1,6 @@
 package de.castcrafter.travel_anchors;
 
 import de.castcrafter.travel_anchors.network.ClientEventSerializer;
-import de.castcrafter.travel_anchors.network.Networking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -17,12 +16,12 @@ public class EventListener {
 
     @SubscribeEvent
     public void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-        Networking.updateTravelAnchorList(event.getPlayer());
+        TravelAnchors.getNetwork().updateTravelAnchorList(event.getPlayer());
     }
 
     @SubscribeEvent
     public void playerChangeDim(PlayerEvent.PlayerChangedDimensionEvent event) {
-        Networking.updateTravelAnchorList(event.getPlayer());
+        TravelAnchors.getNetwork().updateTravelAnchorList(event.getPlayer());
     }
 
     @SubscribeEvent
@@ -50,7 +49,7 @@ public class EventListener {
         World world = event.getWorld();
         PlayerEntity player = event.getPlayer();
         if (TeleportHandler.canBlockTeleport(player) && !player.isSneaking() && event.getHand() == Hand.MAIN_HAND && event.getPlayer().getHeldItem(Hand.OFF_HAND).isEmpty() && event.getItemStack().isEmpty()) {
-            Networking.sendClientEventToServer(world, ClientEventSerializer.ClientEvent.EMPTY_HAND_INTERACT);
+            TravelAnchors.getNetwork().sendClientEventToServer(world, ClientEventSerializer.ClientEvent.EMPTY_HAND_INTERACT);
             event.setResult(Event.Result.DENY);
             event.setCancellationResult(ActionResultType.SUCCESS);
         }
@@ -76,7 +75,7 @@ public class EventListener {
         if (event.getEntityLiving() instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) event.getEntityLiving();
             if (TeleportHandler.canBlockTeleport(player)) {
-                Networking.sendClientEventToServer(player.getEntityWorld(), ClientEventSerializer.ClientEvent.JUMP);
+                TravelAnchors.getNetwork().sendClientEventToServer(player.getEntityWorld(), ClientEventSerializer.ClientEvent.JUMP);
             }
         }
     }
