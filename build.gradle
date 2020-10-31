@@ -102,7 +102,7 @@ dependencies {
     compile fg.deobf("io.github.noeppi_noeppi.mods:LibX:1.16.3-1.0.1")
 }
 
-// Example for how to get properties into the manifest for reading by the runtime..
+// Example for how to get properties into the manifest for reading by the runtime.
 jar {
     manifest {
         attributes([
