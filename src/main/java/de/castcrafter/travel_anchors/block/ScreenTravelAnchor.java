@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
@@ -48,7 +49,8 @@ public class ScreenTravelAnchor extends ContainerScreen<ContainerTravelAnchor> {
     protected void drawGuiContainerForegroundLayer(@Nonnull MatrixStack matrixStack, int x, int y) {
         String title = this.title.getString();
         this.font.drawString(matrixStack, title, (float) (this.xSize / 2 - this.font.getStringWidth(title) / 2), 6.0F, 0x404040);
-        this.font.drawString(matrixStack, this.playerInventory.getDisplayName().getString(), 8, (float) (this.ySize - 126), 0x404040);
+        boolean empty = this.textFieldWidget.getText().trim().isEmpty();
+        this.font.drawString(matrixStack, empty ? I18n.format("screen.travel_anchors.nameless") : this.playerInventory.getDisplayName().getString(), 8, (float) (this.ySize - 126), empty ? 0xB31616 : 0x404040);
     }
 
     @Override
@@ -70,9 +72,8 @@ public class ScreenTravelAnchor extends ContainerScreen<ContainerTravelAnchor> {
         super.onClose();
         this.getMinecraft().keyboardListener.enableRepeatEvents(false);
         if (Minecraft.getInstance().world != null) {
-            TravelAnchors.getNetwork().sendNameChange(this.container.getWorld(), this.container.getPos(), this.textFieldWidget.getText());
+            TravelAnchors.getNetwork().sendNameChange(this.container.getWorld(), this.container.getPos(), this.textFieldWidget.getText().trim());
         }
-
     }
 
     @Override

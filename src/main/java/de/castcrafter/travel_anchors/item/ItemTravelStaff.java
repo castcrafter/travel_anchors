@@ -22,4 +22,14 @@ public class ItemTravelStaff extends ItemBase {
     public void addInformation(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, @Nonnull ITooltipFlag flags) {
         tooltip.add(new TranslationTextComponent("tooltip.travel_anchors.travel_staff").mergeStyle(TextFormatting.GOLD));
     }
+
+    @Override
+    public int getItemEnchantability() {
+        return 1000;
+    }
+
+    @Override
+    public boolean isEnchantable(@Nonnull ItemStack stack) {
+        return true;
+    }
 }

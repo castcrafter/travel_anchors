@@ -32,7 +32,7 @@ import java.util.List;
 @SuppressWarnings("deprecation")
 public class BlockTravelAnchor extends BlockGUI<TileTravelAnchor, ContainerTravelAnchor> {
 
-    private static final VoxelShape SHAPE = VoxelShapes.create(0, 0, 0, 1, 1, 1);
+    private static final VoxelShape SHAPE = VoxelShapes.create(0.01, 0.01, 0.01, 0.99, 0.99, 0.99);
 
     public BlockTravelAnchor(ModX mod, Class<TileTravelAnchor> teClass, ContainerType<ContainerTravelAnchor> container, Properties properties) {
         super(mod, teClass, container, properties);
@@ -62,6 +62,19 @@ public class BlockTravelAnchor extends BlockGUI<TileTravelAnchor, ContainerTrave
             BlockState mimic = ((TileTravelAnchor) tile).getMimic();
             if (mimic != null) {
                 return mimic.getShape(reader, pos, context);
+            }
+        }
+        return VoxelShapes.fullCube();
+    }
+
+    @Nonnull
+    @Override
+    public VoxelShape getRenderShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos) {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof TileTravelAnchor) {
+            BlockState mimic = ((TileTravelAnchor) tile).getMimic();
+            if (mimic != null) {
+                return mimic.getRenderShape(world, pos);
             }
         }
         return SHAPE;

@@ -10,6 +10,7 @@
 
   "screen.travel_anchors.travel_anchor": "Reiseanker",
   "screen.travel_anchors.search": "Suchen",
+  "screen.travel_anchors.nameless": "Gib zum Benutzen einen Namen ein",
 
   "tooltip.travel_anchors.travel_anchor_block": "Schaue mit einem Reisestab oder der Teleportation-Verzauberung auf den Block um zu teleportieren.",
   "tooltip.travel_anchors.travel_staff": "Hocken + Rechtsklick für einen Teleport auf kurze Entfernung. Reiseanker anschauen um zu ihm zu teleportieren.",

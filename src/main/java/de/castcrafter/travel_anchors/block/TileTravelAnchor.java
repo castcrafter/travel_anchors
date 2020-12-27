@@ -1,11 +1,15 @@
 package de.castcrafter.travel_anchors.block;
 
+import de.castcrafter.travel_anchors.TeleportHandler;
 import de.castcrafter.travel_anchors.TravelAnchorList;
 import io.github.noeppi_noeppi.libx.mod.registration.TileEntityBase;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.ModelProperty;
 
 import javax.annotation.Nonnull;
@@ -52,6 +56,17 @@ public class TileTravelAnchor extends TileEntityBase {
     public void handleUpdateTag(BlockState state, CompoundNBT nbt) {
         this.name = nbt.getString("travel_anchor_name");
         this.readMimic(nbt);
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public double getMaxRenderDistanceSquared() {
+        if (Minecraft.getInstance().player == null) {
+            return super.getMaxRenderDistanceSquared();
+        } else {
+            double distance = TeleportHandler.getMaxDistance(Minecraft.getInstance().player);
+            return distance * distance;
+        }
     }
 
     private void writeMimic(CompoundNBT tag) {

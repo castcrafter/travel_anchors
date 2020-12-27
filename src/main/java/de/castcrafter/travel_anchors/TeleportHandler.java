@@ -1,10 +1,12 @@
 package de.castcrafter.travel_anchors;
 
 import de.castcrafter.travel_anchors.config.ServerConfig;
+import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.play.server.STitlePacket;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
@@ -23,7 +25,28 @@ public class TeleportHandler {
 
     public static boolean anchorTeleport(World world, PlayerEntity player, @Nullable BlockPos except, @Nullable Hand hand) {
         Pair<BlockPos, String> anchor = getAnchorToTeleport(world, player, except);
+        return teleportPlayer(player, anchor, hand);
+    }
 
+    public static Pair<BlockPos, String> getAnchorToTeleport(World world, PlayerEntity player, @Nullable BlockPos except) {
+        if (!player.isSneaking()) {
+            double maxDistance = getMaxDistance(player);
+            Vector3d positionVec = player.getPositionVec().add(0, player.getEyeHeight(), 0);
+            Optional<Pair<BlockPos, String>> anchor = TravelAnchorList.get(world).getAnchorsAround(player.getPositionVec(), Math.pow(maxDistance, 2))
+                    .filter(pair -> except == null || !except.equals(pair.getLeft()))
+                    .min((p1, p2) -> {
+                        double angle1 = Math.abs(getAngleRadians(positionVec, p1.getLeft(), player.rotationYaw, player.rotationPitch));
+                        double angle2 = Math.abs(getAngleRadians(positionVec, p2.getLeft(), player.rotationYaw, player.rotationPitch));
+                        return Double.compare(angle1, angle2);
+                    }).filter(p -> Math.abs(getAngleRadians(positionVec, p.getLeft(), player.rotationYaw, player.rotationPitch)) <= Math.toRadians(ServerConfig.MAX_ANGLE.get()))
+                    .filter(p -> canTeleportTo(world, p.getLeft()));
+            return anchor.orElse(null);
+        } else {
+            return null;
+        }
+    }
+    
+    public static boolean teleportPlayer(PlayerEntity player, @Nullable Pair<BlockPos, String> anchor, @Nullable Hand hand) {
         if (anchor != null) {
             if (!player.getEntityWorld().isRemote) {
                 player.setPositionAndUpdate(anchor.getLeft().getX() + 0.5, anchor.getLeft().getY() + 1, anchor.getLeft().getZ() + 0.5);
@@ -42,24 +65,6 @@ public class TeleportHandler {
                 ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.tp.fail"), 10, 60, 10));
             }
             return false;
-        }
-    }
-
-    public static Pair<BlockPos, String> getAnchorToTeleport(World world, PlayerEntity player, @Nullable BlockPos except) {
-        if (!player.isSneaking()) {
-            double maxDistance = getMaxDistance(player);
-            Vector3d positionVec = player.getPositionVec().add(0, player.getEyeHeight(), 0);
-            Optional<Pair<BlockPos, String>> anchor = TravelAnchorList.get(world).getAnchorsAround(player.getPositionVec(), Math.pow(maxDistance, 2))
-                    .filter(pair -> except == null || !except.equals(pair.getLeft()))
-                    .min((p1, p2) -> {
-                        double angle1 = Math.abs(getAngleRadians(positionVec, p1.getLeft(), player.rotationYaw, player.rotationPitch));
-                        double angle2 = Math.abs(getAngleRadians(positionVec, p2.getLeft(), player.rotationYaw, player.rotationPitch));
-                        return Double.compare(angle1, angle2);
-                    }).filter(p -> Math.abs(getAngleRadians(positionVec, p.getLeft(), player.rotationYaw, player.rotationPitch)) <= Math.toRadians(ServerConfig.MAX_ANGLE.get()))
-                    .filter(p -> canTeleportTo(world, p.getLeft()));
-            return anchor.orElse(null);
-        } else {
-            return null;
         }
     }
 
@@ -115,5 +120,51 @@ public class TeleportHandler {
         int offHandLevel = EnchantmentHelper.getEnchantmentLevel(ModEnchantments.range, player.getHeldItem(Hand.OFF_HAND));
         int lvl = Math.max(mainHandLevel, offHandLevel);
         return ServerConfig.MAX_DISTANCE.get() * (1 + (lvl / 2d));
+    }
+    
+    public static boolean canElevate(PlayerEntity player) {
+        return player.getEntityWorld().getBlockState(player.getPosition().toImmutable().down()).getBlock() == ModComponents.travelAnchor;
+    }
+    
+    public static boolean elevateUp(PlayerEntity player) {
+        if (!canElevate(player)) {
+            return false;
+        }
+        World world = player.getEntityWorld();
+        BlockPos.Mutable searchPos = player.getPosition().toImmutable().toMutable();
+        while (!World.isOutsideBuildHeight(searchPos) && (world.getBlockState(searchPos).getBlock() != ModComponents.travelAnchor || !canTeleportTo(world, searchPos))) {
+            searchPos.move(Direction.UP);
+        }
+        BlockState state = world.getBlockState(searchPos);
+        Pair<BlockPos, String> anchor = null;
+        if (state.getBlock() == ModComponents.travelAnchor && canTeleportTo(world, searchPos)) {
+            BlockPos target = searchPos.toImmutable();
+            String name = ModComponents.travelAnchor.getTile(world, target).getName();
+            if (!name.isEmpty()) {
+                anchor = Pair.of(target, name);
+            }
+        }
+        return teleportPlayer(player, anchor, player.getActiveHand());
+    }
+    
+    public static boolean elevateDown(PlayerEntity player) {
+        if (!canElevate(player)) {
+            return false;
+        }
+        World world = player.getEntityWorld();
+        BlockPos.Mutable searchPos = player.getPosition().toImmutable().down(2).toMutable();
+        while (!World.isOutsideBuildHeight(searchPos) && (world.getBlockState(searchPos).getBlock() != ModComponents.travelAnchor || !canTeleportTo(world, searchPos))) {
+            searchPos.move(Direction.DOWN);
+        }
+        BlockState state = world.getBlockState(searchPos);
+        Pair<BlockPos, String> anchor = null;
+        if (state.getBlock() == ModComponents.travelAnchor && canTeleportTo(world, searchPos)) {
+            BlockPos target = searchPos.toImmutable();
+            String name = ModComponents.travelAnchor.getTile(world, target).getName();
+            if (!name.isEmpty()) {
+                anchor = Pair.of(target, name);
+            }
+        }
+        return teleportPlayer(player, anchor, player.getActiveHand());
     }
 }

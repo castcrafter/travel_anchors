@@ -21,7 +21,7 @@ public class Networking extends NetworkX {
 
     @Override
     protected String getProtocolVersion() {
-        return "3";
+        return "4";
     }
 
     protected void registerPackets() {

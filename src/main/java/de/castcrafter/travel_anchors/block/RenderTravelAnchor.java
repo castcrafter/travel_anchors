@@ -6,8 +6,10 @@ import de.castcrafter.travel_anchors.TeleportHandler;
 import de.castcrafter.travel_anchors.TravelAnchors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.Hand;
@@ -40,12 +42,11 @@ public class RenderTravelAnchor extends TileEntityRenderer<TileTravelAnchor> {
         if (tile.getMimic() == null || tile.getMimic().getBlock() == tile.getBlockState().getBlock() || tile.getMimic().isAir()) {
             IVertexBuilder vertexBuffer = buffer.getBuffer(RenderTypeLookup.func_239220_a_(tile.getBlockState(), false));
             //noinspection deprecation
-
             Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelRenderer()
                     .renderModelBrightnessColor(matrixStack.getLast(), vertexBuffer, tile.getBlockState(),
-                            ANCHOR_MODEL_BAKED, 1, 1, 1, combinedLight, combinedOverlay);
+                            ANCHOR_MODEL_BAKED, 1, 1, 1, combinedLight, OverlayTexture.NO_OVERLAY);
         } else {
-            Minecraft.getInstance().getBlockRendererDispatcher().renderBlock(tile.getMimic(), matrixStack, buffer, combinedLight, combinedOverlay, tile.getModelData());
+            Minecraft.getInstance().getBlockRendererDispatcher().renderBlock(tile.getMimic(), matrixStack, buffer, combinedLight, OverlayTexture.NO_OVERLAY, tile.getModelData());
         }
 
         if (Minecraft.getInstance().world != null && Minecraft.getInstance().player != null && !Minecraft.getInstance().player.isSneaking()
@@ -54,11 +55,11 @@ public class RenderTravelAnchor extends TileEntityRenderer<TileTravelAnchor> {
             Pair<BlockPos, String> anchor = TeleportHandler.getAnchorToTeleport(Minecraft.getInstance().world, Minecraft.getInstance().player, Minecraft.getInstance().player.getPosition().toImmutable().down());
 
             BlockPos pos = tile.getPos();
-            double doubleScale = Math.sqrt(0.0004 * Minecraft.getInstance().player.getPositionVec().distanceTo(new Vector3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5)));
-            if (doubleScale < 0.04f) {
-                doubleScale = 0.04f;
+            double doubleScale = Math.sqrt(0.0035 * Minecraft.getInstance().player.getPositionVec().distanceTo(new Vector3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5)));
+            if (doubleScale < 0.1f) {
+                doubleScale = 0.1f;
             }
-            doubleScale = doubleScale * (Minecraft.getInstance().gameSettings.fov / 70d);
+            doubleScale = doubleScale * (Math.sin(Math.toRadians(Minecraft.getInstance().gameSettings.fov / 4d)));
             float scale = (float) doubleScale;
 
             IFormattableTextComponent tc = new StringTextComponent(tile.getName());
@@ -81,8 +82,8 @@ public class RenderTravelAnchor extends TileEntityRenderer<TileTravelAnchor> {
             int alpha = (int) (textOpacitySetting * 255.0F) << 24;
             float halfWidth = (float) (-Minecraft.getInstance().fontRenderer.getStringPropertyWidth(tc) / 2);
 
-            Minecraft.getInstance().fontRenderer.func_243247_a(tc, halfWidth, 0, color, false, matrix4f, buffer, true, alpha, combinedLight);
-            Minecraft.getInstance().fontRenderer.func_243247_a(tc, halfWidth, 0, color, false, matrix4f, buffer, false, 0, combinedLight);
+            Minecraft.getInstance().fontRenderer.func_243247_a(tc, halfWidth, 0, color, false, matrix4f, buffer, true, alpha, LightTexture.packLight(15, 15));
+            Minecraft.getInstance().fontRenderer.func_243247_a(tc, halfWidth, 0, color, false, matrix4f, buffer, false, 0, LightTexture.packLight(15, 15));
 
             matrixStack.pop();
         }
