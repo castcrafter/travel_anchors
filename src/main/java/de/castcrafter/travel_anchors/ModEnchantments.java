@@ -7,8 +7,11 @@ import net.minecraft.enchantment.EnchantmentType;
 
 public class ModEnchantments {
 
+    public static final EnchantmentType TELEPORTABLE_NO_STAFF = EnchantmentType.create(TravelAnchors.getInstance().modid + "_teleportable_no_staff",
+            item -> EnchantmentType.WEAPON.canEnchantItem(item) || EnchantmentType.DIGGER.canEnchantItem(item));
+    
     public static final EnchantmentType TELEPORTABLE = EnchantmentType.create(TravelAnchors.getInstance().modid + "_teleportable",
-            item -> item == ModComponents.travelStaff || EnchantmentType.BREAKABLE.canEnchantItem(item));
+            item -> item == ModComponents.travelStaff || TELEPORTABLE_NO_STAFF.canEnchantItem(item));
 
     public static final Enchantment teleportation = new TeleportationEnchantment();
     public static final Enchantment range = new RangeEnchantment();
