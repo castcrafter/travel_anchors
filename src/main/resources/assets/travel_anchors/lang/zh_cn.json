@@ -12,7 +12,7 @@
   "screen.travel_anchors.search": "搜索",
   "screen.travel_anchors.nameless": "需设置名称来使用",
 
-  "tooltip.travel_anchors.travel_anchor_block": "这个方块只有在手持旅行权杖或站在旅行锚上时才能被看见",
+  "tooltip.travel_anchors.travel_anchor_block": "使用旅行权杖或传送附魔进行移动",
   "tooltip.travel_anchors.travel_staff": "按住 Shift + 右击来传送一小段距离或传送到旅行锚",
 
   "travel_anchors.tp.success": "传送到 %s.",
