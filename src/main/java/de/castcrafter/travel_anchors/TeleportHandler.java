@@ -11,7 +11,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
@@ -69,10 +68,8 @@ public class TeleportHandler {
     }
 
     public static boolean shortTeleport(World world, PlayerEntity player, Hand hand) {
-        Vector3d positionVec = player.getPositionVec().add(0, player.getEyeHeight(), 0);
-        float yaw = player.rotationYaw * ((float) Math.PI / 180F);
-        float pitch = player.rotationPitch * ((float) Math.PI / 180F);
-        BlockPos target = new BlockPos(positionVec.x - MathHelper.sin(yaw) * 7, positionVec.y + -MathHelper.sin(pitch) * 7, positionVec.z + MathHelper.cos(yaw) * 7);
+        Vector3d targetVec = player.getPositionVec().add(0, player.getEyeHeight(), 0).add(player.getLookVec().mul(7, 7, 7));
+        BlockPos target = new BlockPos(Math.round(targetVec.x), Math.round(targetVec.y), Math.round(targetVec.z));
         if (canTeleportTo(world, target.down())) { //to use the same check as the anchors use the position below
             if (!player.getEntityWorld().isRemote) {
                 player.setPositionAndUpdate(target.getX(), target.getY(), target.getZ());
@@ -144,7 +141,7 @@ public class TeleportHandler {
                 anchor = Pair.of(target, name);
             }
         }
-        return teleportPlayer(player, anchor, player.getActiveHand());
+        return teleportPlayer(player, anchor, null);
     }
     
     public static boolean elevateDown(PlayerEntity player) {
@@ -165,6 +162,6 @@ public class TeleportHandler {
                 anchor = Pair.of(target, name);
             }
         }
-        return teleportPlayer(player, anchor, player.getActiveHand());
+        return teleportPlayer(player, anchor, null);
     }
 }

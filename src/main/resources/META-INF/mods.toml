@@ -25,3 +25,10 @@ Adds a staff of travelling and a travel anchor to teleport around the world.
     versionRange="[1.16.3,)"
     ordering="NONE"
     side="BOTH"
+
+[[dependencies.travel_anchors]]
+    modId="libx"
+    mandatory=true
+    versionRange="[1.16.3-1.0.17,)"
+    ordering="NONE"
+    side="BOTH"
