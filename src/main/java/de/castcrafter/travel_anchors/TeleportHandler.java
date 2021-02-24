@@ -68,11 +68,21 @@ public class TeleportHandler {
     }
 
     public static boolean shortTeleport(World world, PlayerEntity player, Hand hand) {
-        Vector3d targetVec = player.getPositionVec().add(0, player.getEyeHeight(), 0).add(player.getLookVec().mul(7, 7, 7));
-        BlockPos target = new BlockPos(Math.round(targetVec.x), Math.round(targetVec.y), Math.round(targetVec.z));
-        if (canTeleportTo(world, target.down())) { //to use the same check as the anchors use the position below
+        Vector3d targetVec = player.getPositionVec().add(0, player.getEyeHeight(), 0);
+        Vector3d lookVec = player.getLookVec();
+        BlockPos target = null;
+        for (double i = 7; i >= 2; i -= 0.5) {
+            Vector3d v3d = targetVec.add(lookVec.mul(i, i, i));
+            target = new BlockPos(Math.round(v3d.x), Math.round(v3d.y), Math.round(v3d.z));
+            if (canTeleportTo(world, target.down())) { //to use the same check as the anchors use the position below
+                break;
+            } else {
+                target = null;
+            }
+        }
+        if (target != null) {
             if (!player.getEntityWorld().isRemote) {
-                player.setPositionAndUpdate(target.getX(), target.getY(), target.getZ());
+                player.setPositionAndUpdate(target.getX() + 0.5, target.getY(), target.getZ() + 0.5);
             }
             player.fallDistance = 0;
             player.swing(hand, true);
