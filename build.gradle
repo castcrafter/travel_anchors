@@ -1,17 +1,20 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url='https://repo.spongepowered.org/maven' }
         jcenter()
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply plugin: 'org.spongepowered.mixin'
 
 version = '2.3'
 group = 'de.castcrafter.travel_anchors' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -36,6 +39,9 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
+
+            jvmArg("-javaagent:\"C:\\Users\\zombi\\.gradle\\caches\\modules-2\\files-2.1\\org.spongepowered\\mixin\\0.8.2\\1cf212283d26f706fd3074318870bebd14d2a9ed\\mixin-0.8.2.jar\"")
+            arg "-mixin.config=travel_anchors.mixins.json"
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -112,9 +118,14 @@ jar {
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
             "Implementation-Vendor" :"examplemodsareus",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+            "MixinConfigs": "travel_anchors.mixins.json"
         ])
     }
+}
+
+mixin {
+    add sourceSets.main, "travel_anchors.refmap.json"
 }
 
 // Example configuration to allow publishing using the maven-publish task

@@ -13,7 +13,6 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class EventListener {
@@ -59,21 +58,6 @@ public class EventListener {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
-        if (TeleportHandler.canPlayerTeleport(event.getPlayer(), event.getHand()) && TeleportHandler.getAnchorToTeleport(event.getWorld(), event.getPlayer(), event.getPlayer().getPosition().toImmutable().down()) != null) {
-            if (event.getItemStack().isEmpty()) {
-                // We need to handle it here it it's empty. Because minecraft.
-                if (TeleportHandler.anchorTeleport(event.getWorld(), event.getPlayer(), event.getPlayer().getPosition().toImmutable().down(), event.getHand())) {
-                    event.setCanceled(true);
-                }
-            } else {
-                event.setResult(event.getUseItem());
-                event.setCanceled(true);
-            }
-        }
-    }
-
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void onJump(LivingEvent.LivingJumpEvent event) {
@@ -84,7 +68,7 @@ public class EventListener {
             }
         }
     }
-    
+
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void onSneak(InputUpdateEvent event) {
