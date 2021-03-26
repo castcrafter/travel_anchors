@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ItemStack.class)
 public class ItemStackMixin {
 
-    @Inject(method = "onItemUse(Lnet/minecraft/item/ItemUseContext;)Lnet/minecraft/util/ActionResultType;", at = @At("TAIL"), cancellable = true)
+    @Inject(method = "onItemUse(Lnet/minecraft/item/ItemUseContext;)Lnet/minecraft/util/ActionResultType;", at = @At("RETURN"), cancellable = true)
     public void onClickBlock(ItemUseContext context, CallbackInfoReturnable<ActionResultType> cir) {
-        if (cir.getReturnValue() != ActionResultType.PASS) return;
+        if (cir.getReturnValue() == ActionResultType.SUCCESS) return;
 
         if (TeleportHandler.canPlayerTeleport(context.getPlayer(), context.getHand()) && TeleportHandler.getAnchorToTeleport(context.getWorld(), context.getPlayer(), context.getPlayer().getPosition().toImmutable().down()) != null) {
             TeleportHandler.anchorTeleport(context.getWorld(), context.getPlayer(), context.getPlayer().getPosition().toImmutable().down(), context.getHand());
