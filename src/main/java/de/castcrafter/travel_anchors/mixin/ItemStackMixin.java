@@ -18,9 +18,9 @@ public class ItemStackMixin {
 
         if (TeleportHandler.canPlayerTeleport(context.getPlayer(), context.getHand()) && TeleportHandler.getAnchorToTeleport(context.getWorld(), context.getPlayer(), context.getPlayer().getPosition().toImmutable().down()) != null) {
             TeleportHandler.anchorTeleport(context.getWorld(), context.getPlayer(), context.getPlayer().getPosition().toImmutable().down(), context.getHand());
+            cir.setReturnValue(ActionResultType.SUCCESS);
         }
 
-        cir.setReturnValue(ActionResultType.SUCCESS);
     }
 }
 
