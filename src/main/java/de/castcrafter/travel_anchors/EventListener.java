@@ -63,13 +63,8 @@ public class EventListener {
     public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         if (TeleportHandler.canPlayerTeleport(event.getPlayer(), event.getHand()) && TeleportHandler.getAnchorToTeleport(event.getWorld(), event.getPlayer(), event.getPlayer().getPosition().toImmutable().down()) != null) {
             if (event.getItemStack().isEmpty()) {
-                // We need to handle it here it it's empty. Because minecraft.
-                if (TeleportHandler.anchorTeleport(event.getWorld(), event.getPlayer(), event.getPlayer().getPosition().toImmutable().down(), event.getHand())) {
-                    event.setCanceled(true);
-                }
-            } else {
-                event.setResult(event.getUseItem());
-                event.setCanceled(true);
+                event.setUseBlock(Event.Result.DEFAULT);
+                event.setUseBlock(Event.Result.ALLOW);
             }
         }
     }
