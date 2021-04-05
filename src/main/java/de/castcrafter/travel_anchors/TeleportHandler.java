@@ -15,6 +15,8 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -48,7 +50,11 @@ public class TeleportHandler {
     public static boolean teleportPlayer(PlayerEntity player, @Nullable Pair<BlockPos, String> anchor, @Nullable Hand hand) {
         if (anchor != null) {
             if (!player.getEntityWorld().isRemote) {
-                player.setPositionAndUpdate(anchor.getLeft().getX() + 0.5, anchor.getLeft().getY() + 1, anchor.getLeft().getZ() + 0.5);
+                Vector3d teleportVec = checkTeleport(player, anchor.getLeft());
+                if (teleportVec == null) {
+                    return false;
+                }
+                player.setPositionAndUpdate(teleportVec.getX(), teleportVec.getY(), teleportVec.getZ());
             }
             player.fallDistance = 0;
             if (hand != null) {
@@ -82,7 +88,11 @@ public class TeleportHandler {
         }
         if (target != null) {
             if (!player.getEntityWorld().isRemote) {
-                player.setPositionAndUpdate(target.getX() + 0.5, target.getY(), target.getZ() + 0.5);
+                Vector3d teleportVec = checkTeleport(player, target);
+                if (teleportVec == null) {
+                    return false;
+                }
+                player.setPositionAndUpdate(teleportVec.getX(), teleportVec.getY(), teleportVec.getZ());
             }
             player.fallDistance = 0;
             player.swing(hand, true);
@@ -173,5 +183,14 @@ public class TeleportHandler {
             }
         }
         return teleportPlayer(player, anchor, null);
+    }
+    
+    @Nullable
+    private static Vector3d checkTeleport(PlayerEntity player, BlockPos target) {
+        EnderTeleportEvent event = new EnderTeleportEvent(player, target.getX() + 0.5, target.getY(), target.getZ() + 0.5, 0);
+        if (MinecraftForge.EVENT_BUS.post(event)) {
+            return null;
+        }
+        return new Vector3d(event.getTargetX(), event.getTargetY(), event.getTargetZ());
     }
 }
