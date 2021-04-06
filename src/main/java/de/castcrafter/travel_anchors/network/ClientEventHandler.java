@@ -35,6 +35,13 @@ public class ClientEventHandler {
                             }
                         }
                         break;
+                        
+                    case JUMP_TP:
+                        // Client has configured to use jump as telport not elevate
+                        if (TeleportHandler.canBlockTeleport(player) && !player.isSneaking()) {
+                            TeleportHandler.anchorTeleport(player.getEntityWorld(), player, player.getPosition().toImmutable().down(), null);
+                        }
+                        break;
                 }
             }
         });

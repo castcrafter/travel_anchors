@@ -1,6 +1,7 @@
 package de.castcrafter.travel_anchors;
 
 import de.castcrafter.travel_anchors.block.ScreenTravelAnchor;
+import de.castcrafter.travel_anchors.config.ClientConfig;
 import de.castcrafter.travel_anchors.config.ServerConfig;
 import de.castcrafter.travel_anchors.network.Networking;
 import de.castcrafter.travel_anchors.block.RenderTravelAnchor;
@@ -43,6 +44,7 @@ public class TravelAnchors extends ModXRegistration {
         network = new Networking(this);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.SERVER_CONFIG);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.CLIENT_CONFIG);
         ServerConfig.loadConfig(ServerConfig.SERVER_CONFIG, FMLPaths.GAMEDIR.get().resolve(FMLConfig.defaultConfigPath()).resolve(this.modid + "-server.toml"));
 
         this.addRegistrationHandler(ModComponents::register);

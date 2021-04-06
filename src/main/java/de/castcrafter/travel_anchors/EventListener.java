@@ -1,6 +1,8 @@
 package de.castcrafter.travel_anchors;
 
+import de.castcrafter.travel_anchors.config.ClientConfig;
 import de.castcrafter.travel_anchors.network.ClientEventSerializer;
+import io.github.noeppi_noeppi.libx.event.ClickBlockEmptyHandEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResultType;
@@ -13,7 +15,6 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class EventListener {
@@ -58,13 +59,19 @@ public class EventListener {
             event.setCancellationResult(ActionResultType.SUCCESS);
         }
     }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
-        if (TeleportHandler.canPlayerTeleport(event.getPlayer(), event.getHand()) && TeleportHandler.getAnchorToTeleport(event.getWorld(), event.getPlayer(), event.getPlayer().getPosition().toImmutable().down()) != null) {
-            if (event.getItemStack().isEmpty()) {
-                event.setUseBlock(Event.Result.DEFAULT);
-                event.setUseBlock(Event.Result.ALLOW);
+    
+    @SubscribeEvent
+    public void emptyBlockClick(ClickBlockEmptyHandEvent event) {
+        if (event.getHand() == Hand.MAIN_HAND) {
+            // Empty offhand does not count. In that case the main hand will either produce
+            // this event or PlayerInteractEvent.RightClickItem
+            if (TeleportHandler.canPlayerTeleport(event.getPlayer(), event.getHand())) {
+                if (!event.getPlayer().isSneaking()) {
+                    if (TeleportHandler.anchorTeleport(event.getWorld(), event.getPlayer(), event.getPlayer().getPosition().toImmutable().down(), event.getHand())) {
+                        event.setCanceled(true);
+                        event.setCancellationResult(ActionResultType.SUCCESS);
+                    }
+                }
             }
         }
     }
@@ -74,8 +81,14 @@ public class EventListener {
     public void onJump(LivingEvent.LivingJumpEvent event) {
         if (event.getEntityLiving() instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) event.getEntityLiving();
-            if (TeleportHandler.canElevate(player) && !player.isSneaking()) {
-                TravelAnchors.getNetwork().sendClientEventToServer(player.getEntityWorld(), ClientEventSerializer.ClientEvent.JUMP);
+            if (ClientConfig.DISABLE_ELEVATE.get()) {
+                if (TeleportHandler.canBlockTeleport(player) && !player.isSneaking()) {
+                    TravelAnchors.getNetwork().sendClientEventToServer(player.getEntityWorld(), ClientEventSerializer.ClientEvent.JUMP_TP);
+                }
+            } else {
+                if (TeleportHandler.canElevate(player) && !player.isSneaking()) {
+                    TravelAnchors.getNetwork().sendClientEventToServer(player.getEntityWorld(), ClientEventSerializer.ClientEvent.JUMP);
+                }
             }
         }
     }
@@ -84,8 +97,10 @@ public class EventListener {
     @OnlyIn(Dist.CLIENT)
     public void onSneak(InputUpdateEvent event) {
         if (Minecraft.getInstance().player != null && Minecraft.getInstance().gameSettings.keyBindSneak.isPressed()) {
-            if (TeleportHandler.canElevate(Minecraft.getInstance().player)) {
-                TravelAnchors.getNetwork().sendClientEventToServer(Minecraft.getInstance().player.getEntityWorld(), ClientEventSerializer.ClientEvent.SNEAK);
+            if (!ClientConfig.DISABLE_ELEVATE.get()) {
+                if (TeleportHandler.canElevate(Minecraft.getInstance().player)) {
+                    TravelAnchors.getNetwork().sendClientEventToServer(Minecraft.getInstance().player.getEntityWorld(), ClientEventSerializer.ClientEvent.SNEAK);
+                }
             }
         }
     }

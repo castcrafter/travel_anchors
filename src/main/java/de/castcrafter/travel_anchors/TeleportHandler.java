@@ -50,7 +50,7 @@ public class TeleportHandler {
     public static boolean teleportPlayer(PlayerEntity player, @Nullable Pair<BlockPos, String> anchor, @Nullable Hand hand) {
         if (anchor != null) {
             if (!player.getEntityWorld().isRemote) {
-                Vector3d teleportVec = checkTeleport(player, anchor.getLeft());
+                Vector3d teleportVec = checkTeleport(player, anchor.getLeft().up());
                 if (teleportVec == null) {
                     return false;
                 }

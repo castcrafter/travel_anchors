@@ -23,6 +23,7 @@ public class ClientEventSerializer implements PacketSerializer<ClientEventSerial
     public enum ClientEvent {
         JUMP,
         EMPTY_HAND_INTERACT,
-        SNEAK
+        SNEAK,
+        JUMP_TP
     }
 }
