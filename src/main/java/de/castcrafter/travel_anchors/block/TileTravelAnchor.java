@@ -4,17 +4,26 @@ import de.castcrafter.travel_anchors.TeleportHandler;
 import de.castcrafter.travel_anchors.TravelAnchorList;
 import io.github.noeppi_noeppi.libx.mod.registration.TileEntityBase;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.data.ModelsUtil;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.model.IModelBuilder;
+import net.minecraftforge.client.model.ModelDataManager;
+import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
+import net.minecraftforge.client.model.obj.OBJModel.ModelGroup;
+import net.minecraftforge.common.model.Models;
 
 import javax.annotation.Nonnull;
 
-public class TileTravelAnchor extends TileEntityBase {
+public class TileTravelAnchor extends TileEntityBase{
 
     public static final ModelProperty<BlockState> MIMIC = new ModelProperty<>();
 

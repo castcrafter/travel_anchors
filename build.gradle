@@ -94,10 +94,14 @@ repositories {
         name = 'MelanX Maven'
         url = 'https://maven.melanx.de/'
     }
+     maven {
+        url "https://www.cursemaven.com"
+    }
+    
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.3-34.1.32'
+    minecraft 'net.minecraftforge:forge:1.16.4-35.1.13'
 
     compile fg.deobf("io.github.noeppi_noeppi.mods:LibX:1.16.3-1.0.29")
 }

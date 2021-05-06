@@ -116,7 +116,7 @@ public class BlockTravelAnchor extends BlockGUI<TileTravelAnchor, ContainerTrave
     @Nonnull
     @Override
     public BlockRenderType getRenderType(@Nonnull BlockState state) {
-        return BlockRenderType.ENTITYBLOCK_ANIMATED;
+        return BlockRenderType.MODEL;
     }
 }
 

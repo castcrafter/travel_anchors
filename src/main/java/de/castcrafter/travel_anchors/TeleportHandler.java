@@ -126,8 +126,8 @@ public class TeleportHandler {
                 || EnchantmentHelper.getEnchantmentLevel(ModEnchantments.teleportation, player.getHeldItem(hand)) >= 1;
     }
 
-    private static double getAngleRadians(Vector3d positionVec, BlockPos anchor, float yaw, float pitch) {
-        Vector3d blockVec = new Vector3d(anchor.getX() + 0.5 - positionVec.x, anchor.getY() + 1.0 - positionVec.y, anchor.getZ() + 0.5 - positionVec.z).normalize();
+    public static double getAngleRadians(Vector3d positionVec, BlockPos anchor, float yaw, float pitch) {
+        Vector3d blockVec = new Vector3d(anchor.getX() + 0.5 - positionVec.x, anchor.getY() - 1.0 - positionVec.y, anchor.getZ() + 0.5 - positionVec.z).normalize();
         Vector3d lookVec = Vector3d.fromPitchYaw(pitch, yaw).normalize();
         return Math.acos(lookVec.dotProduct(blockVec));
     }
