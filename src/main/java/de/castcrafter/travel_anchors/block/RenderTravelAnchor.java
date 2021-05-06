@@ -109,7 +109,7 @@ public class RenderTravelAnchor extends TileEntityRenderer<TileTravelAnchor> {
     @OnlyIn(Dist.CLIENT)
     private void displayClientStructurePreview(World world, TileTravelAnchor tile, float scale,MatrixStack renderStack, Vector3d playerPos) {
     	//BlockOverlayRenderHandler.getInstance().set(world.getDimensionKey(),buffer,tile,scale); //text unter ta rendern
-    	BlockOverlayRenderHandler.getInstance().renderTATest(world, renderStack, playerPos, tile,scale); //text über ta rendern
+    	BlockOverlayRenderHandler.getInstance().renderTATest(world, renderStack, playerPos, tile,scale); //text Ã¼ber ta rendern
     }
   
     public static void registerModels(final ModelRegistryEvent event) {
