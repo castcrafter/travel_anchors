@@ -1,5 +1,6 @@
 package de.castcrafter.travel_anchors.block;
 
+import de.castcrafter.travel_anchors.ModComponents;
 import de.castcrafter.travel_anchors.TravelAnchorList;
 import io.github.noeppi_noeppi.libx.mod.ModX;
 import io.github.noeppi_noeppi.libx.mod.registration.BlockGUI;
@@ -110,13 +111,13 @@ public class BlockTravelAnchor extends BlockGUI<TileTravelAnchor, ContainerTrave
     @Override
     public void onReplaced(@Nonnull BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
         super.onReplaced(state, world, pos, newState, isMoving);
-        TravelAnchorList.get(world).setAnchor(world, pos, null);
+        TravelAnchorList.get(world).setAnchor(world, pos, null, ModComponents.travelAnchor.getDefaultState());
     }
 
     @Nonnull
     @Override
     public BlockRenderType getRenderType(@Nonnull BlockState state) {
-        return BlockRenderType.MODEL;
+        return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 }
 

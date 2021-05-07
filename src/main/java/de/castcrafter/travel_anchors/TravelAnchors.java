@@ -1,11 +1,11 @@
 package de.castcrafter.travel_anchors;
 
+import de.castcrafter.travel_anchors.block.RenderTravelAnchor;
 import de.castcrafter.travel_anchors.block.ScreenTravelAnchor;
 import de.castcrafter.travel_anchors.config.ClientConfig;
 import de.castcrafter.travel_anchors.config.ServerConfig;
 import de.castcrafter.travel_anchors.network.Networking;
-import de.castcrafter.travel_anchors.render.BlockOverlayRenderHandler;
-import de.castcrafter.travel_anchors.block.RenderTravelAnchor;
+import de.castcrafter.travel_anchors.render.TravelAnchorRenderer;
 import io.github.noeppi_noeppi.libx.mod.registration.ModXRegistration;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
@@ -13,22 +13,16 @@ import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLConfig;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
-
-import com.sun.jna.Structure;
 
 @Mod("travel_anchors")
 public class TravelAnchors extends ModXRegistration {
@@ -54,21 +48,9 @@ public class TravelAnchors extends ModXRegistration {
 
         this.addRegistrationHandler(ModComponents::register);
         this.addRegistrationHandler(ModEnchantments::register);
-
-        DistExecutor.unsafeRunForDist(() -> () -> {
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(RenderTravelAnchor::registerModels);
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(RenderTravelAnchor::bakeModels);
-            
-            return null;
-        }, () -> () -> null);
         
-        
-        
-        
-
         MinecraftForge.EVENT_BUS.register(new EventListener());
-        BlockOverlayRenderHandler.getInstance().attachEventListeners(MinecraftForge.EVENT_BUS);
-        
+        MinecraftForge.EVENT_BUS.addListener(TravelAnchorRenderer::renderAnchors);
     }
 
     @Nonnull
