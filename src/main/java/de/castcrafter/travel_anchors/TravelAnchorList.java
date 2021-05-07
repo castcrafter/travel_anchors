@@ -1,5 +1,7 @@
 package de.castcrafter.travel_anchors;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.BlockPos;
@@ -38,7 +40,7 @@ public class TravelAnchorList extends WorldSavedData {
         super(name);
     }
 
-    public final HashMap<BlockPos, String> anchors = new HashMap<>();
+    public final HashMap<BlockPos, Entry> anchors = new HashMap<>();
 
     @Override
     public void read(@Nonnull CompoundNBT nbt) {
@@ -51,7 +53,7 @@ public class TravelAnchorList extends WorldSavedData {
                     BlockPos pos = new BlockPos(entryNBT.getInt("x"), entryNBT.getInt("y"), entryNBT.getInt("z")).toImmutable();
                     String name = entryNBT.getString("name");
                     if (!name.isEmpty()) {
-                        this.anchors.put(pos, entryNBT.getString("name"));
+                        this.anchors.put(pos, new Entry(entryNBT.getString("name"), entryNBT.contains("state") ? Block.getStateById(entryNBT.getInt("state")) : ModComponents.travelAnchor.getDefaultState()));
                     }
                 }
             }
@@ -62,19 +64,20 @@ public class TravelAnchorList extends WorldSavedData {
     @Override
     public CompoundNBT write(@Nonnull CompoundNBT nbt) {
         ListNBT list = new ListNBT();
-        for (Map.Entry<BlockPos, String> entry : this.anchors.entrySet()) {
+        for (Map.Entry<BlockPos, Entry> entry : this.anchors.entrySet()) {
             CompoundNBT entryNBT = new CompoundNBT();
             entryNBT.putInt("x", entry.getKey().getX());
             entryNBT.putInt("y", entry.getKey().getY());
             entryNBT.putInt("z", entry.getKey().getZ());
-            entryNBT.putString("name", entry.getValue());
+            entryNBT.putString("name", entry.getValue().name);
+            entryNBT.putInt("state", Block.getStateId(entry.getValue().state));
             list.add(entryNBT);
         }
         nbt.put("anchors", list);
         return nbt;
     }
 
-    public void setAnchor(World world, BlockPos pos, @Nullable String name) {
+    public void setAnchor(World world, BlockPos pos, @Nullable String name, @Nullable BlockState state) {
         if (!world.isRemote) {
             boolean needsUpdate = false;
             BlockPos immutablePos = pos.toImmutable();
@@ -84,9 +87,10 @@ public class TravelAnchorList extends WorldSavedData {
                     needsUpdate = true;
                 }
             } else {
-                String oldName = this.anchors.getOrDefault(immutablePos, null);
-                if (oldName == null || !oldName.equals(name)) {
-                    this.anchors.put(pos.toImmutable(), name);
+                if (state == null) state = ModComponents.travelAnchor.getDefaultState();
+                Entry oldEntry = this.anchors.getOrDefault(immutablePos, null);
+                if (oldEntry == null || !oldEntry.name.equals(name) || oldEntry.state != state) {
+                    this.anchors.put(pos.toImmutable(), new Entry(name, state));
                     needsUpdate = true;
                 }
             }
@@ -98,13 +102,29 @@ public class TravelAnchorList extends WorldSavedData {
     }
 
     public String getAnchor(BlockPos pos) {
+        Entry entry = this.getEntry(pos);
+        return entry == null ? null : entry.name;
+    }
+    
+    public Entry getEntry(BlockPos pos) {
         return this.anchors.getOrDefault(pos.toImmutable(), null);
     }
 
     public Stream<Pair<BlockPos, String>> getAnchorsAround(Vector3d pos, double maxDistanceSq) {
         return this.anchors.entrySet().stream()
                 .filter(entry -> entry.getKey().distanceSq(pos.x, pos.y, pos.z, true) < maxDistanceSq)
-                .map(entry -> Pair.of(entry.getKey(), entry.getValue()));
+                .map(entry -> Pair.of(entry.getKey(), entry.getValue().name));
+    }
+    
+    public static class Entry {
+        
+        public String name;
+        public BlockState state;
+
+        public Entry(String name, BlockState state) {
+            this.name = name;
+            this.state = state;
+        }
     }
 }
 
