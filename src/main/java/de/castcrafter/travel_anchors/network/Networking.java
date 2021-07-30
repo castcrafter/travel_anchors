@@ -3,13 +3,13 @@ package de.castcrafter.travel_anchors.network;
 import de.castcrafter.travel_anchors.TravelAnchorList;
 import io.github.noeppi_noeppi.libx.mod.ModX;
 import io.github.noeppi_noeppi.libx.network.NetworkX;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.fmllegacy.network.NetworkDirection;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 
@@ -30,29 +30,29 @@ public class Networking extends NetworkX {
         this.register(new ClientEventSerializer(), () -> ClientEventHandler::handle, NetworkDirection.PLAY_TO_SERVER);
     }
 
-    public void sendNameChange(World world, BlockPos pos, String name) {
-        if (world.isRemote) {
+    public void sendNameChange(Level level, BlockPos pos, String name) {
+        if (level.isClientSide) {
             this.instance.sendToServer(new AnchorNameChangeSerializer.AnchorNameChangeMessage(pos, name));
         }
     }
 
-    public void updateTravelAnchorList(World world, @Nullable TravelAnchorList list) {
-        if (!world.isRemote) {
+    public void updateTravelAnchorList(Level level, @Nullable TravelAnchorList list) {
+        if (!level.isClientSide) {
             if (list == null) {
-                list = TravelAnchorList.get(world);
+                list = TravelAnchorList.get(level);
             }
-            this.instance.send(PacketDistributor.DIMENSION.with(world::getDimensionKey), new AnchorListUpdateSerializer.AnchorListUpdateMessage(list.write(new CompoundNBT())));
+            this.instance.send(PacketDistributor.DIMENSION.with(level::dimension), new AnchorListUpdateSerializer.AnchorListUpdateMessage(list.save(new CompoundTag())));
         }
     }
 
-    public void updateTravelAnchorList(PlayerEntity player) {
-        if (!player.getEntityWorld().isRemote && player instanceof ServerPlayerEntity) {
-            this.instance.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new AnchorListUpdateSerializer.AnchorListUpdateMessage(TravelAnchorList.get(player.getEntityWorld()).write(new CompoundNBT())));
+    public void updateTravelAnchorList(Player player) {
+        if (!player.getCommandSenderWorld().isClientSide && player instanceof ServerPlayer) {
+            this.instance.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new AnchorListUpdateSerializer.AnchorListUpdateMessage(TravelAnchorList.get(player.getCommandSenderWorld()).save(new CompoundTag())));
         }
     }
 
-    public void sendClientEventToServer(World world, ClientEventSerializer.ClientEvent event) {
-        if (world.isRemote) {
+    public void sendClientEventToServer(Level level, ClientEventSerializer.ClientEvent event) {
+        if (level.isClientSide) {
             this.instance.sendToServer(event);
         }
     }

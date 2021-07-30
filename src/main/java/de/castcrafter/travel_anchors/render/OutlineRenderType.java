@@ -1,6 +1,8 @@
 package de.castcrafter.travel_anchors.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
 
 import javax.annotation.Nonnull;
@@ -14,7 +16,7 @@ public class OutlineRenderType extends RenderType {
     private final RenderType parent;
     
     private OutlineRenderType(RenderType parent) {
-        super("Outline" + parent.name, parent.getVertexFormat(), parent.getDrawMode(), parent.getBufferSize(), parent.isUseDelegate(), parent.needsSorting, parent::setupRenderState, parent::clearRenderState);
+        super("Outline" + parent.name, parent.format(), parent.mode(), parent.bufferSize(), parent.affectsCrumbling(), parent.sortOnUpload, parent::setupRenderState, parent::clearRenderState);
         this.parent = parent;
     }
     
@@ -27,14 +29,15 @@ public class OutlineRenderType extends RenderType {
     @Override
     public void setupRenderState() {
         this.parent.setupRenderState();
-        if (Minecraft.getInstance().worldRenderer.getEntityOutlineFramebuffer() != null) {
-            Minecraft.getInstance().worldRenderer.getEntityOutlineFramebuffer().bindFramebuffer(false);
+        if (Minecraft.getInstance().levelRenderer.entityTarget() != null) {
+            //noinspection ConstantConditions
+            Minecraft.getInstance().levelRenderer.entityTarget().bindWrite(false);
         }
     }
 
     @Override
     public void clearRenderState() {
-        Minecraft.getInstance().getFramebuffer().bindFramebuffer(false);
+        Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
         this.parent.clearRenderState();
     }
     

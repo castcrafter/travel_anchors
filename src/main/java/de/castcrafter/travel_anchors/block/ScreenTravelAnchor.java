@@ -1,94 +1,93 @@
 package de.castcrafter.travel_anchors.block;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.castcrafter.travel_anchors.TravelAnchors;
+import io.github.noeppi_noeppi.libx.render.RenderHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.resources.language.I18n;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ScreenTravelAnchor extends ContainerScreen<ContainerTravelAnchor> {
+public class ScreenTravelAnchor extends AbstractContainerScreen<MenuTravelAnchor> {
 
     private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(TravelAnchors.getInstance().modid, "textures/gui/travel_anchor.png");
-    private TextFieldWidget textFieldWidget;
+    private EditBox textFieldWidget;
 
-    public ScreenTravelAnchor(ContainerTravelAnchor screenContainer, PlayerInventory inv, ITextComponent titleIn) {
-        super(screenContainer, inv, titleIn);
+    public ScreenTravelAnchor(MenuTravelAnchor screenMenu, Inventory inv, Component titleIn) {
+        super(screenMenu, inv, titleIn);
     }
 
     @Override
     public void init() {
         super.init();
-        this.getMinecraft().keyboardListener.enableRepeatEvents(true);
-        this.textFieldWidget = new TextFieldWidget(this.font, this.width / 2 - 50, this.height / 2 - 63, 100, 15, new TranslationTextComponent("screen.travel_anchors.search"));
-        this.textFieldWidget.setMaxStringLength(32767);
+        this.getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
+        this.textFieldWidget = new EditBox(this.font, this.width / 2 - 50, this.height / 2 - 63, 100, 15, new TranslatableComponent("screen.travel_anchors.search"));
+        this.textFieldWidget.setMaxLength(32767);
         this.textFieldWidget.changeFocus(true);
-        this.textFieldWidget.setText(this.container.tile.getName());
+        this.textFieldWidget.setValue(this.menu.getBlockEntity().getName());
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(@Nonnull MatrixStack matrixStack, float partialTicks, int x, int y) {
-        //noinspection deprecation
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        //noinspection ConstantConditions
-        this.minecraft.getTextureManager().bindTexture(GUI_TEXTURE);
-        this.blit(matrixStack, (this.width - this.xSize) / 2, (this.height - this.ySize) / 2, 0, 0, this.xSize, this.ySize);
+    protected void renderBg(@Nonnull PoseStack poseStack, float partialTicks, int mouseX, int mouseY) {
+        RenderHelper.resetColor();
+        RenderSystem.setShaderTexture(0, GUI_TEXTURE);
+        this.blit(poseStack, (this.width - this.imageWidth) / 2, (this.height - this.imageHeight) / 2, 0, 0, this.imageWidth, this.imageHeight);
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(@Nonnull MatrixStack matrixStack, int x, int y) {
+    protected void renderLabels(@Nonnull PoseStack poseStack, int mouseX, int mouseY) {
         String title = this.title.getString();
-        this.font.drawString(matrixStack, title, (float) (this.xSize / 2 - this.font.getStringWidth(title) / 2), 6.0F, 0x404040);
-        boolean empty = this.textFieldWidget.getText().trim().isEmpty();
-        this.font.drawString(matrixStack, empty ? I18n.format("screen.travel_anchors.nameless") : this.playerInventory.getDisplayName().getString(), 8, (float) (this.ySize - 126), empty ? 0xB31616 : 0x404040);
+        this.font.draw(poseStack, title, (float) (this.imageWidth / 2 - this.font.width(title) / 2), 6.0F, 0x404040);
+        boolean empty = this.textFieldWidget.getValue().trim().isEmpty();
+        this.font.draw(poseStack, empty ? I18n.get("screen.travel_anchors.nameless") : this.playerInventoryTitle.getString(), 8, (float) (this.imageHeight - 126), empty ? 0xB31616 : 0x404040);
     }
 
     @Override
-    public void render(@Nonnull MatrixStack ms, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(ms);
-        super.render(ms, mouseX, mouseY, partialTicks);
-        this.renderHoveredTooltip(ms, mouseX, mouseY);
-        this.textFieldWidget.render(ms, mouseX, mouseY, partialTicks);
+    public void render(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(matrixStack);
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
+        this.renderTooltip(matrixStack, mouseX, mouseY);
+        this.textFieldWidget.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
     @Override
     @Nullable
-    public IGuiEventListener getListener() {
+    public GuiEventListener getFocused() {
         return this.textFieldWidget;
     }
 
     @Override
-    public void onClose() {
-        super.onClose();
-        this.getMinecraft().keyboardListener.enableRepeatEvents(false);
-        if (Minecraft.getInstance().world != null) {
-            TravelAnchors.getNetwork().sendNameChange(this.container.getWorld(), this.container.getPos(), this.textFieldWidget.getText().trim());
+    public void removed() {
+        super.removed();
+        this.getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
+        if (Minecraft.getInstance().level != null) {
+            TravelAnchors.getNetwork().sendNameChange(this.menu.getLevel(), this.menu.getPos(), this.textFieldWidget.getValue().trim());
         }
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        InputMappings.Input mapping = InputMappings.getInputByCode(keyCode, scanCode);
+        InputConstants.Key mapping = InputConstants.getKey(keyCode, scanCode);
         //noinspection ConstantConditions
-        if (keyCode != 256 && (this.minecraft.gameSettings.keyBindInventory.isActiveAndMatches(mapping)
-                || this.minecraft.gameSettings.keyBindDrop.isActiveAndMatches(mapping))) {
+        if (keyCode != 256 && (this.minecraft.options.keyInventory.isActiveAndMatches(mapping)
+                || this.minecraft.options.keyDrop.isActiveAndMatches(mapping))) {
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
-    public void tick() {
+    protected void containerTick() {
         this.textFieldWidget.tick();
     }
 }

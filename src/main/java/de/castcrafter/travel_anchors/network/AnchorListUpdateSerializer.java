@@ -1,8 +1,8 @@
 package de.castcrafter.travel_anchors.network;
 
 import io.github.noeppi_noeppi.libx.network.PacketSerializer;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class AnchorListUpdateSerializer implements PacketSerializer<AnchorListUpdateSerializer.AnchorListUpdateMessage> {
 
@@ -12,13 +12,13 @@ public class AnchorListUpdateSerializer implements PacketSerializer<AnchorListUp
     }
 
     @Override
-    public void encode(AnchorListUpdateMessage msg, PacketBuffer buffer) {
-        buffer.writeCompoundTag(msg.nbt);
+    public void encode(AnchorListUpdateMessage msg, FriendlyByteBuf buffer) {
+        buffer.writeNbt(msg.nbt);
     }
 
     @Override
-    public AnchorListUpdateMessage decode(PacketBuffer buffer) {
-        return new AnchorListUpdateMessage(buffer.readCompoundTag());
+    public AnchorListUpdateMessage decode(FriendlyByteBuf buffer) {
+        return new AnchorListUpdateMessage(buffer.readNbt());
     }
 
     public static class AnchorListUpdateMessage {
@@ -27,10 +27,10 @@ public class AnchorListUpdateSerializer implements PacketSerializer<AnchorListUp
 
         }
 
-        public AnchorListUpdateMessage(CompoundNBT nbt) {
+        public AnchorListUpdateMessage(CompoundTag nbt) {
             this.nbt = nbt;
         }
 
-        public CompoundNBT nbt;
+        public CompoundTag nbt;
     }
 }

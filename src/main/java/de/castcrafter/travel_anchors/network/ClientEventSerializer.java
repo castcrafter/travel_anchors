@@ -1,7 +1,7 @@
 package de.castcrafter.travel_anchors.network;
 
 import io.github.noeppi_noeppi.libx.network.PacketSerializer;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class ClientEventSerializer implements PacketSerializer<ClientEventSerializer.ClientEvent> {
 
@@ -11,13 +11,13 @@ public class ClientEventSerializer implements PacketSerializer<ClientEventSerial
     }
 
     @Override
-    public void encode(ClientEvent msg, PacketBuffer buffer) {
-        buffer.writeString(msg.name());
+    public void encode(ClientEvent msg, FriendlyByteBuf buffer) {
+        buffer.writeUtf(msg.name());
     }
 
     @Override
-    public ClientEvent decode(PacketBuffer buffer) {
-        return ClientEvent.valueOf(buffer.readString(32767));
+    public ClientEvent decode(FriendlyByteBuf buffer) {
+        return ClientEvent.valueOf(buffer.readUtf(32767));
     }
 
     public enum ClientEvent {

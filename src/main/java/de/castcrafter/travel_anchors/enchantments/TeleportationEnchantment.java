@@ -1,13 +1,13 @@
 package de.castcrafter.travel_anchors.enchantments;
 
 import de.castcrafter.travel_anchors.ModEnchantments;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.entity.EquipmentSlot;
 
 public class TeleportationEnchantment extends Enchantment {
 
     public TeleportationEnchantment() {
-        super(Enchantment.Rarity.RARE, ModEnchantments.TELEPORTABLE_NO_STAFF, new EquipmentSlotType[]{EquipmentSlotType.MAINHAND, EquipmentSlotType.OFFHAND});
+        super(Enchantment.Rarity.RARE, ModEnchantments.TELEPORTABLE_NO_STAFF, new EquipmentSlot[]{EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND});
     }
 
     @Override

@@ -4,10 +4,10 @@ import de.castcrafter.travel_anchors.config.ClientConfig;
 import de.castcrafter.travel_anchors.network.ClientEventSerializer;
 import io.github.noeppi_noeppi.libx.event.ClickBlockEmptyHandEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputUpdateEvent;
@@ -31,19 +31,19 @@ public class EventListener {
 
     @SubscribeEvent
     public void onRightClick(PlayerInteractEvent.RightClickItem event) {
-        World world = event.getWorld();
-        PlayerEntity player = event.getPlayer();
+        Level level = event.getWorld();
+        Player player = event.getPlayer();
         if (TeleportHandler.canPlayerTeleport(player, event.getHand()) && !event.getItemStack().isEmpty()) {
-            if (player.isSneaking() && TeleportHandler.canItemTeleport(player, event.getHand())) {
-                if (TeleportHandler.shortTeleport(world, player, event.getHand())) {
+            if (player.isShiftKeyDown() && TeleportHandler.canItemTeleport(player, event.getHand())) {
+                if (TeleportHandler.shortTeleport(level, player, event.getHand())) {
                     event.setResult(Event.Result.DENY);
-                    event.setCancellationResult(ActionResultType.SUCCESS);
-                    player.getCooldownTracker().setCooldown(event.getItemStack().getItem(), 30);
+                    event.setCancellationResult(InteractionResult.SUCCESS);
+                    player.getCooldowns().addCooldown(event.getItemStack().getItem(), 30);
                 }
             } else {
-                if (TeleportHandler.anchorTeleport(world, player, player.getPosition().toImmutable().down(), event.getHand())) {
+                if (TeleportHandler.anchorTeleport(level, player, player.blockPosition().immutable().below(), event.getHand())) {
                     event.setResult(Event.Result.DENY);
-                    event.setCancellationResult(ActionResultType.SUCCESS);
+                    event.setCancellationResult(InteractionResult.SUCCESS);
                 }
             }
         }
@@ -51,25 +51,25 @@ public class EventListener {
 
     @SubscribeEvent
     public void onEmptyClick(PlayerInteractEvent.RightClickEmpty event) {
-        World world = event.getWorld();
-        PlayerEntity player = event.getPlayer();
-        if (TeleportHandler.canBlockTeleport(player) && !player.isSneaking() && event.getHand() == Hand.MAIN_HAND && event.getPlayer().getHeldItem(Hand.OFF_HAND).isEmpty() && event.getItemStack().isEmpty()) {
-            TravelAnchors.getNetwork().sendClientEventToServer(world, ClientEventSerializer.ClientEvent.EMPTY_HAND_INTERACT);
+        Level level = event.getWorld();
+        Player player = event.getPlayer();
+        if (TeleportHandler.canBlockTeleport(player) && !player.isShiftKeyDown() && event.getHand() == InteractionHand.MAIN_HAND && event.getPlayer().getItemInHand(InteractionHand.OFF_HAND).isEmpty() && event.getItemStack().isEmpty()) {
+            TravelAnchors.getNetwork().sendClientEventToServer(level, ClientEventSerializer.ClientEvent.EMPTY_HAND_INTERACT);
             event.setResult(Event.Result.DENY);
-            event.setCancellationResult(ActionResultType.SUCCESS);
+            event.setCancellationResult(InteractionResult.SUCCESS);
         }
     }
     
     @SubscribeEvent
     public void emptyBlockClick(ClickBlockEmptyHandEvent event) {
-        if (event.getHand() == Hand.MAIN_HAND) {
+        if (event.getHand() == InteractionHand.MAIN_HAND) {
             // Empty offhand does not count. In that case the main hand will either produce
             // this event or PlayerInteractEvent.RightClickItem
             if (TeleportHandler.canPlayerTeleport(event.getPlayer(), event.getHand())) {
-                if (!event.getPlayer().isSneaking()) {
-                    if (TeleportHandler.anchorTeleport(event.getWorld(), event.getPlayer(), event.getPlayer().getPosition().toImmutable().down(), event.getHand())) {
+                if (!event.getPlayer().isShiftKeyDown()) {
+                    if (TeleportHandler.anchorTeleport(event.getLevel(), event.getPlayer(), event.getPlayer().blockPosition().immutable().below(), event.getHand())) {
                         event.setCanceled(true);
-                        event.setCancellationResult(ActionResultType.SUCCESS);
+                        event.setCancellationResult(InteractionResult.SUCCESS);
                     }
                 }
             }
@@ -79,15 +79,14 @@ public class EventListener {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void onJump(LivingEvent.LivingJumpEvent event) {
-        if (event.getEntityLiving() instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) event.getEntityLiving();
-            if (ClientConfig.DISABLE_ELEVATE.get()) {
-                if (TeleportHandler.canBlockTeleport(player) && !player.isSneaking()) {
-                    TravelAnchors.getNetwork().sendClientEventToServer(player.getEntityWorld(), ClientEventSerializer.ClientEvent.JUMP_TP);
+        if (event.getEntityLiving() instanceof Player player) {
+            if (ClientConfig.disable_elevation) {
+                if (TeleportHandler.canBlockTeleport(player) && !player.isShiftKeyDown()) {
+                    TravelAnchors.getNetwork().sendClientEventToServer(player.getCommandSenderWorld(), ClientEventSerializer.ClientEvent.JUMP_TP);
                 }
             } else {
-                if (TeleportHandler.canElevate(player) && !player.isSneaking()) {
-                    TravelAnchors.getNetwork().sendClientEventToServer(player.getEntityWorld(), ClientEventSerializer.ClientEvent.JUMP);
+                if (TeleportHandler.canElevate(player) && !player.isShiftKeyDown()) {
+                    TravelAnchors.getNetwork().sendClientEventToServer(player.getCommandSenderWorld(), ClientEventSerializer.ClientEvent.JUMP);
                 }
             }
         }
@@ -96,10 +95,10 @@ public class EventListener {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void onSneak(InputUpdateEvent event) {
-        if (Minecraft.getInstance().player != null && Minecraft.getInstance().gameSettings.keyBindSneak.isPressed()) {
-            if (!ClientConfig.DISABLE_ELEVATE.get()) {
+        if (Minecraft.getInstance().player != null && Minecraft.getInstance().options.keyShift.consumeClick()) {
+            if (!ClientConfig.disable_elevation) {
                 if (TeleportHandler.canElevate(Minecraft.getInstance().player)) {
-                    TravelAnchors.getNetwork().sendClientEventToServer(Minecraft.getInstance().player.getEntityWorld(), ClientEventSerializer.ClientEvent.SNEAK);
+                    TravelAnchors.getNetwork().sendClientEventToServer(Minecraft.getInstance().player.getCommandSenderWorld(), ClientEventSerializer.ClientEvent.SNEAK);
                 }
             }
         }

@@ -1,22 +1,20 @@
 package de.castcrafter.travel_anchors;
 
-import de.castcrafter.travel_anchors.config.ServerConfig;
-import net.minecraft.block.BlockState;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.play.server.STitlePacket;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import de.castcrafter.travel_anchors.config.CommonConfig;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.EnderTeleportEvent;
+import net.minecraftforge.event.entity.EntityTeleportEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -24,139 +22,139 @@ import java.util.Optional;
 
 public class TeleportHandler {
 
-    public static boolean anchorTeleport(World world, PlayerEntity player, @Nullable BlockPos except, @Nullable Hand hand) {
-        Pair<BlockPos, String> anchor = getAnchorToTeleport(world, player, except);
+    public static boolean anchorTeleport(Level level, Player player, @Nullable BlockPos except, @Nullable InteractionHand hand) {
+        Pair<BlockPos, String> anchor = getAnchorToTeleport(level, player, except);
         return teleportPlayer(player, anchor, hand);
     }
 
-    public static Pair<BlockPos, String> getAnchorToTeleport(World world, PlayerEntity player, @Nullable BlockPos except) {
-        if (!player.isSneaking()) {
+    public static Pair<BlockPos, String> getAnchorToTeleport(Level level, Player player, @Nullable BlockPos except) {
+        if (!player.isShiftKeyDown()) {
             double maxDistance = getMaxDistance(player);
-            Vector3d positionVec = player.getPositionVec().add(0, player.getEyeHeight(), 0);
-            Optional<Pair<BlockPos, String>> anchor = TravelAnchorList.get(world).getAnchorsAround(player.getPositionVec(), Math.pow(maxDistance, 2))
+            Vec3 positionVec = player.position().add(0, player.getEyeHeight(), 0);
+            Optional<Pair<BlockPos, String>> anchor = TravelAnchorList.get(level).getAnchorsAround(player.position(), Math.pow(maxDistance, 2))
                     .filter(pair -> except == null || !except.equals(pair.getLeft()))
                     .min((p1, p2) -> {
-                        double angle1 = Math.abs(getAngleRadians(positionVec, p1.getLeft(), player.rotationYaw, player.rotationPitch));
-                        double angle2 = Math.abs(getAngleRadians(positionVec, p2.getLeft(), player.rotationYaw, player.rotationPitch));
+                        double angle1 = Math.abs(getAngleRadians(positionVec, p1.getLeft(), player.getYRot(), player.getXRot()));
+                        double angle2 = Math.abs(getAngleRadians(positionVec, p2.getLeft(), player.getYRot(), player.getXRot()));
                         return Double.compare(angle1, angle2);
-                    }).filter(p -> Math.abs(getAngleRadians(positionVec, p.getLeft(), player.rotationYaw, player.rotationPitch)) <= Math.toRadians(ServerConfig.MAX_ANGLE.get()))
-                    .filter(p -> canTeleportTo(world, p.getLeft()));
+                    }).filter(p -> Math.abs(getAngleRadians(positionVec, p.getLeft(), player.getYRot(), player.getXRot())) <= Math.toRadians(CommonConfig.max_angle))
+                    .filter(p -> canTeleportTo(level, p.getLeft()));
             return anchor.orElse(null);
         } else {
             return null;
         }
     }
     
-    public static boolean teleportPlayer(PlayerEntity player, @Nullable Pair<BlockPos, String> anchor, @Nullable Hand hand) {
+    public static boolean teleportPlayer(Player player, @Nullable Pair<BlockPos, String> anchor, @Nullable InteractionHand hand) {
         if (anchor != null) {
-            if (!player.getEntityWorld().isRemote) {
-                Vector3d teleportVec = checkTeleport(player, anchor.getLeft().up());
+            if (!player.getCommandSenderWorld().isClientSide) {
+                Vec3 teleportVec = checkTeleport(player, anchor.getLeft().above());
                 if (teleportVec == null) {
                     return false;
                 }
-                player.setPositionAndUpdate(teleportVec.getX(), teleportVec.getY(), teleportVec.getZ());
+                player.teleportTo(teleportVec.x(), teleportVec.y(), teleportVec.z());
             }
             player.fallDistance = 0;
             if (hand != null) {
                 player.swing(hand, true);
             }
-            player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1F, 1F);
-            if (player instanceof ServerPlayerEntity) {
-                ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.tp.success", anchor.getRight()), 10, 60, 10));
+            player.playNotifySound(SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1F, 1F);
+            if (!player.level.isClientSide) {
+                player.displayClientMessage(new TranslatableComponent("travel_anchors.tp.success", anchor.getRight()), true);
             }
             return true;
         } else {
-            if (player instanceof ServerPlayerEntity) {
-                ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.tp.fail"), 10, 60, 10));
+            if (!player.level.isClientSide) {
+                player.displayClientMessage(new TranslatableComponent("travel_anchors.tp.fail"), true);
             }
             return false;
         }
     }
 
-    public static boolean shortTeleport(World world, PlayerEntity player, Hand hand) {
-        Vector3d targetVec = player.getPositionVec().add(0, player.getEyeHeight(), 0);
-        Vector3d lookVec = player.getLookVec();
+    public static boolean shortTeleport(Level level, Player player, InteractionHand hand) {
+        Vec3 targetVec = player.position().add(0, player.getEyeHeight(), 0);
+        Vec3 lookVec = player.getLookAngle();
         BlockPos target = null;
         for (double i = 7; i >= 2; i -= 0.5) {
-            Vector3d v3d = targetVec.add(lookVec.mul(i, i, i));
+            Vec3 v3d = targetVec.add(lookVec.multiply(i, i, i));
             target = new BlockPos(Math.round(v3d.x), Math.round(v3d.y), Math.round(v3d.z));
-            if (canTeleportTo(world, target.down())) { //to use the same check as the anchors use the position below
+            if (canTeleportTo(level, target.below())) { //to use the same check as the anchors use the position below
                 break;
             } else {
                 target = null;
             }
         }
         if (target != null) {
-            if (!player.getEntityWorld().isRemote) {
-                Vector3d teleportVec = checkTeleport(player, target);
+            if (!player.getCommandSenderWorld().isClientSide) {
+                Vec3 teleportVec = checkTeleport(player, target);
                 if (teleportVec == null) {
                     return false;
                 }
-                player.setPositionAndUpdate(teleportVec.getX(), teleportVec.getY(), teleportVec.getZ());
+                player.teleportTo(teleportVec.x(), teleportVec.y(), teleportVec.z());
             }
             player.fallDistance = 0;
             player.swing(hand, true);
-            player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1F, 1F);
+            player.playNotifySound(SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1F, 1F);
             return true;
         } else {
-            if (player instanceof ServerPlayerEntity) {
-                ((ServerPlayerEntity) player).connection.sendPacket(new STitlePacket(STitlePacket.Type.ACTIONBAR, new TranslationTextComponent("travel_anchors.hop.fail"), 10, 60, 10));
+            if (!player.level.isClientSide) {
+                player.displayClientMessage(new TranslatableComponent("travel_anchors.hop.fail"), true);
             }
             return false;
         }
     }
 
-    public static boolean canTeleportTo(IBlockReader world, BlockPos target) {
-        return !world.getBlockState(target.toImmutable().up(1)).isSolid()
-                && !world.getBlockState(target.toImmutable().up(2)).isSolid()
+    public static boolean canTeleportTo(BlockGetter level, BlockPos target) {
+        return !level.getBlockState(target.immutable().above(1)).canOcclude()
+                && !level.getBlockState(target.immutable().above(2)).canOcclude()
                 && target.getY() > 0;
     }
 
-    public static boolean canPlayerTeleport(PlayerEntity player, Hand hand) {
+    public static boolean canPlayerTeleport(Player player, InteractionHand hand) {
         return canItemTeleport(player, hand) || canBlockTeleport(player);
     }
 
-    public static boolean canBlockTeleport(PlayerEntity player) {
-        return (player.getEntityWorld().getBlockState(player.getPosition().toImmutable().down()).getBlock() == ModComponents.travelAnchor
-                && !player.isSneaking());
+    public static boolean canBlockTeleport(Player player) {
+        return (player.getCommandSenderWorld().getBlockState(player.blockPosition().immutable().below()).getBlock() == ModComponents.travelAnchor
+                && !player.isShiftKeyDown());
     }
 
-    public static boolean canItemTeleport(PlayerEntity player, Hand hand) {
-        return player.getHeldItem(hand).getItem() == ModComponents.travelStaff
-                || EnchantmentHelper.getEnchantmentLevel(ModEnchantments.teleportation, player.getHeldItem(hand)) >= 1;
+    public static boolean canItemTeleport(Player player, InteractionHand hand) {
+        return player.getItemInHand(hand).getItem() == ModComponents.travelStaff
+                || EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.teleportation, player.getItemInHand(hand)) >= 1;
     }
 
-    private static double getAngleRadians(Vector3d positionVec, BlockPos anchor, float yaw, float pitch) {
-        Vector3d blockVec = new Vector3d(anchor.getX() + 0.5 - positionVec.x, anchor.getY() + 1.0 - positionVec.y, anchor.getZ() + 0.5 - positionVec.z).normalize();
-        Vector3d lookVec = Vector3d.fromPitchYaw(pitch, yaw).normalize();
-        return Math.acos(lookVec.dotProduct(blockVec));
+    private static double getAngleRadians(Vec3 positionVec, BlockPos anchor, float yRot, float xRot) {
+        Vec3 blockVec = new Vec3(anchor.getX() + 0.5 - positionVec.x, anchor.getY() + 1.0 - positionVec.y, anchor.getZ() + 0.5 - positionVec.z).normalize();
+        Vec3 lookVec = Vec3.directionFromRotation(xRot, yRot).normalize();
+        return Math.acos(lookVec.dot(blockVec));
     }
 
-    public static double getMaxDistance(PlayerEntity player) {
-        int mainHandLevel = EnchantmentHelper.getEnchantmentLevel(ModEnchantments.range, player.getHeldItem(Hand.MAIN_HAND));
-        int offHandLevel = EnchantmentHelper.getEnchantmentLevel(ModEnchantments.range, player.getHeldItem(Hand.OFF_HAND));
+    public static double getMaxDistance(Player player) {
+        int mainHandLevel = EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.range, player.getItemInHand(InteractionHand.MAIN_HAND));
+        int offHandLevel = EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.range, player.getItemInHand(InteractionHand.OFF_HAND));
         int lvl = Math.max(mainHandLevel, offHandLevel);
-        return ServerConfig.MAX_DISTANCE.get() * (1 + (lvl / 2d));
+        return CommonConfig.max_distance * (1 + (lvl / 2d));
     }
     
-    public static boolean canElevate(PlayerEntity player) {
-        return player.getEntityWorld().getBlockState(player.getPosition().toImmutable().down()).getBlock() == ModComponents.travelAnchor;
+    public static boolean canElevate(Player player) {
+        return player.getCommandSenderWorld().getBlockState(player.blockPosition().immutable().below()).getBlock() == ModComponents.travelAnchor;
     }
     
-    public static boolean elevateUp(PlayerEntity player) {
+    public static boolean elevateUp(Player player) {
         if (!canElevate(player)) {
             return false;
         }
-        World world = player.getEntityWorld();
-        BlockPos.Mutable searchPos = player.getPosition().toImmutable().toMutable();
-        while (!World.isOutsideBuildHeight(searchPos) && (world.getBlockState(searchPos).getBlock() != ModComponents.travelAnchor || !canTeleportTo(world, searchPos))) {
+        Level level = player.getCommandSenderWorld();
+        BlockPos.MutableBlockPos searchPos = player.blockPosition().immutable().mutable();
+        while (!level.isOutsideBuildHeight(searchPos) && (level.getBlockState(searchPos).getBlock() != ModComponents.travelAnchor || !canTeleportTo(level, searchPos))) {
             searchPos.move(Direction.UP);
         }
-        BlockState state = world.getBlockState(searchPos);
+        BlockState state = level.getBlockState(searchPos);
         Pair<BlockPos, String> anchor = null;
-        if (state.getBlock() == ModComponents.travelAnchor && canTeleportTo(world, searchPos)) {
-            BlockPos target = searchPos.toImmutable();
-            String name = ModComponents.travelAnchor.getTile(world, target).getName();
+        if (state.getBlock() == ModComponents.travelAnchor && canTeleportTo(level, searchPos)) {
+            BlockPos target = searchPos.immutable();
+            String name = ModComponents.travelAnchor.getBlockEntity(level, target).getName();
             if (!name.isEmpty()) {
                 anchor = Pair.of(target, name);
             }
@@ -164,20 +162,20 @@ public class TeleportHandler {
         return teleportPlayer(player, anchor, null);
     }
     
-    public static boolean elevateDown(PlayerEntity player) {
+    public static boolean elevateDown(Player player) {
         if (!canElevate(player)) {
             return false;
         }
-        World world = player.getEntityWorld();
-        BlockPos.Mutable searchPos = player.getPosition().toImmutable().down(2).toMutable();
-        while (!World.isOutsideBuildHeight(searchPos) && (world.getBlockState(searchPos).getBlock() != ModComponents.travelAnchor || !canTeleportTo(world, searchPos))) {
+        Level level = player.getCommandSenderWorld();
+        BlockPos.MutableBlockPos searchPos = player.blockPosition().immutable().below(2).mutable();
+        while (!level.isOutsideBuildHeight(searchPos) && (level.getBlockState(searchPos).getBlock() != ModComponents.travelAnchor || !canTeleportTo(level, searchPos))) {
             searchPos.move(Direction.DOWN);
         }
-        BlockState state = world.getBlockState(searchPos);
+        BlockState state = level.getBlockState(searchPos);
         Pair<BlockPos, String> anchor = null;
-        if (state.getBlock() == ModComponents.travelAnchor && canTeleportTo(world, searchPos)) {
-            BlockPos target = searchPos.toImmutable();
-            String name = ModComponents.travelAnchor.getTile(world, target).getName();
+        if (state.getBlock() == ModComponents.travelAnchor && canTeleportTo(level, searchPos)) {
+            BlockPos target = searchPos.immutable();
+            String name = ModComponents.travelAnchor.getBlockEntity(level, target).getName();
             if (!name.isEmpty()) {
                 anchor = Pair.of(target, name);
             }
@@ -186,11 +184,11 @@ public class TeleportHandler {
     }
     
     @Nullable
-    private static Vector3d checkTeleport(PlayerEntity player, BlockPos target) {
-        EnderTeleportEvent event = new EnderTeleportEvent(player, target.getX() + 0.5, target.getY(), target.getZ() + 0.5, 0);
+    private static Vec3 checkTeleport(Player player, BlockPos target) {
+        EntityTeleportEvent event = new EntityTeleportEvent(player, target.getX() + 0.5, target.getY(), target.getZ() + 0.5);
         if (MinecraftForge.EVENT_BUS.post(event)) {
             return null;
         }
-        return new Vector3d(event.getTargetX(), event.getTargetY(), event.getTargetZ());
+        return new Vec3(event.getTargetX(), event.getTargetY(), event.getTargetZ());
     }
 }

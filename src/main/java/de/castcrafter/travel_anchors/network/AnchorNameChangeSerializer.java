@@ -1,8 +1,8 @@
 package de.castcrafter.travel_anchors.network;
 
 import io.github.noeppi_noeppi.libx.network.PacketSerializer;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 
 public class AnchorNameChangeSerializer implements PacketSerializer<AnchorNameChangeSerializer.AnchorNameChangeMessage> {
 
@@ -12,14 +12,14 @@ public class AnchorNameChangeSerializer implements PacketSerializer<AnchorNameCh
     }
 
     @Override
-    public void encode(AnchorNameChangeMessage msg, PacketBuffer buffer) {
+    public void encode(AnchorNameChangeMessage msg, FriendlyByteBuf buffer) {
         buffer.writeBlockPos(msg.pos);
-        buffer.writeString(msg.name);
+        buffer.writeUtf(msg.name);
     }
 
     @Override
-    public AnchorNameChangeMessage decode(PacketBuffer buffer) {
-        return new AnchorNameChangeMessage(buffer.readBlockPos(), buffer.readString(32767));
+    public AnchorNameChangeMessage decode(FriendlyByteBuf buffer) {
+        return new AnchorNameChangeMessage(buffer.readBlockPos(), buffer.readUtf(32767));
     }
 
     public static class AnchorNameChangeMessage {

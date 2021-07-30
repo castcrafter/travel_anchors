@@ -1,9 +1,9 @@
 package de.castcrafter.travel_anchors.network;
 
 import de.castcrafter.travel_anchors.block.TileTravelAnchor;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -13,13 +13,13 @@ public class AnchorNameChangeHandler {
         ctx.get().enqueueWork(() -> {
             if (ctx.get().getSender() != null) {
                 //noinspection ConstantConditions
-                ServerWorld world = ctx.get().getSender().getServerWorld();
+                ServerLevel level = ctx.get().getSender().getLevel();
                 //noinspection deprecation
-                if (world.isBlockLoaded(msg.pos)) {
-                    TileEntity te = world.getTileEntity(msg.pos);
-                    if (te instanceof TileTravelAnchor) {
-                        ((TileTravelAnchor) te).setName(msg.name);
-                        te.markDirty();
+                if (level.hasChunkAt(msg.pos)) {
+                    BlockEntity be = level.getBlockEntity(msg.pos);
+                    if (be instanceof TileTravelAnchor) {
+                        ((TileTravelAnchor) be).setName(msg.name);
+                        be.setChanged();
                     }
                 }
             }

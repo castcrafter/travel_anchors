@@ -3,121 +3,142 @@ package de.castcrafter.travel_anchors.block;
 import de.castcrafter.travel_anchors.ModComponents;
 import de.castcrafter.travel_anchors.TravelAnchorList;
 import io.github.noeppi_noeppi.libx.mod.ModX;
-import io.github.noeppi_noeppi.libx.mod.registration.BlockGUI;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import io.github.noeppi_noeppi.libx.base.tile.BlockMenu;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 
-@SuppressWarnings("deprecation")
-public class BlockTravelAnchor extends BlockGUI<TileTravelAnchor, ContainerTravelAnchor> {
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-    private static final VoxelShape SHAPE = VoxelShapes.create(0.01, 0.01, 0.01, 0.99, 0.99, 0.99);
+public class BlockTravelAnchor extends BlockMenu<TileTravelAnchor, MenuTravelAnchor> {
 
-    public BlockTravelAnchor(ModX mod, Class<TileTravelAnchor> teClass, ContainerType<ContainerTravelAnchor> container, Properties properties) {
-        super(mod, teClass, container, properties);
+    private static final VoxelShape SHAPE = Shapes.box(0.01, 0.01, 0.01, 0.99, 0.99, 0.99);
+
+    public BlockTravelAnchor(ModX mod, Class<TileTravelAnchor> teClass, MenuType<MenuTravelAnchor> menu, Properties properties) {
+        super(mod, teClass, menu, properties);
     }
 
-    public BlockTravelAnchor(ModX mod, Class<TileTravelAnchor> teClass, ContainerType<ContainerTravelAnchor> container, Properties properties, Item.Properties itemProperties) {
-        super(mod, teClass, container, properties, itemProperties);
+    public BlockTravelAnchor(ModX mod, Class<TileTravelAnchor> teClass, MenuType<MenuTravelAnchor> menu, Properties properties, Item.Properties itemProperties) {
+        super(mod, teClass, menu, properties, itemProperties);
     }
 
     @Override
-    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
-        TileEntity tile = world.getTileEntity(pos);
+    @OnlyIn(Dist.CLIENT)
+    public void registerClient(ResourceLocation id, Consumer<Runnable> defer) {
+        ItemBlockRenderTypes.setRenderLayer(ModComponents.travelAnchor, RenderType.cutoutMipped());
+        MenuScreens.register(ModComponents.travelAnchor.menu, ScreenTravelAnchor::new);
+        BlockEntityRenderers.register(ModComponents.travelAnchor.getBlockEntityType(), dispatcher -> new RenderTravelAnchor());
+
+    }
+    
+    @Override
+    @SuppressWarnings("deprecation")
+    public int getLightBlock(@Nonnull BlockState state, BlockGetter level, @Nonnull BlockPos pos) {
+        BlockEntity tile = level.getBlockEntity(pos);
         if (tile instanceof TileTravelAnchor) {
             BlockState mimic = ((TileTravelAnchor) tile).getMimic();
             if (mimic != null) {
-                return mimic.getLightValue(world, pos);
+                return mimic.getLightBlock(level, pos);
             }
         }
-        return super.getLightValue(state, world, pos);
+        return super.getLightBlock(state, level, pos);
+    }
+    
+    @Nonnull
+    @Override
+    @SuppressWarnings("deprecation")
+    public VoxelShape getShape(@Nonnull BlockState state, BlockGetter level, @Nonnull BlockPos pos, @Nonnull CollisionContext context) {
+        BlockEntity tile = level.getBlockEntity(pos);
+        if (tile instanceof TileTravelAnchor) {
+            BlockState mimic = ((TileTravelAnchor) tile).getMimic();
+            if (mimic != null) {
+                return mimic.getShape(level, pos, context);
+            }
+        }
+        return Shapes.block();
     }
 
     @Nonnull
     @Override
-    public VoxelShape getShape(@Nonnull BlockState state, IBlockReader reader, @Nonnull BlockPos pos, @Nonnull ISelectionContext context) {
-        TileEntity tile = reader.getTileEntity(pos);
+    @SuppressWarnings("deprecation")
+    public VoxelShape getOcclusionShape(@Nonnull BlockState state, @Nonnull BlockGetter level, @Nonnull BlockPos pos) {
+        BlockEntity tile = level.getBlockEntity(pos);
         if (tile instanceof TileTravelAnchor) {
             BlockState mimic = ((TileTravelAnchor) tile).getMimic();
             if (mimic != null) {
-                return mimic.getShape(reader, pos, context);
-            }
-        }
-        return VoxelShapes.fullCube();
-    }
-
-    @Nonnull
-    @Override
-    public VoxelShape getRenderShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos) {
-        TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof TileTravelAnchor) {
-            BlockState mimic = ((TileTravelAnchor) tile).getMimic();
-            if (mimic != null) {
-                return mimic.getRenderShape(world, pos);
+                return mimic.getBlockSupportShape(level, pos);
             }
         }
         return SHAPE;
     }
 
     @Override
-    public void addInformation(@Nonnull ItemStack stack, @Nullable IBlockReader world, List<ITextComponent> tooltip, @Nonnull ITooltipFlag flags) {
-        tooltip.add(new TranslationTextComponent("tooltip.travel_anchors.travel_anchor_block"));
+    public void appendHoverText(@Nonnull ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip, @Nonnull TooltipFlag flag) {
+        tooltip.add(new TranslatableComponent("tooltip.travel_anchors.travel_anchor_block"));
     }
 
     @Nonnull
     @Override
-    public ActionResultType onBlockActivated(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult hit) {
-        if (!world.isRemote) {
-            ItemStack item = player.getHeldItem(Hand.OFF_HAND);
-            if (!item.isEmpty() && item.getItem() instanceof BlockItem && player.getHeldItem(Hand.MAIN_HAND).isEmpty()) {
-                TileEntity te = world.getTileEntity(pos);
-                if (te instanceof TileTravelAnchor) {
-                    BlockState mimicState = ((BlockItem) item.getItem()).getBlock().getStateForPlacement(new BlockItemUseContext(player, Hand.OFF_HAND, item, hit));
+    public InteractionResult use(@Nonnull BlockState state, Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult hit) {
+        if (!level.isClientSide) {
+            ItemStack item = player.getItemInHand(InteractionHand.OFF_HAND);
+            if (!item.isEmpty() && item.getItem() instanceof BlockItem && player.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
+                BlockEntity be = level.getBlockEntity(pos);
+                if (be instanceof TileTravelAnchor) {
+                    BlockState mimicState = ((BlockItem) item.getItem()).getBlock().getStateForPlacement(new BlockPlaceContext(player, InteractionHand.OFF_HAND, item, hit));
                     if (mimicState == null || mimicState.getBlock() == this) {
-                        ((TileTravelAnchor) te).setMimic(null);
+                        ((TileTravelAnchor) be).setMimic(null);
                     } else {
-                        ((TileTravelAnchor) te).setMimic(mimicState);
+                        ((TileTravelAnchor) be).setMimic(mimicState);
                     }
                 }
-                return ActionResultType.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
-            super.onBlockActivated(state, world, pos, player, hand, hit);
+            super.use(state, level, pos, player, hand, hit);
         }
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void onReplaced(@Nonnull BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
-        super.onReplaced(state, world, pos, newState, isMoving);
-        TravelAnchorList.get(world).setAnchor(world, pos, null, ModComponents.travelAnchor.getDefaultState());
+    public void onRemove(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
+        super.onRemove(state, level, pos, newState, isMoving);
+        TravelAnchorList.get(level).setAnchor(level, pos, null, ModComponents.travelAnchor.defaultBlockState());
     }
 
     @Nonnull
     @Override
-    public BlockRenderType getRenderType(@Nonnull BlockState state) {
-        return BlockRenderType.ENTITYBLOCK_ANIMATED;
+    @SuppressWarnings("deprecation")
+    public RenderShape getRenderShape(@Nonnull BlockState state) {
+        return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 }
 
