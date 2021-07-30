@@ -1,8 +1,8 @@
 package de.castcrafter.travel_anchors.enchantments;
 
 import de.castcrafter.travel_anchors.ModEnchantments;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.enchantment.Enchantment;
 
 public class TeleportationEnchantment extends Enchantment {
 

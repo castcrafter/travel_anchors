@@ -1,8 +1,8 @@
 package de.castcrafter.travel_anchors.network;
 
 import io.github.noeppi_noeppi.libx.network.PacketSerializer;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class AnchorNameChangeSerializer implements PacketSerializer<AnchorNameChangeSerializer.AnchorNameChangeMessage> {
 

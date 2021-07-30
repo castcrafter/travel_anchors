@@ -1,8 +1,8 @@
 package de.castcrafter.travel_anchors.network;
 
 import de.castcrafter.travel_anchors.block.TileTravelAnchor;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;

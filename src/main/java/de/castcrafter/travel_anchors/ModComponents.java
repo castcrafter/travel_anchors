@@ -5,13 +5,13 @@ import de.castcrafter.travel_anchors.block.MenuTravelAnchor;
 import de.castcrafter.travel_anchors.block.TileTravelAnchor;
 import de.castcrafter.travel_anchors.item.ItemTravelStaff;
 import io.github.noeppi_noeppi.libx.annotation.registration.RegisterClass;
-import io.github.noeppi_noeppi.libx.menu.BlockEntityMenu;
-import io.github.noeppi_noeppi.libx.base.tile.BlockMenu;
 import io.github.noeppi_noeppi.libx.base.ItemBase;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
+import io.github.noeppi_noeppi.libx.base.tile.BlockMenu;
+import io.github.noeppi_noeppi.libx.menu.BlockEntityMenu;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.Material;
 
 @RegisterClass
 public class ModComponents {

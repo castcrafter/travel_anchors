@@ -3,10 +3,10 @@ package de.castcrafter.travel_anchors.block;
 import de.castcrafter.travel_anchors.TravelAnchorList;
 import io.github.noeppi_noeppi.libx.base.tile.BlockEntityBase;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nonnull;
 

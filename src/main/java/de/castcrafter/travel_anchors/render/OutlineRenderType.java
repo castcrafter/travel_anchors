@@ -1,8 +1,6 @@
 package de.castcrafter.travel_anchors.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
 
 import javax.annotation.Nonnull;

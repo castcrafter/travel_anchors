@@ -2,11 +2,11 @@ package de.castcrafter.travel_anchors.enchantments;
 
 import de.castcrafter.travel_anchors.ModComponents;
 import de.castcrafter.travel_anchors.ModEnchantments;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 public class RangeEnchantment extends Enchantment {
 
