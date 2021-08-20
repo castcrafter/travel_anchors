@@ -1,5 +1,6 @@
 package de.castcrafter.travel_anchors.block;
 
+import de.castcrafter.travel_anchors.ModComponents;
 import de.castcrafter.travel_anchors.TravelAnchorList;
 import io.github.noeppi_noeppi.libx.base.tile.BlockEntityBase;
 import net.minecraft.core.BlockPos;
@@ -23,7 +24,7 @@ public class TileTravelAnchor extends BlockEntityBase {
     @Override
     public CompoundTag save(CompoundTag compound) {
         compound.putString("travel_anchor_name", this.name);
-        this.wribeMimic(compound);
+        this.writeMimic(compound);
         return super.save(compound);
     }
 
@@ -42,7 +43,7 @@ public class TileTravelAnchor extends BlockEntityBase {
     public CompoundTag getUpdateTag() {
         CompoundTag nbt = super.getUpdateTag();
         nbt.putString("travel_anchor_name", this.name);
-        this.wribeMimic(nbt);
+        this.writeMimic(nbt);
         return nbt;
     }
 
@@ -52,15 +53,18 @@ public class TileTravelAnchor extends BlockEntityBase {
         this.readMimic(nbt);
     }
 
-    private void wribeMimic(CompoundTag tag) {
-        if (this.mimic != null) {
-            tag.put("mimic", NbtUtils.writeBlockState(this.mimic));
-        }
+    private void writeMimic(CompoundTag tag) {
+        tag.put("mimic", NbtUtils.writeBlockState(this.mimic == null ? ModComponents.travelAnchor.defaultBlockState() : this.mimic));
     }
 
     private void readMimic(CompoundTag tag) {
         if (tag.contains("mimic")) {
-            this.mimic = NbtUtils.readBlockState(tag.getCompound("mimic"));
+            BlockState state = NbtUtils.readBlockState(tag.getCompound("mimic"));
+            if (state == ModComponents.travelAnchor.defaultBlockState()) {
+                this.mimic = null;
+            } else {
+                this.mimic = state;
+            }
         }
     }
 
@@ -85,9 +89,9 @@ public class TileTravelAnchor extends BlockEntityBase {
         this.mimic = mimic;
         if (this.level != null) {
             TravelAnchorList.get(this.level).setAnchor(this.level, this.worldPosition, this.name, mimic);
-            this.setChanged();
-            this.markDispatchable();
         }
+        this.setChanged();
+        this.markDispatchable();
     }
 
     @Override
