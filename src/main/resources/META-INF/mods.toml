@@ -1,6 +1,6 @@
 modLoader="javafml"
-loaderVersion="[34,)"
-license="All rights reserved"
+loaderVersion="[37,)"
+license="Apache License 2.0"
 
 [[mods]]
 modId="travel_anchors"
@@ -15,7 +15,7 @@ Adds a staff of travelling and a travel anchor to teleport around the world.
 [[dependencies.travel_anchors]]
     modId="forge"
     mandatory=true
-    versionRange="[34,)"
+    versionRange="[37,)"
     ordering="NONE"
     side="BOTH"
 
