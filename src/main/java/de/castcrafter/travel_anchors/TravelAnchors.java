@@ -14,7 +14,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import javax.annotation.Nonnull;
 
 @Mod("travel_anchors")
-public class TravelAnchors extends ModXRegistration {
+public final class TravelAnchors extends ModXRegistration {
 
     private static TravelAnchors instance;
     private static Networking network;
