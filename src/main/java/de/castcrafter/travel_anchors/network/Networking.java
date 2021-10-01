@@ -20,8 +20,8 @@ public class Networking extends NetworkX {
     }
 
     @Override
-    protected String getProtocolVersion() {
-        return "5";
+    protected Protocol getProtocol() {
+        return Protocol.of("5");
     }
 
     protected void registerPackets() {
@@ -32,7 +32,7 @@ public class Networking extends NetworkX {
 
     public void sendNameChange(Level level, BlockPos pos, String name) {
         if (level.isClientSide) {
-            this.instance.sendToServer(new AnchorNameChangeSerializer.AnchorNameChangeMessage(pos, name));
+            this.channel.sendToServer(new AnchorNameChangeSerializer.AnchorNameChangeMessage(pos, name));
         }
     }
 
@@ -41,19 +41,19 @@ public class Networking extends NetworkX {
             if (list == null) {
                 list = TravelAnchorList.get(level);
             }
-            this.instance.send(PacketDistributor.DIMENSION.with(level::dimension), new AnchorListUpdateSerializer.AnchorListUpdateMessage(list.save(new CompoundTag())));
+            this.channel.send(PacketDistributor.DIMENSION.with(level::dimension), new AnchorListUpdateSerializer.AnchorListUpdateMessage(list.save(new CompoundTag())));
         }
     }
 
     public void updateTravelAnchorList(Player player) {
         if (!player.getCommandSenderWorld().isClientSide && player instanceof ServerPlayer) {
-            this.instance.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new AnchorListUpdateSerializer.AnchorListUpdateMessage(TravelAnchorList.get(player.getCommandSenderWorld()).save(new CompoundTag())));
+            this.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new AnchorListUpdateSerializer.AnchorListUpdateMessage(TravelAnchorList.get(player.getCommandSenderWorld()).save(new CompoundTag())));
         }
     }
 
     public void sendClientEventToServer(Level level, ClientEventSerializer.ClientEvent event) {
         if (level.isClientSide) {
-            this.instance.sendToServer(event);
+            this.channel.sendToServer(event);
         }
     }
 }

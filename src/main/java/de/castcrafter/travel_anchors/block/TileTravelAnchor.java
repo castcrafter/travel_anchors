@@ -77,7 +77,7 @@ public class TileTravelAnchor extends BlockEntityBase {
         if (this.level != null) {
             TravelAnchorList.get(this.level).setAnchor(this.level, this.worldPosition, name, this.mimic);
             this.setChanged();
-            this.markDispatchable();
+            this.setDispatchable();
         }
     }
 
@@ -91,7 +91,7 @@ public class TileTravelAnchor extends BlockEntityBase {
             TravelAnchorList.get(this.level).setAnchor(this.level, this.worldPosition, this.name, mimic);
         }
         this.setChanged();
-        this.markDispatchable();
+        this.setDispatchable();
     }
 
     @Override

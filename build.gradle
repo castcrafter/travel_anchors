@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    annotationProcessor fg.deobf("io.github.noeppi_noeppi.mods:LibX:1.17.1-2.0.3")
+    annotationProcessor fg.deobf("io.github.noeppi_noeppi.mods:LibX:1.17.1-2.1.2")
 
-    implementation fg.deobf("io.github.noeppi_noeppi.mods:LibX:1.17.1-2.0.3")
+    implementation fg.deobf("io.github.noeppi_noeppi.mods:LibX:1.17.1-2.1.2")
 }
