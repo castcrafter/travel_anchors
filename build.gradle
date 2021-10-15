@@ -5,14 +5,11 @@ buildscript {
 apply from: 'https://raw.githubusercontent.com/noeppi-noeppi/ModUtils/v2/mod.gradle'
 
 repositories {
-    maven {
-        name = 'MelanX Maven'
-        url = 'https://maven.melanx.de/'
-    }
+    maven { url = 'https://maven.melanx.de/' }
 }
 
 dependencies {
-    annotationProcessor fg.deobf("io.github.noeppi_noeppi.mods:LibX:1.17.1-2.1.2")
+    annotationProcessor fg.deobf("io.github.noeppi_noeppi.mods:LibX:1.17.1-2.1.9")
 
-    implementation fg.deobf("io.github.noeppi_noeppi.mods:LibX:1.17.1-2.1.2")
+    implementation fg.deobf("io.github.noeppi_noeppi.mods:LibX:1.17.1-2.1.9")
 }

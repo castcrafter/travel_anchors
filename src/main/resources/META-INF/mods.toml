@@ -15,14 +15,7 @@ Adds a staff of travelling and a travel anchor to teleport around the world.
 [[dependencies.travel_anchors]]
     modId="forge"
     mandatory=true
-    versionRange="[37,)"
-    ordering="NONE"
-    side="BOTH"
-
-[[dependencies.travel_anchors]]
-    modId="forge"
-    mandatory=true
-    versionRange="[1.17.1-37.0.13,)"
+    versionRange="[37.0.95,)"
     ordering="NONE"
     side="BOTH"
 
@@ -30,5 +23,12 @@ Adds a staff of travelling and a travel anchor to teleport around the world.
     modId="minecraft"
     mandatory=true
     versionRange="[1.17.1,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.travel_anchors]]
+    modId="libx"
+    mandatory=true
+    versionRange="[1.17.1-2.1.9,)"
     ordering="NONE"
     side="BOTH"
