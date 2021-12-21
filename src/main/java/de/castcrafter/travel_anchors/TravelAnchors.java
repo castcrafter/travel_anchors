@@ -20,7 +20,7 @@ public final class TravelAnchors extends ModXRegistration {
     private static Networking network;
 
     public TravelAnchors() {
-        super("travel_anchors", new CreativeModeTab("travel_anchors") {
+        super(new CreativeModeTab("travel_anchors") {
             @Nonnull
             @Override
             public ItemStack makeIcon() {

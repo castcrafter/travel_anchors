@@ -3,6 +3,7 @@ package de.castcrafter.travel_anchors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -10,7 +11,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.Constants;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -45,8 +45,8 @@ public class TravelAnchorList extends SavedData {
 
     public void load(@Nonnull CompoundTag nbt) {
         this.anchors.clear();
-        if (nbt.contains("anchors", Constants.NBT.TAG_LIST)) {
-            ListTag list = nbt.getList("anchors", Constants.NBT.TAG_COMPOUND);
+        if (nbt.contains("anchors", Tag.TAG_LIST)) {
+            ListTag list = nbt.getList("anchors", Tag.TAG_COMPOUND);
             for (int i = 0; i < list.size(); i++) {
                 CompoundTag entryNBT = list.getCompound(i);
                 if (entryNBT.contains("x") && entryNBT.contains("y") && entryNBT.contains("z") && entryNBT.contains("name")) {

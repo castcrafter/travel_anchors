@@ -2,7 +2,7 @@ package de.castcrafter.travel_anchors.block;
 
 import de.castcrafter.travel_anchors.ModComponents;
 import de.castcrafter.travel_anchors.TravelAnchorList;
-import io.github.noeppi_noeppi.libx.base.tile.BlockMenu;
+import io.github.noeppi_noeppi.libx.base.tile.MenuBlockBE;
 import io.github.noeppi_noeppi.libx.mod.ModX;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -38,7 +38,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class BlockTravelAnchor extends BlockMenu<TileTravelAnchor, MenuTravelAnchor> {
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+
+public class BlockTravelAnchor extends MenuBlockBE<TileTravelAnchor, MenuTravelAnchor> {
 
     private static final VoxelShape SHAPE = Shapes.box(0.01, 0.01, 0.01, 0.99, 0.99, 0.99);
 

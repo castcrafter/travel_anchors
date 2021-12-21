@@ -2,7 +2,7 @@ package de.castcrafter.travel_anchors.network;
 
 import de.castcrafter.travel_anchors.TravelAnchorList;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 

@@ -10,7 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.InputUpdateEvent;
+import net.minecraftforge.client.event.MovementInputUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -94,7 +94,7 @@ public class EventListener {
     
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public void onSneak(InputUpdateEvent event) {
+    public void onSneak(MovementInputUpdateEvent event) {
         if (Minecraft.getInstance().player != null && Minecraft.getInstance().options.keyShift.consumeClick()) {
             if (!ClientConfig.disable_elevation) {
                 if (TeleportHandler.canElevate(Minecraft.getInstance().player)) {

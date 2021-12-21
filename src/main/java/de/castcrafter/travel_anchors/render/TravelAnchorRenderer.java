@@ -27,7 +27,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 import org.apache.commons.lang3.tuple.Pair;
@@ -57,8 +57,8 @@ public class TravelAnchorRenderer {
     @Model("block/travel_anchor")
     public static BakedModel MODEL = null;
 
-    public static void renderAnchors(RenderWorldLastEvent event) {
-        PoseStack poseStack = event.getMatrixStack();
+    public static void renderAnchors(RenderLevelLastEvent event) {
+        PoseStack poseStack = event.getPoseStack();
         ClientLevel level = Minecraft.getInstance().level;
         LocalPlayer player = Minecraft.getInstance().player;
         if (level != null && player != null) {
@@ -67,9 +67,9 @@ public class TravelAnchorRenderer {
                 double maxDistanceSq = TeleportHandler.getMaxDistance(player);
                 maxDistanceSq = maxDistanceSq * maxDistanceSq;
                 TravelAnchorList list = TravelAnchorList.get(Minecraft.getInstance().level);
-                double posX = Mth.lerp(event.getPartialTicks(), player.xo, player.getX());
-                double posY = Mth.lerp(event.getPartialTicks(), player.yo, player.getY());
-                double posZ = Mth.lerp(event.getPartialTicks(), player.zo, player.getZ());
+                double posX = Mth.lerp(event.getPartialTick(), player.xo, player.getX());
+                double posY = Mth.lerp(event.getPartialTick(), player.yo, player.getY());
+                double posZ = Mth.lerp(event.getPartialTick(), player.zo, player.getZ());
                 Vec3 projection = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
                 double projPosX = projection.x;
                 double projPosY = projection.y;

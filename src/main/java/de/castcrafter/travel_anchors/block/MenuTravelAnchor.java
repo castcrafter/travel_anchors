@@ -9,7 +9,7 @@ import net.minecraft.world.level.Level;
 
 public class MenuTravelAnchor extends BlockEntityMenu<TileTravelAnchor> {
 
-    public MenuTravelAnchor(MenuType<?> type, int window, Level level, BlockPos pos, Inventory playerContainer, Player player) {
+    public MenuTravelAnchor(MenuType<? extends BlockEntityMenu<?>> type, int window, Level level, BlockPos pos, Inventory playerContainer, Player player) {
         super(type, window, level, pos, playerContainer, player, 0, 0);
         this.layoutPlayerInventorySlots(8, 51);
     }

@@ -13,6 +13,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import net.minecraft.world.item.Item.Properties;
+
 public class ItemTravelStaff extends ItemBase {
     
     public ItemTravelStaff(ModX mod, Properties properties) {
