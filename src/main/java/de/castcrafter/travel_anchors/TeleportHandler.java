@@ -107,7 +107,7 @@ public class TeleportHandler {
     public static boolean canTeleportTo(BlockGetter level, BlockPos target) {
         return !level.getBlockState(target.immutable().above(1)).canOcclude()
                 && !level.getBlockState(target.immutable().above(2)).canOcclude()
-                && target.getY() > 0;
+                && target.getY() >= level.getMinBuildHeight();
     }
 
     public static boolean canPlayerTeleport(Player player, InteractionHand hand) {
