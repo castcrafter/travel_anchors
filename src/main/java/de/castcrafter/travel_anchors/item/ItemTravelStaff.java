@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemTravelStaff extends ItemBase {
-    
+
     public ItemTravelStaff(ModX mod, Properties properties) {
         super(mod, properties);
     }

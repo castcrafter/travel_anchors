@@ -36,6 +36,6 @@ public class RangeEnchantment extends Enchantment {
 
     @Override
     public int getMaxCost(int level) {
-        return getMinCost(level)*2 + 2;
+        return getMinCost(level) * 2 + 2;
     }
 }
