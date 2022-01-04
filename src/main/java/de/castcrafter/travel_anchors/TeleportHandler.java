@@ -47,7 +47,7 @@ public class TeleportHandler {
     
     public static boolean teleportPlayer(Player player, @Nullable Pair<BlockPos, String> anchor, @Nullable InteractionHand hand) {
         if (anchor != null) {
-            if (!player.getCommandSenderWorld().isClientSide) {
+            if (!player.getLevel().isClientSide) {
                 Vec3 teleportVec = checkTeleport(player, anchor.getLeft().above());
                 if (teleportVec == null) {
                     return false;
@@ -85,7 +85,7 @@ public class TeleportHandler {
             }
         }
         if (target != null) {
-            if (!player.getCommandSenderWorld().isClientSide) {
+            if (!player.getLevel().isClientSide) {
                 Vec3 teleportVec = checkTeleport(player, target);
                 if (teleportVec == null) {
                     return false;
@@ -115,7 +115,7 @@ public class TeleportHandler {
     }
 
     public static boolean canBlockTeleport(Player player) {
-        return (player.getCommandSenderWorld().getBlockState(player.blockPosition().immutable().below()).getBlock() == ModComponents.travelAnchor
+        return (player.getLevel().getBlockState(player.blockPosition().immutable().below()).getBlock() == ModComponents.travelAnchor
                 && !player.isShiftKeyDown());
     }
 
@@ -138,14 +138,14 @@ public class TeleportHandler {
     }
     
     public static boolean canElevate(Player player) {
-        return player.getCommandSenderWorld().getBlockState(player.blockPosition().immutable().below()).getBlock() == ModComponents.travelAnchor;
+        return player.getLevel().getBlockState(player.blockPosition().immutable().below()).getBlock() == ModComponents.travelAnchor;
     }
     
     public static boolean elevateUp(Player player) {
         if (!canElevate(player)) {
             return false;
         }
-        Level level = player.getCommandSenderWorld();
+        Level level = player.getLevel();
         BlockPos.MutableBlockPos searchPos = player.blockPosition().immutable().mutable();
         while (!level.isOutsideBuildHeight(searchPos) && (level.getBlockState(searchPos).getBlock() != ModComponents.travelAnchor || !canTeleportTo(level, searchPos))) {
             searchPos.move(Direction.UP);
@@ -166,7 +166,7 @@ public class TeleportHandler {
         if (!canElevate(player)) {
             return false;
         }
-        Level level = player.getCommandSenderWorld();
+        Level level = player.getLevel();
         BlockPos.MutableBlockPos searchPos = player.blockPosition().immutable().below(2).mutable();
         while (!level.isOutsideBuildHeight(searchPos) && (level.getBlockState(searchPos).getBlock() != ModComponents.travelAnchor || !canTeleportTo(level, searchPos))) {
             searchPos.move(Direction.DOWN);
