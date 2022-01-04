@@ -28,4 +28,14 @@ public class RangeEnchantment extends Enchantment {
     public boolean canApplyAtEnchantingTable(ItemStack stack) {
         return stack.getItem() == ModComponents.travelStaff || stack.getItem() == Items.BOOK || stack.getItem() == Items.ENCHANTED_BOOK;
     }
+
+    @Override
+    public int getMinCost(int level) {
+        return level * 7 + 3;
+    }
+
+    @Override
+    public int getMaxCost(int level) {
+        return getMinCost(level)*2 + 2;
+    }
 }
