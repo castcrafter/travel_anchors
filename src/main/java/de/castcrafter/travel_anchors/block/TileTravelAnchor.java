@@ -20,12 +20,11 @@ public class TileTravelAnchor extends BlockEntityBase {
         super(type, pos, state);
     }
 
-    @Nonnull
     @Override
-    public CompoundTag save(CompoundTag compound) {
-        compound.putString("travel_anchor_name", this.name);
-        this.writeMimic(compound);
-        return super.save(compound);
+    public void saveAdditional(@Nonnull CompoundTag nbt) {
+        super.saveAdditional(nbt);
+        nbt.putString("travel_anchor_name", this.name);
+        this.writeMimic(nbt);
     }
 
     @Override

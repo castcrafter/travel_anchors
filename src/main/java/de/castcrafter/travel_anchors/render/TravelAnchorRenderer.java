@@ -76,7 +76,7 @@ public class TravelAnchorRenderer {
                 double projPosZ = projection.z;
                 Pair<BlockPos, String> pair = TeleportHandler.getAnchorToTeleport(level, player, player.blockPosition().below());
                 for (BlockPos pos : list.anchors.keySet()) {
-                    double distanceSq = pos.distSqr(posX, posY, posZ, true);
+                    double distanceSq = pos.distToCenterSqr(posX, posY, posZ);
                     if (distanceSq <= maxDistanceSq) {
                         TravelAnchorList.Entry entry = list.getEntry(pos);
                         if (entry != null) {
