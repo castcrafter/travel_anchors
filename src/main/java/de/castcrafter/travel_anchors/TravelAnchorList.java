@@ -112,7 +112,7 @@ public class TravelAnchorList extends SavedData {
 
     public Stream<Pair<BlockPos, String>> getAnchorsAround(Vec3 pos, double maxDistanceSq) {
         return this.anchors.entrySet().stream()
-                .filter(entry -> entry.getKey().distSqr(pos.x, pos.y, pos.z, true) < maxDistanceSq)
+                .filter(entry -> entry.getKey().distToCenterSqr(pos.x, pos.y, pos.z) < maxDistanceSq)
                 .map(entry -> Pair.of(entry.getKey(), entry.getValue().name));
     }
     

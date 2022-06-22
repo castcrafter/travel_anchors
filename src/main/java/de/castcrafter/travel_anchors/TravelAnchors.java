@@ -12,12 +12,16 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 
 @Mod("travel_anchors")
 public final class TravelAnchors extends ModXRegistration {
 
+    public static final Logger logger = LoggerFactory.getLogger("travel_anchors");
+    
     private static TravelAnchors instance;
     private static Networking network;
 
@@ -54,7 +58,7 @@ public final class TravelAnchors extends ModXRegistration {
 
     @Override
     protected void setup(final FMLCommonSetupEvent event) {
-        this.logger.info("Loading TravelAnchors");
+        logger.info("Loading TravelAnchors");
     }
 
     @Override
