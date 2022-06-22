@@ -1,0 +1,21 @@
+{
+  "itemGroup.travelanchors": "Travel Anchors (Âncoras de Viangem)",
+
+  "item.travelanchors.travel_staff": "Bastão de Viangem",
+
+  "enchantment.travelanchors.range": "Alcance",
+  "enchantment.travelanchors.teleportation": "Teletransporte",
+
+  "block.travelanchors.travel_anchor": "Âncora de Viangem",
+
+  "screen.travelanchors.travel_anchor": "Âncora de Viangem",
+  "screen.travelanchors.search": "Procurar",
+  "screen.travelanchors.nameless": "Digite um nome para usá-lo",
+
+  "tooltip.travelanchors.travel_anchor_block": "Olhe para isso com um Bastão de Viangem, ou Encantamento Teletransporte para o teleportar.",
+  "tooltip.travelanchors.travel_staff": "Clique [Agachar] + [Botão Direito} para se teletransportar para uma curta distância. Olhe pra a Âncora de Viangem para se teletransportar para ela.",
+
+  "travelanchors.tp.success": "Teleportado para %s.",
+  "travelanchors.tp.fail": "Nenhuma Âncora de Viangem encontrada.",
+  "travelanchors.hop.fail": "Destino obstruído."
+}

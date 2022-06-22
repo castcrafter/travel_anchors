@@ -1,15 +1,15 @@
 buildscript {
-    apply from: 'https://noeppi-noeppi.github.io/ModUtils/v3/buildscript.gradle', to: buildscript
+    apply from: 'https://moddingx.github.io/ModUtils/v4/buildscript.gradle', to: buildscript
 }
 
-apply from: 'https://noeppi-noeppi.github.io/ModUtils/v3/mod.gradle'
+apply from: 'https://moddingx.github.io/ModUtils/v4/mod.gradle'
 
 repositories {
     maven { url = 'https://maven.melanx.de/' }
 }
 
 dependencies {
-    annotationProcessor fg.deobf("io.github.noeppi_noeppi.mods:LibX:1.18.2-3.2.2")
+    annotationProcessor fg.deobf("org.moddingx:LibX:1.19-4.0.4")
 
-    implementation fg.deobf("io.github.noeppi_noeppi.mods:LibX:1.18.2-3.2.2")
+    implementation fg.deobf("org.moddingx:LibX:1.19-4.0.4")
 }

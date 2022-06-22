@@ -1,0 +1,21 @@
+{
+  "itemGroup.travelanchors": "旅行锚",
+
+  "item.travelanchors.travel_staff": "旅行权杖",
+
+  "enchantment.travelanchors.range": "范围",
+  "enchantment.travelanchors.teleportation": "传送",
+
+  "block.travelanchors.travel_anchor": "旅行锚",
+
+  "screen.travelanchors.travel_anchor": "旅行锚",
+  "screen.travelanchors.search": "搜索",
+  "screen.travelanchors.nameless": "需设置名称来使用",
+
+  "tooltip.travelanchors.travel_anchor_block": "使用旅行权杖或传送附魔进行移动",
+  "tooltip.travelanchors.travel_staff": "按住 Shift + 右击来传送一小段距离或传送到旅行锚",
+
+  "travelanchors.tp.success": "传送到 %s.",
+  "travelanchors.tp.fail": "找不到旅行锚",
+  "travelanchors.hop.fail": "目的地被阻挡"
+}

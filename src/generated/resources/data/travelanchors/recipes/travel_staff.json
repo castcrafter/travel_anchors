@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "e": {
+      "tag": "forge:ender_pearls"
+    },
+    "i": {
+      "tag": "forge:ingots/iron"
+    }
+  },
+  "pattern": [
+    "  i",
+    " e ",
+    "e  "
+  ],
+  "result": {
+    "item": "travelanchors:travel_staff"
+  }
+}

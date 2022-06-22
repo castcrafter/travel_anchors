@@ -1,0 +1,21 @@
+{
+  "itemGroup.travelanchors": "Reiseanker",
+
+  "item.travelanchors.travel_staff": "Reisestab",
+
+  "enchantment.travelanchors.range": "Reichweite",
+  "enchantment.travelanchors.teleportation": "Teleportation",
+
+  "block.travelanchors.travel_anchor": "Reiseanker",
+
+  "screen.travelanchors.travel_anchor": "Reiseanker",
+  "screen.travelanchors.search": "Suchen",
+  "screen.travelanchors.nameless": "Gib zum Benutzen einen Namen ein",
+
+  "tooltip.travelanchors.travel_anchor_block": "Schaue mit einem Reisestab oder der Teleportation-Verzauberung auf den Block um zu teleportieren.",
+  "tooltip.travelanchors.travel_staff": "Hocken + Rechtsklick für einen Teleport auf kurze Entfernung. Reiseanker anschauen um zu ihm zu teleportieren.",
+
+  "travelanchors.tp.success": "Teleportiert zu %s.",
+  "travelanchors.tp.fail": "Kein Reiseanker gefunden.",
+  "travelanchors.hop.fail": "Ziel versperrt."
+}

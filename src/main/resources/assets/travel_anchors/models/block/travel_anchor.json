@@ -1,6 +1,0 @@
-{
-  "parent": "block/cube_all",
-  "textures": {
-    "all": "travel_anchors:block/travel_anchor"
-  }
-}
