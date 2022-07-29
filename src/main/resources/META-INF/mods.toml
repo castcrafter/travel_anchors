@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[41,)"
+loaderVersion="[42,)"
 license="Apache License 2.0"
 
 [[mods]]
@@ -17,20 +17,20 @@ Adds a staff of travelling and a travel anchor to teleport around the world.
 [[dependencies.travelanchors]]
     modId="forge"
     mandatory=true
-    versionRange="[41.0.98,)"
+    versionRange="[42,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.travelanchors]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19,1.20)"
+    versionRange="[1.19.1,1.20)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.travelanchors]]
     modId="libx"
     mandatory=true
-    versionRange="[1.19-4.0.4,)"
+    versionRange="[1.19.1-4.1.1,)"
     ordering="NONE"
     side="BOTH"

@@ -1,7 +1,7 @@
 package de.castcrafter.travelanchors;
 
 import de.castcrafter.travelanchors.config.ClientConfig;
-import de.castcrafter.travelanchors.network.ClientEventSerializer;
+import de.castcrafter.travelanchors.network.ClientEventMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -54,12 +54,12 @@ public class EventListener {
         Level level = event.getLevel();
         Player player = event.getEntity();
         if (TeleportHandler.canBlockTeleport(player) && !player.isShiftKeyDown() && event.getHand() == InteractionHand.MAIN_HAND && event.getEntity().getItemInHand(InteractionHand.OFF_HAND).isEmpty() && event.getItemStack().isEmpty()) {
-            TravelAnchors.getNetwork().sendClientEventToServer(level, ClientEventSerializer.ClientEvent.EMPTY_HAND_INTERACT);
+            TravelAnchors.getNetwork().sendClientEventToServer(level, ClientEventMessage.Type.EMPTY_HAND_INTERACT);
             event.setResult(Event.Result.DENY);
             event.setCancellationResult(InteractionResult.SUCCESS);
         }
     }
-    
+
     @SubscribeEvent
     public void emptyBlockClick(ClickBlockEmptyHandEvent event) {
         if (event.getHand() == InteractionHand.MAIN_HAND) {
@@ -82,23 +82,23 @@ public class EventListener {
         if (event.getEntity() instanceof Player player) {
             if (ClientConfig.disable_elevation) {
                 if (TeleportHandler.canBlockTeleport(player) && !player.isShiftKeyDown()) {
-                    TravelAnchors.getNetwork().sendClientEventToServer(player.getCommandSenderWorld(), ClientEventSerializer.ClientEvent.JUMP_TP);
+                    TravelAnchors.getNetwork().sendClientEventToServer(player.getCommandSenderWorld(), ClientEventMessage.Type.JUMP_TP);
                 }
             } else {
                 if (TeleportHandler.canElevate(player) && !player.isShiftKeyDown()) {
-                    TravelAnchors.getNetwork().sendClientEventToServer(player.getCommandSenderWorld(), ClientEventSerializer.ClientEvent.JUMP);
+                    TravelAnchors.getNetwork().sendClientEventToServer(player.getCommandSenderWorld(), ClientEventMessage.Type.JUMP);
                 }
             }
         }
     }
-    
+
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void onSneak(MovementInputUpdateEvent event) {
         if (Minecraft.getInstance().player != null && Minecraft.getInstance().options.keyShift.consumeClick()) {
             if (!ClientConfig.disable_elevation) {
                 if (TeleportHandler.canElevate(Minecraft.getInstance().player)) {
-                    TravelAnchors.getNetwork().sendClientEventToServer(Minecraft.getInstance().player.getCommandSenderWorld(), ClientEventSerializer.ClientEvent.SNEAK);
+                    TravelAnchors.getNetwork().sendClientEventToServer(Minecraft.getInstance().player.getCommandSenderWorld(), ClientEventMessage.Type.SNEAK);
                 }
             }
         }

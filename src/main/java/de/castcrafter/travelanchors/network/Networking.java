@@ -25,14 +25,14 @@ public class Networking extends NetworkX {
     }
 
     protected void registerPackets() {
-        this.register(new AnchorNameChangeSerializer(), () -> AnchorNameChangeHandler::handle, NetworkDirection.PLAY_TO_SERVER);
-        this.register(new AnchorListUpdateSerializer(), () -> AnchorListUpdateHandler::handle, NetworkDirection.PLAY_TO_CLIENT);
-        this.register(new ClientEventSerializer(), () -> ClientEventHandler::handle, NetworkDirection.PLAY_TO_SERVER);
+        this.registerGame(NetworkDirection.PLAY_TO_SERVER, new AnchorNameChangeMessage.Serializer(), () -> AnchorNameChangeMessage.Handler::new);
+        this.registerGame(NetworkDirection.PLAY_TO_CLIENT, new AnchorListUpdateMessage.Serializer(), () -> AnchorListUpdateMessage.Handler::new);
+        this.registerGame(NetworkDirection.PLAY_TO_SERVER, new ClientEventMessage.Serializer(), () -> ClientEventMessage.Handler::new);
     }
 
     public void sendNameChange(Level level, BlockPos pos, String name) {
         if (level.isClientSide) {
-            this.channel.sendToServer(new AnchorNameChangeSerializer.AnchorNameChangeMessage(pos, name));
+            this.channel.sendToServer(new AnchorNameChangeMessage(pos, name));
         }
     }
 
@@ -41,19 +41,19 @@ public class Networking extends NetworkX {
             if (list == null) {
                 list = TravelAnchorList.get(level);
             }
-            this.channel.send(PacketDistributor.DIMENSION.with(level::dimension), new AnchorListUpdateSerializer.AnchorListUpdateMessage(list.save(new CompoundTag())));
+            this.channel.send(PacketDistributor.DIMENSION.with(level::dimension), new AnchorListUpdateMessage(list.save(new CompoundTag())));
         }
     }
 
     public void updateTravelAnchorList(Player player) {
         if (!player.getCommandSenderWorld().isClientSide && player instanceof ServerPlayer) {
-            this.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new AnchorListUpdateSerializer.AnchorListUpdateMessage(TravelAnchorList.get(player.getCommandSenderWorld()).save(new CompoundTag())));
+            this.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new AnchorListUpdateMessage(TravelAnchorList.get(player.getCommandSenderWorld()).save(new CompoundTag())));
         }
     }
 
-    public void sendClientEventToServer(Level level, ClientEventSerializer.ClientEvent event) {
+    public void sendClientEventToServer(Level level, ClientEventMessage.Type type) {
         if (level.isClientSide) {
-            this.channel.sendToServer(event);
+            this.channel.sendToServer(new ClientEventMessage(type));
         }
     }
 }
