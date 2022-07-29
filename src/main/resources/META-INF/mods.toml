@@ -17,7 +17,7 @@ Adds a staff of travelling and a travel anchor to teleport around the world.
 [[dependencies.travelanchors]]
     modId="forge"
     mandatory=true
-    versionRange="[41.0.45,)"
+    versionRange="[41.0.98,)"
     ordering="NONE"
     side="BOTH"
 

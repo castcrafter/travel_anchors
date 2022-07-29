@@ -24,9 +24,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.RenderLevelLastEvent;
-import net.minecraftforge.client.model.data.EmptyModelData;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.client.model.data.ModelData;
 import org.apache.commons.lang3.tuple.Pair;
 import org.moddingx.libx.annotation.model.Model;
 import org.moddingx.libx.render.RenderHelperLevel;
@@ -56,11 +55,11 @@ public class TravelAnchorRenderer {
     @Model("block/travel_anchor")
     public static BakedModel MODEL = null;
 
-    public static void renderAnchors(RenderLevelLastEvent event) {
+    public static void renderAnchors(RenderLevelStageEvent event) {
         PoseStack poseStack = event.getPoseStack();
         ClientLevel level = Minecraft.getInstance().level;
         LocalPlayer player = Minecraft.getInstance().player;
-        if (level != null && player != null) {
+        if (level != null && player != null && event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS) {
             if (TeleportHandler.canBlockTeleport(player) || TeleportHandler.canItemTeleport(player, InteractionHand.MAIN_HAND)
                     || TeleportHandler.canItemTeleport(player, InteractionHand.OFF_HAND)) {
                 double maxDistanceSq = TeleportHandler.getMaxDistance(player);
@@ -89,7 +88,7 @@ public class TravelAnchorRenderer {
                             boolean active = pair != null && pos.equals(pair.getLeft());
                             boolean directText = distanceSq <= 15 * 15;
                             poseStack.pushPose();
-                            RenderHelperLevel.loadProjection(poseStack, pos);
+                            RenderHelperLevel.loadCameraPosition(event.getCamera(), poseStack, pos);
                             if (distanceSq > 10 * 10) {
                                 double distance = Math.sqrt(distanceSq);
                                 poseStack.translate(0.5, 0.5, 0.5);
@@ -113,7 +112,7 @@ public class TravelAnchorRenderer {
                                     blockScale *= 1.3;
                                 }
 
-                                RenderHelperLevel.loadProjection(poseStack, projPosX, projPosY, projPosZ);
+                                RenderHelperLevel.loadCameraPosition(event.getCamera(), poseStack, projPosX, projPosY, projPosZ);
                                 CircleRotation rot = rotateCircle(projPosX - (pos.getX() + 0.5), projPosY - (pos.getY() + 0.5 + (0.5 * blockScale)), projPosZ - (pos.getZ() + 0.5));
                                 rot.apply(poseStack);
                                 poseStack.translate(0, 5, 0);
@@ -155,7 +154,7 @@ public class TravelAnchorRenderer {
         }
     }
 
-    public static void renderAnchor(PoseStack poseStack, MultiBufferSource buffer, @Nullable String name, BlockState state, int light, boolean glow, boolean active, double distanceSq, @Nullable IModelData modelData) {
+    public static void renderAnchor(PoseStack poseStack, MultiBufferSource buffer, @Nullable String name, BlockState state, int light, boolean glow, boolean active, double distanceSq, @Nullable ModelData modelData) {
         if (state == null || state.getBlock() == ModBlocks.travelAnchor) {
             VertexConsumer vertex = buffer.getBuffer(RenderType.solid());
             //noinspection deprecation
@@ -165,7 +164,7 @@ public class TravelAnchorRenderer {
         } else {
             Minecraft.getInstance().getBlockRenderer()
                     .renderSingleBlock(state, poseStack, buffer, light, OverlayTexture.NO_OVERLAY,
-                            modelData == null ? EmptyModelData.INSTANCE : modelData);
+                            modelData == null ? ModelData.EMPTY : modelData, null);
         }
         if (glow) {
             RenderType type;

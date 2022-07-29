@@ -21,18 +21,18 @@ public class EventListener {
 
     @SubscribeEvent
     public void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-        TravelAnchors.getNetwork().updateTravelAnchorList(event.getPlayer());
+        TravelAnchors.getNetwork().updateTravelAnchorList(event.getEntity());
     }
 
     @SubscribeEvent
     public void playerChangeDim(PlayerEvent.PlayerChangedDimensionEvent event) {
-        TravelAnchors.getNetwork().updateTravelAnchorList(event.getPlayer());
+        TravelAnchors.getNetwork().updateTravelAnchorList(event.getEntity());
     }
 
     @SubscribeEvent
     public void onRightClick(PlayerInteractEvent.RightClickItem event) {
-        Level level = event.getWorld();
-        Player player = event.getPlayer();
+        Level level = event.getLevel();
+        Player player = event.getEntity();
         if (TeleportHandler.canPlayerTeleport(player, event.getHand()) && !event.getItemStack().isEmpty()) {
             if (player.isShiftKeyDown() && TeleportHandler.canItemTeleport(player, event.getHand())) {
                 if (TeleportHandler.shortTeleport(level, player, event.getHand())) {
@@ -51,9 +51,9 @@ public class EventListener {
 
     @SubscribeEvent
     public void onEmptyClick(PlayerInteractEvent.RightClickEmpty event) {
-        Level level = event.getWorld();
-        Player player = event.getPlayer();
-        if (TeleportHandler.canBlockTeleport(player) && !player.isShiftKeyDown() && event.getHand() == InteractionHand.MAIN_HAND && event.getPlayer().getItemInHand(InteractionHand.OFF_HAND).isEmpty() && event.getItemStack().isEmpty()) {
+        Level level = event.getLevel();
+        Player player = event.getEntity();
+        if (TeleportHandler.canBlockTeleport(player) && !player.isShiftKeyDown() && event.getHand() == InteractionHand.MAIN_HAND && event.getEntity().getItemInHand(InteractionHand.OFF_HAND).isEmpty() && event.getItemStack().isEmpty()) {
             TravelAnchors.getNetwork().sendClientEventToServer(level, ClientEventSerializer.ClientEvent.EMPTY_HAND_INTERACT);
             event.setResult(Event.Result.DENY);
             event.setCancellationResult(InteractionResult.SUCCESS);
@@ -79,7 +79,7 @@ public class EventListener {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void onJump(LivingEvent.LivingJumpEvent event) {
-        if (event.getEntityLiving() instanceof Player player) {
+        if (event.getEntity() instanceof Player player) {
             if (ClientConfig.disable_elevation) {
                 if (TeleportHandler.canBlockTeleport(player) && !player.isShiftKeyDown()) {
                     TravelAnchors.getNetwork().sendClientEventToServer(player.getCommandSenderWorld(), ClientEventSerializer.ClientEvent.JUMP_TP);
