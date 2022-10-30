@@ -40,10 +40,12 @@ public class TeleportHandler {
                         if (Math.abs(Mth.wrapDegrees(angle1 - angle2)) < 0.1) { // About 4 deg
                             double dst1sqr = positionVec.distanceToSqr(p1.getLeft().getX() + 0.5, p1.getLeft().getY() + 1, p1.getLeft().getZ() + 0.5);
                             double dst2sqr = positionVec.distanceToSqr(p2.getLeft().getX() + 0.5, p2.getLeft().getY() + 1, p2.getLeft().getZ() + 0.5);
-                            return Double.compare(dst1sqr, dst2sqr);
-                        } else {
-                            return Double.compare(Math.abs(angle1), Math.abs(angle2));
+                            double anchorDistSqr = p1.getLeft().distSqr(p2.getLeft());
+                            if (Math.min(dst1sqr, dst2sqr) < anchorDistSqr * 4) {
+                                return Double.compare(dst1sqr, dst2sqr);
+                            }
                         }
+                        return Double.compare(Math.abs(angle1), Math.abs(angle2));
                     })
                     .filter(p -> canTeleportTo(level, p.getLeft()));
             return anchor.orElse(null);
