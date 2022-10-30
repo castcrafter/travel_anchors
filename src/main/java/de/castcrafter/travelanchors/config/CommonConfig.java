@@ -14,4 +14,8 @@ public class CommonConfig {
     @Config("The maximum distance you are allowed to teleport.")
     @DoubleRange(min = 1)
     public static double max_distance = 64;
+    
+    @Config("The maximum distance you can short-range teleport with shift-click.")
+    @DoubleRange(min = 2, max = 15)
+    public static double max_short_tp_distance = 7;
 }

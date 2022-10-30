@@ -84,7 +84,7 @@ public class TeleportHandler {
         Vec3 targetVec = player.position().add(0, player.getEyeHeight(), 0);
         Vec3 lookVec = player.getLookAngle();
         BlockPos target = null;
-        for (double i = 7; i >= 2; i -= 0.5) {
+        for (double i = CommonConfig.max_short_tp_distance; i >= 2; i -= 0.5) {
             Vec3 v3d = targetVec.add(lookVec.multiply(i, i, i));
             target = new BlockPos(Math.round(v3d.x), Math.round(v3d.y), Math.round(v3d.z));
             if (canTeleportTo(level, target.below())) { //to use the same check as the anchors use the position below
@@ -119,6 +119,10 @@ public class TeleportHandler {
                 && target.getY() >= level.getMinBuildHeight();
     }
 
+    public static boolean canPlayerTeleportAnyHand(Player player) {
+        return canPlayerTeleport(player, InteractionHand.MAIN_HAND) || canPlayerTeleport(player, InteractionHand.OFF_HAND);
+    }
+    
     public static boolean canPlayerTeleport(Player player, InteractionHand hand) {
         return canItemTeleport(player, hand) || canBlockTeleport(player);
     }
