@@ -6,6 +6,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
@@ -32,11 +33,18 @@ public class TeleportHandler {
             Vec3 positionVec = player.position().add(0, player.getEyeHeight(), 0);
             Optional<Pair<BlockPos, String>> anchor = TravelAnchorList.get(level).getAnchorsAround(player.position(), Math.pow(maxDistance, 2))
                     .filter(pair -> except == null || !except.equals(pair.getLeft()))
+                    .filter(p -> Math.abs(getAngleRadians(positionVec, p.getLeft(), player.getYRot(), player.getXRot())) <= Math.toRadians(CommonConfig.max_angle))
                     .min((p1, p2) -> {
-                        double angle1 = Math.abs(getAngleRadians(positionVec, p1.getLeft(), player.getYRot(), player.getXRot()));
-                        double angle2 = Math.abs(getAngleRadians(positionVec, p2.getLeft(), player.getYRot(), player.getXRot()));
-                        return Double.compare(angle1, angle2);
-                    }).filter(p -> Math.abs(getAngleRadians(positionVec, p.getLeft(), player.getYRot(), player.getXRot())) <= Math.toRadians(CommonConfig.max_angle))
+                        double angle1 = getAngleRadians(positionVec, p1.getLeft(), player.getYRot(), player.getXRot());
+                        double angle2 = getAngleRadians(positionVec, p2.getLeft(), player.getYRot(), player.getXRot());
+                        if (Math.abs(Mth.wrapDegrees(angle1 - angle2)) < 0.1) { // About 4 deg
+                            double dst1sqr = positionVec.distanceToSqr(p1.getLeft().getX() + 0.5, p1.getLeft().getY() + 1, p1.getLeft().getZ() + 0.5);
+                            double dst2sqr = positionVec.distanceToSqr(p2.getLeft().getX() + 0.5, p2.getLeft().getY() + 1, p2.getLeft().getZ() + 0.5);
+                            return Double.compare(dst1sqr, dst2sqr);
+                        } else {
+                            return Double.compare(Math.abs(angle1), Math.abs(angle2));
+                        }
+                    })
                     .filter(p -> canTeleportTo(level, p.getLeft()));
             return anchor.orElse(null);
         } else {
