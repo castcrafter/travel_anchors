@@ -21,7 +21,7 @@ public class Networking extends NetworkX {
 
     @Override
     protected Protocol getProtocol() {
-        return Protocol.of("5");
+        return Protocol.of("6");
     }
 
     protected void registerPackets() {

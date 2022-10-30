@@ -3,8 +3,6 @@ package de.castcrafter.travelanchors.block;
 import de.castcrafter.travelanchors.ModBlocks;
 import de.castcrafter.travelanchors.TravelAnchorList;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -51,7 +49,6 @@ public class BlockTravelAnchor extends MenuBlockBE<TileTravelAnchor, MenuTravelA
     @Override
     @OnlyIn(Dist.CLIENT)
     public void registerClient(SetupContext ctx) {
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.travelAnchor, RenderType.cutoutMipped());
         MenuScreens.register(ModBlocks.travelAnchor.menu, ScreenTravelAnchor::new);
         BlockEntityRenderers.register(ModBlocks.travelAnchor.getBlockEntityType(), dispatcher -> new RenderTravelAnchor());
     }

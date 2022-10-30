@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    annotationProcessor fg.deobf("org.moddingx:LibX:1.19.1-4.1.1")
+    annotationProcessor fg.deobf("org.moddingx:LibX:1.19.2-4.2.5")
 
-    implementation fg.deobf("org.moddingx:LibX:1.19.1-4.1.1")
+    implementation fg.deobf("org.moddingx:LibX:1.19.2-4.2.5")
 }
