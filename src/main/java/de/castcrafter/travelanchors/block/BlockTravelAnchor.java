@@ -1,6 +1,7 @@
 package de.castcrafter.travelanchors.block;
 
 import de.castcrafter.travelanchors.ModBlocks;
+import de.castcrafter.travelanchors.TeleportHandler;
 import de.castcrafter.travelanchors.TravelAnchorList;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -10,10 +11,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -102,23 +100,40 @@ public class BlockTravelAnchor extends MenuBlockBE<TileTravelAnchor, MenuTravelA
     @Nonnull
     @Override
     public InteractionResult use(@Nonnull BlockState state, Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult hit) {
-        if (!level.isClientSide) {
-            ItemStack item = player.getItemInHand(InteractionHand.OFF_HAND);
-            if (!item.isEmpty() && item.getItem() instanceof BlockItem && player.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
-                BlockEntity be = level.getBlockEntity(pos);
-                if (be instanceof TileTravelAnchor) {
-                    BlockState mimicState = ((BlockItem) item.getItem()).getBlock().getStateForPlacement(new BlockPlaceContext(player, InteractionHand.OFF_HAND, item, hit));
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof TileTravelAnchor anchor) {
+            ItemStack stack = player.getItemInHand(hand);
+            if (anchor.isLocked()) {
+                if (stack.getItem() == Items.STICK) {
+                    if (!level.isClientSide) {
+                        anchor.setLocked(false);
+                        player.displayClientMessage(Component.translatable("travelanchors.lock.unlocked"), true);
+                    }
+                    return InteractionResult.sidedSuccess(level.isClientSide);
+                }
+                if (!level.isClientSide && !TeleportHandler.canPlayerTeleportAnyHand(player)) {
+                    player.displayClientMessage(Component.translatable("travelanchors.lock.interact"), true);
+                }
+                return InteractionResult.PASS;
+            }
+            
+            ItemStack offhand = player.getItemInHand(InteractionHand.OFF_HAND);
+            if (hand == InteractionHand.MAIN_HAND && stack.isEmpty() && !offhand.isEmpty() && offhand.getItem() instanceof BlockItem blockItem) {
+                if (!level.isClientSide) {
+                    BlockState mimicState = blockItem.getBlock().getStateForPlacement(new BlockPlaceContext(player, InteractionHand.OFF_HAND, offhand, hit));
                     if (mimicState == null || mimicState.getBlock() == this) {
-                        ((TileTravelAnchor) be).setMimic(null);
+                        anchor.setMimic(null);
                     } else {
-                        ((TileTravelAnchor) be).setMimic(mimicState);
+                        anchor.setMimic(mimicState);
                     }
                 }
-                return InteractionResult.SUCCESS;
+                return InteractionResult.sidedSuccess(level.isClientSide);
             }
-            super.use(state, level, pos, player, hand, hit);
+            
+            return super.use(state, level, pos, player, hand, hit);
+        } else {
+            return InteractionResult.PASS;
         }
-        return InteractionResult.SUCCESS;
     }
 
     @Override

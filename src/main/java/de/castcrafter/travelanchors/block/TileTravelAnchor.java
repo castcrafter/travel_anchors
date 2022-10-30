@@ -15,6 +15,7 @@ public class TileTravelAnchor extends BlockEntityBase {
     
     private String name = "";
     private BlockState mimic = null;
+    private boolean locked = false;
 
     public TileTravelAnchor(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -24,6 +25,7 @@ public class TileTravelAnchor extends BlockEntityBase {
     public void saveAdditional(@Nonnull CompoundTag nbt) {
         super.saveAdditional(nbt);
         nbt.putString("travel_anchor_name", this.name);
+        nbt.putBoolean("is_locked", this.locked);
         this.writeMimic(nbt);
     }
 
@@ -31,6 +33,7 @@ public class TileTravelAnchor extends BlockEntityBase {
     public void load(@Nonnull CompoundTag nbt) {
         super.load(nbt);
         this.name = nbt.getString("travel_anchor_name");
+        this.locked = nbt.getBoolean("is_locked");
         this.readMimic(nbt);
         if (this.level != null) {
             TravelAnchorList.get(this.level).setAnchor(this.level, this.worldPosition, this.name, this.mimic);
@@ -42,6 +45,7 @@ public class TileTravelAnchor extends BlockEntityBase {
     public CompoundTag getUpdateTag() {
         CompoundTag nbt = super.getUpdateTag();
         nbt.putString("travel_anchor_name", this.name);
+        nbt.putBoolean("is_locked", this.locked);
         this.writeMimic(nbt);
         return nbt;
     }
@@ -49,6 +53,7 @@ public class TileTravelAnchor extends BlockEntityBase {
     @Override
     public void handleUpdateTag(CompoundTag nbt) {
         this.name = nbt.getString("travel_anchor_name");
+        this.locked = nbt.getBoolean("is_locked");
         this.readMimic(nbt);
     }
 
@@ -78,6 +83,16 @@ public class TileTravelAnchor extends BlockEntityBase {
             this.setChanged();
             this.setDispatchable();
         }
+    }
+
+    public boolean isLocked() {
+        return this.locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+        this.setChanged();
+        this.setDispatchable();
     }
 
     public BlockState getMimic() {

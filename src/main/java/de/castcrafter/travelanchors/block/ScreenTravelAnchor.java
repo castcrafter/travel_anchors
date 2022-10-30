@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.castcrafter.travelanchors.TravelAnchors;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -30,10 +31,15 @@ public class ScreenTravelAnchor extends AbstractContainerScreen<MenuTravelAnchor
     public void init() {
         super.init();
         this.getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
-        this.textFieldWidget = new EditBox(this.font, this.width / 2 - 50, this.height / 2 - 63, 100, 15, Component.translatable("screen.travelanchors.search"));
+        this.textFieldWidget = new EditBox(this.font, this.width / 2 - 72, this.height / 2 - 63, 100, 16, Component.translatable("screen.travelanchors.search"));
         this.textFieldWidget.setMaxLength(32767);
         this.textFieldWidget.changeFocus(true);
         this.textFieldWidget.setValue(this.menu.getBlockEntity().getName());
+        
+        this.addRenderableWidget(new Button(this.width / 2 + 33, this.height / 2 - 65, 44, 20, Component.translatable("travelanchors.lock.button"), btn -> {
+            TravelAnchors.getNetwork().sendLock(this.menu.getLevel(), this.menu.getPos());
+            this.onClose();
+        }));
     }
 
     @Override

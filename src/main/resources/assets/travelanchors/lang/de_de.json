@@ -17,5 +17,10 @@
 
   "travelanchors.tp.success": "Teleportiert zu %s.",
   "travelanchors.tp.fail": "Kein Reiseanker gefunden.",
-  "travelanchors.hop.fail": "Ziel versperrt."
+  "travelanchors.hop.fail": "Ziel versperrt.",
+  
+  "travelanchors.lock.button": "Sperren",
+  "travelanchors.lock.locked": "Dieser Anker ist nun gesperrt.",
+  "travelanchors.lock.unlocked": "This Anker ist nun nicht mehr gesperrt.",
+  "travelanchors.lock.interact": "Dieser Anker ist gesperrt. Rechtsklicke mit einem Stock, um ihn zu entsperren."
 }

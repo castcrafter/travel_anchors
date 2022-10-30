@@ -26,6 +26,7 @@ public class Networking extends NetworkX {
 
     protected void registerPackets() {
         this.registerGame(NetworkDirection.PLAY_TO_SERVER, new AnchorNameChangeMessage.Serializer(), () -> AnchorNameChangeMessage.Handler::new);
+        this.registerGame(NetworkDirection.PLAY_TO_SERVER, new AnchorLockMessage.Serializer(), () -> AnchorLockMessage.Handler::new);
         this.registerGame(NetworkDirection.PLAY_TO_CLIENT, new AnchorListUpdateMessage.Serializer(), () -> AnchorListUpdateMessage.Handler::new);
         this.registerGame(NetworkDirection.PLAY_TO_SERVER, new ClientEventMessage.Serializer(), () -> ClientEventMessage.Handler::new);
     }
@@ -33,6 +34,12 @@ public class Networking extends NetworkX {
     public void sendNameChange(Level level, BlockPos pos, String name) {
         if (level.isClientSide) {
             this.channel.sendToServer(new AnchorNameChangeMessage(pos, name));
+        }
+    }
+    
+    public void sendLock(Level level, BlockPos pos) {
+        if (level.isClientSide) {
+            this.channel.sendToServer(new AnchorLockMessage(pos));
         }
     }
 

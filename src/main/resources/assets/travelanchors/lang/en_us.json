@@ -19,5 +19,10 @@
 
   "travelanchors.tp.success": "Teleported to %s.",
   "travelanchors.tp.fail": "No travel anchor found.",
-  "travelanchors.hop.fail": "Destination obstructed."
+  "travelanchors.hop.fail": "Destination obstructed.",
+  
+  "travelanchors.lock.button": "Lock",
+  "travelanchors.lock.locked": "This anchor is now locked.",
+  "travelanchors.lock.unlocked": "This anchor is no longer locked.",
+  "travelanchors.lock.interact": "This anchor is locked. Right-click with a stick to unlock."
 }
