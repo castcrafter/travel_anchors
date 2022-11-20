@@ -18,4 +18,10 @@ public class CommonConfig {
     @Config("The maximum distance you can short-range teleport with shift-click.")
     @DoubleRange(min = 2, max = 15)
     public static double max_short_tp_distance = 7;
+    
+    @Config({
+            "Fire an EntityTeleportEvent before allowing the teleport.",
+            "This allows other mods to prevent the teleport or change the destination."
+    })
+    public static boolean fireTeleportEvent = true;
 }

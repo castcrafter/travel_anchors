@@ -198,10 +198,14 @@ public class TeleportHandler {
     
     @Nullable
     private static Vec3 checkTeleport(Player player, BlockPos target) {
-        EntityTeleportEvent event = new EntityTeleportEvent(player, target.getX() + 0.5, target.getY(), target.getZ() + 0.5);
-        if (MinecraftForge.EVENT_BUS.post(event)) {
-            return null;
+        if (CommonConfig.fireTeleportEvent) {
+            EntityTeleportEvent event = new EntityTeleportEvent(player, target.getX() + 0.5, target.getY(), target.getZ() + 0.5);
+            if (MinecraftForge.EVENT_BUS.post(event)) {
+                return null;
+            }
+            return new Vec3(event.getTargetX(), event.getTargetY(), event.getTargetZ());
+        } else {
+            return new Vec3(target.getX() + 0.5, target.getY(), target.getZ() + 0.5);
         }
-        return new Vec3(event.getTargetX(), event.getTargetY(), event.getTargetZ());
     }
 }
