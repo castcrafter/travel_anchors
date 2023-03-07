@@ -10,7 +10,7 @@ import org.moddingx.libx.annotation.registration.RegisterClass;
 import org.moddingx.libx.base.tile.MenuBlockBE;
 import org.moddingx.libx.menu.BlockEntityMenu;
 
-@RegisterClass(registry = "BLOCK_REGISTRY", priority = 1)
+@RegisterClass(registry = "BLOCK", priority = 1)
 public class ModBlocks {
 
     public static final MenuBlockBE<TileTravelAnchor, MenuTravelAnchor> travelAnchor = new BlockTravelAnchor(TravelAnchors.getInstance(), TileTravelAnchor.class, BlockEntityMenu.createMenuType(MenuTravelAnchor::new), BlockBehaviour.Properties.of(Material.METAL).sound(SoundType.METAL).strength(2.0f));

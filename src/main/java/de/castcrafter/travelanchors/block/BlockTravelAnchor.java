@@ -3,6 +3,7 @@ package de.castcrafter.travelanchors.block;
 import de.castcrafter.travelanchors.ModBlocks;
 import de.castcrafter.travelanchors.TeleportHandler;
 import de.castcrafter.travelanchors.TravelAnchorList;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.BlockPos;
@@ -94,7 +95,7 @@ public class BlockTravelAnchor extends MenuBlockBE<TileTravelAnchor, MenuTravelA
 
     @Override
     public void appendHoverText(@Nonnull ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip, @Nonnull TooltipFlag flag) {
-        tooltip.add(Component.translatable("tooltip.travelanchors.travel_anchor_block"));
+        tooltip.add(Component.translatable("tooltip.travelanchors.travel_anchor_block").withStyle(ChatFormatting.GOLD));
     }
 
     @Nonnull

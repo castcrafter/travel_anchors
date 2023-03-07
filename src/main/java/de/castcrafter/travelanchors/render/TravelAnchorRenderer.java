@@ -4,8 +4,8 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
+import org.joml.Matrix4f;
 import de.castcrafter.travelanchors.ModBlocks;
 import de.castcrafter.travelanchors.TeleportHandler;
 import de.castcrafter.travelanchors.TravelAnchorList;
@@ -227,15 +227,15 @@ public class TravelAnchorRenderer {
 
         public void apply(PoseStack poseStack) {
             if (!Float.isNaN(this.y)) {
-                poseStack.mulPose(Vector3f.YP.rotation(this.y));
+                poseStack.mulPose(Axis.YP.rotation(this.y));
             }
-            poseStack.mulPose(Vector3f.ZP.rotation(this.z));
+            poseStack.mulPose(Axis.ZP.rotation(this.z));
         }
 
         public void reverse(PoseStack poseStack) {
-            poseStack.mulPose(Vector3f.ZP.rotation(-this.z));
+            poseStack.mulPose(Axis.ZP.rotation(-this.z));
             if (!Float.isNaN(this.y)) {
-                poseStack.mulPose(Vector3f.YP.rotation(-this.y));
+                poseStack.mulPose(Axis.YP.rotation(-this.y));
             }
         }
     }

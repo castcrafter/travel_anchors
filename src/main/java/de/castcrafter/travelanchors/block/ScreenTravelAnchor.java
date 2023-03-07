@@ -30,16 +30,15 @@ public class ScreenTravelAnchor extends AbstractContainerScreen<MenuTravelAnchor
     @Override
     public void init() {
         super.init();
-        this.getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
         this.textFieldWidget = new EditBox(this.font, this.width / 2 - 72, this.height / 2 - 63, 100, 16, Component.translatable("screen.travelanchors.search"));
         this.textFieldWidget.setMaxLength(32767);
         this.textFieldWidget.changeFocus(true);
         this.textFieldWidget.setValue(this.menu.getBlockEntity().getName());
         
-        this.addRenderableWidget(new Button(this.width / 2 + 33, this.height / 2 - 65, 44, 20, Component.translatable("travelanchors.lock.button"), btn -> {
+        this.addRenderableWidget(Button.builder(Component.translatable("travelanchors.lock.button"), btn -> {
             TravelAnchors.getNetwork().sendLock(this.menu.getLevel(), this.menu.getPos());
             this.onClose();
-        }));
+        }).bounds(this.width / 2 + 33, this.height / 2 - 65, 44, 20).build());
     }
 
     @Override
@@ -74,7 +73,6 @@ public class ScreenTravelAnchor extends AbstractContainerScreen<MenuTravelAnchor
     @Override
     public void removed() {
         super.removed();
-        this.getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
         if (Minecraft.getInstance().level != null) {
             TravelAnchors.getNetwork().sendNameChange(this.menu.getLevel(), this.menu.getPos(), this.textFieldWidget.getValue().trim());
         }

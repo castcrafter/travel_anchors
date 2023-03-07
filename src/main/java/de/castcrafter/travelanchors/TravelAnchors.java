@@ -2,8 +2,6 @@ package de.castcrafter.travelanchors;
 
 import de.castcrafter.travelanchors.network.Networking;
 import de.castcrafter.travelanchors.render.TravelAnchorRenderer;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
@@ -24,18 +22,14 @@ public final class TravelAnchors extends ModXRegistration {
     
     private static TravelAnchors instance;
     private static Networking network;
+    private static Tab tab;
 
     public TravelAnchors() {
-        super(new CreativeModeTab("travelanchors") {
-            @Nonnull
-            @Override
-            public ItemStack makeIcon() {
-                return new ItemStack(ModItems.travelStaff);
-            }
-        });
+        super();
 
         instance = this;
         network = new Networking(this);
+        tab = new Tab(this);
         
         MinecraftForge.EVENT_BUS.register(new EventListener());
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> MinecraftForge.EVENT_BUS.addListener(TravelAnchorRenderer::renderAnchors));
@@ -51,9 +45,14 @@ public final class TravelAnchors extends ModXRegistration {
         return network;
     }
 
+    @Nonnull
+    public static Tab getTab() {
+        return tab;
+    }
+
     @Override
     protected void initRegistration(RegistrationBuilder builder) {
-        builder.enableRegistryTracking();
+        //
     }
 
     @Override

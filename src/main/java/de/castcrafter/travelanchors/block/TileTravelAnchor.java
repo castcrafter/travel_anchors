@@ -3,6 +3,7 @@ package de.castcrafter.travelanchors.block;
 import de.castcrafter.travelanchors.ModBlocks;
 import de.castcrafter.travelanchors.TravelAnchorList;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -62,8 +63,8 @@ public class TileTravelAnchor extends BlockEntityBase {
     }
 
     private void readMimic(CompoundTag tag) {
-        if (tag.contains("mimic")) {
-            BlockState state = NbtUtils.readBlockState(tag.getCompound("mimic"));
+        if (tag.contains("mimic") && this.level != null) {
+            BlockState state = NbtUtils.readBlockState(this.level.registryAccess().lookupOrThrow(Registries.BLOCK), tag.getCompound("mimic"));
             if (state == ModBlocks.travelAnchor.defaultBlockState()) {
                 this.mimic = null;
             } else {

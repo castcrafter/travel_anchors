@@ -7,7 +7,7 @@ import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import org.moddingx.libx.annotation.registration.Reg.Exclude;
 import org.moddingx.libx.annotation.registration.RegisterClass;
 
-@RegisterClass(registry = "ENCHANTMENT_REGISTRY")
+@RegisterClass(registry = "ENCHANTMENT")
 public class ModEnchantments {
 
     @Exclude
