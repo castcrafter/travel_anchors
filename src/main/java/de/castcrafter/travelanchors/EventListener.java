@@ -36,14 +36,14 @@ public class EventListener {
         if (TeleportHandler.canPlayerTeleport(player, event.getHand()) && !event.getItemStack().isEmpty()) {
             if (player.isShiftKeyDown() && TeleportHandler.canItemTeleport(player, event.getHand())) {
                 if (TeleportHandler.shortTeleport(level, player, event.getHand())) {
-                    event.setResult(Event.Result.DENY);
-                    event.setCancellationResult(InteractionResult.SUCCESS);
+                    event.setCanceled(true);
+                    event.setCancellationResult(InteractionResult.sidedSuccess(event.getLevel().isClientSide));
                     player.getCooldowns().addCooldown(event.getItemStack().getItem(), 30);
                 }
             } else {
                 if (TeleportHandler.anchorTeleport(level, player, player.blockPosition().immutable().below(), event.getHand())) {
-                    event.setResult(Event.Result.DENY);
-                    event.setCancellationResult(InteractionResult.SUCCESS);
+                    event.setCanceled(true);
+                    event.setCancellationResult(InteractionResult.sidedSuccess(event.getLevel().isClientSide));
                 }
             }
         }
@@ -55,7 +55,6 @@ public class EventListener {
         Player player = event.getEntity();
         if (TeleportHandler.canBlockTeleport(player) && !player.isShiftKeyDown() && event.getHand() == InteractionHand.MAIN_HAND && event.getEntity().getItemInHand(InteractionHand.OFF_HAND).isEmpty() && event.getItemStack().isEmpty()) {
             TravelAnchors.getNetwork().sendClientEventToServer(level, ClientEventMessage.Type.EMPTY_HAND_INTERACT);
-            event.setResult(Event.Result.DENY);
             event.setCancellationResult(InteractionResult.SUCCESS);
         }
     }

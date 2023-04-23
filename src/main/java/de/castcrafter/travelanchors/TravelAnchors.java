@@ -1,5 +1,9 @@
 package de.castcrafter.travelanchors;
 
+import de.castcrafter.travelanchors.data.BlockLootProvider;
+import de.castcrafter.travelanchors.data.BlockStatesProvider;
+import de.castcrafter.travelanchors.data.ItemModelsProvider;
+import de.castcrafter.travelanchors.data.RecipesProvider;
 import de.castcrafter.travelanchors.network.Networking;
 import de.castcrafter.travelanchors.render.TravelAnchorRenderer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -8,6 +12,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import org.moddingx.libx.datagen.DatagenSystem;
 import org.moddingx.libx.mod.ModXRegistration;
 import org.moddingx.libx.registration.RegistrationBuilder;
 import org.slf4j.Logger;
@@ -33,6 +38,13 @@ public final class TravelAnchors extends ModXRegistration {
         
         MinecraftForge.EVENT_BUS.register(new EventListener());
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> MinecraftForge.EVENT_BUS.addListener(TravelAnchorRenderer::renderAnchors));
+
+        DatagenSystem.create(this, system -> {
+            system.addDataProvider(BlockStatesProvider::new);
+            system.addDataProvider(ItemModelsProvider::new);
+            system.addDataProvider(BlockLootProvider::new);
+            system.addDataProvider(RecipesProvider::new);
+        });
     }
 
     @Nonnull

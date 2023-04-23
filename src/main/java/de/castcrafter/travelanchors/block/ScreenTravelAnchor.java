@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.castcrafter.travelanchors.TravelAnchors;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -32,7 +33,7 @@ public class ScreenTravelAnchor extends AbstractContainerScreen<MenuTravelAnchor
         super.init();
         this.textFieldWidget = new EditBox(this.font, this.width / 2 - 72, this.height / 2 - 63, 100, 16, Component.translatable("screen.travelanchors.search"));
         this.textFieldWidget.setMaxLength(32767);
-        this.textFieldWidget.changeFocus(true);
+        this.textFieldWidget.setFocused(true);
         this.textFieldWidget.setValue(this.menu.getBlockEntity().getName());
         
         this.addRenderableWidget(Button.builder(Component.translatable("travelanchors.lock.button"), btn -> {
@@ -45,7 +46,7 @@ public class ScreenTravelAnchor extends AbstractContainerScreen<MenuTravelAnchor
     protected void renderBg(@Nonnull PoseStack poseStack, float partialTicks, int mouseX, int mouseY) {
         RenderHelper.resetColor();
         RenderSystem.setShaderTexture(0, GUI_TEXTURE);
-        this.blit(poseStack, (this.width - this.imageWidth) / 2, (this.height - this.imageHeight) / 2, 0, 0, this.imageWidth, this.imageHeight);
+        blit(poseStack, (this.width - this.imageWidth) / 2, (this.height - this.imageHeight) / 2, 0, 0, this.imageWidth, this.imageHeight);
     }
 
     @Override

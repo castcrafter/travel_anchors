@@ -2,18 +2,15 @@ package de.castcrafter.travelanchors.data;
 
 import de.castcrafter.travelanchors.ModBlocks;
 import de.castcrafter.travelanchors.ModItems;
-import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.Tags;
-import org.moddingx.libx.annotation.data.Datagen;
+import org.moddingx.libx.datagen.DatagenContext;
 import org.moddingx.libx.datagen.provider.recipe.RecipeProviderBase;
 import org.moddingx.libx.datagen.provider.recipe.crafting.CraftingExtension;
-import org.moddingx.libx.mod.ModX;
 
-@Datagen
 public class RecipesProvider extends RecipeProviderBase implements CraftingExtension {
-
-    public RecipesProvider(ModX mod, PackOutput output) {
-        super(mod, output);
+    
+    public RecipesProvider(DatagenContext ctx) {
+        super(ctx);
     }
 
     @Override

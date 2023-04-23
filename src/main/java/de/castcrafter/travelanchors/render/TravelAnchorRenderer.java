@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
+import net.minecraft.client.gui.Font;
 import org.joml.Matrix4f;
 import de.castcrafter.travelanchors.ModBlocks;
 import de.castcrafter.travelanchors.TeleportHandler;
@@ -141,8 +142,8 @@ public class TravelAnchorRenderer {
                                 int alpha = (int) (textOpacitySetting * 255) << 24;
                                 float halfWidth = (float) (-Minecraft.getInstance().font.width(tc) / 2);
 
-                                Minecraft.getInstance().font.drawInBatch(tc, halfWidth, 0, color, false, matrix4f, OutlineBuffer.INSTANCE, true, alpha, LightTexture.pack(15, 15));
-                                Minecraft.getInstance().font.drawInBatch(tc, halfWidth, 0, color, false, matrix4f, OutlineBuffer.INSTANCE, false, 0, LightTexture.pack(15, 15));
+                                Minecraft.getInstance().font.drawInBatch(tc, halfWidth, 0, color, false, matrix4f, OutlineBuffer.INSTANCE, Font.DisplayMode.SEE_THROUGH, alpha, LightTexture.pack(15, 15));
+                                Minecraft.getInstance().font.drawInBatch(tc, halfWidth, 0, color, false, matrix4f, OutlineBuffer.INSTANCE, Font.DisplayMode.NORMAL, 0, LightTexture.pack(15, 15));
 
                                 poseStack.popPose();
                             }
@@ -206,8 +207,8 @@ public class TravelAnchorRenderer {
             int alpha = (int) (textOpacitySetting * 255) << 24;
             float halfWidth = (float) (-Minecraft.getInstance().font.width(tc) / 2);
 
-            Minecraft.getInstance().font.drawInBatch(tc, halfWidth, 0, color, false, matrix4f, buffer, true, alpha, LightTexture.pack(15, 15));
-            Minecraft.getInstance().font.drawInBatch(tc, halfWidth, 0, color, false, matrix4f, buffer, false, 0, LightTexture.pack(15, 15));
+            Minecraft.getInstance().font.drawInBatch(tc, halfWidth, 0, color, false, matrix4f, buffer, Font.DisplayMode.SEE_THROUGH, alpha, LightTexture.pack(15, 15));
+            Minecraft.getInstance().font.drawInBatch(tc, halfWidth, 0, color, false, matrix4f, buffer, Font.DisplayMode.NORMAL, 0, LightTexture.pack(15, 15));
             poseStack.popPose();
         }
     }

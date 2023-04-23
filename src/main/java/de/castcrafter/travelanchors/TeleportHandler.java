@@ -86,7 +86,7 @@ public class TeleportHandler {
         BlockPos target = null;
         for (double i = CommonConfig.max_short_tp_distance; i >= 2; i -= 0.5) {
             Vec3 v3d = targetVec.add(lookVec.multiply(i, i, i));
-            target = new BlockPos(Math.round(v3d.x), Math.round(v3d.y), Math.round(v3d.z));
+            target = new BlockPos((int) Math.round(v3d.x), (int) Math.round(v3d.y), (int) Math.round(v3d.z));
             if (canTeleportTo(level, target.below())) { //to use the same check as the anchors use the position below
                 break;
             } else {
