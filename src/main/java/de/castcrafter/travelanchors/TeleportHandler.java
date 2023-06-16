@@ -56,7 +56,7 @@ public class TeleportHandler {
     
     public static boolean teleportPlayer(Player player, @Nullable Pair<BlockPos, String> anchor, @Nullable InteractionHand hand) {
         if (anchor != null) {
-            if (!player.getLevel().isClientSide) {
+            if (!player.level().isClientSide) {
                 Vec3 teleportVec = checkTeleport(player, anchor.getLeft().above());
                 if (teleportVec == null) {
                     return false;
@@ -68,12 +68,12 @@ public class TeleportHandler {
                 player.swing(hand, true);
             }
             player.playNotifySound(SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1F, 1F);
-            if (!player.level.isClientSide) {
+            if (!player.level().isClientSide) {
                 player.displayClientMessage(Component.translatable("travelanchors.tp.success", anchor.getRight()), true);
             }
             return true;
         } else {
-            if (!player.level.isClientSide) {
+            if (!player.level().isClientSide) {
                 player.displayClientMessage(Component.translatable("travelanchors.tp.fail"), true);
             }
             return false;
@@ -94,7 +94,7 @@ public class TeleportHandler {
             }
         }
         if (target != null) {
-            if (!player.getLevel().isClientSide) {
+            if (!player.level().isClientSide) {
                 Vec3 teleportVec = checkTeleport(player, target);
                 if (teleportVec == null) {
                     return false;
@@ -106,7 +106,7 @@ public class TeleportHandler {
             player.playNotifySound(SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1F, 1F);
             return true;
         } else {
-            if (!player.level.isClientSide) {
+            if (!player.level().isClientSide) {
                 player.displayClientMessage(Component.translatable("travelanchors.hop.fail"), true);
             }
             return false;
@@ -128,7 +128,7 @@ public class TeleportHandler {
     }
 
     public static boolean canBlockTeleport(Player player) {
-        return (player.getLevel().getBlockState(player.blockPosition().immutable().below()).getBlock() == ModBlocks.travelAnchor
+        return (player.level().getBlockState(player.blockPosition().immutable().below()).getBlock() == ModBlocks.travelAnchor
                 && !player.isShiftKeyDown());
     }
 
@@ -151,14 +151,14 @@ public class TeleportHandler {
     }
     
     public static boolean canElevate(Player player) {
-        return player.getLevel().getBlockState(player.blockPosition().immutable().below()).getBlock() == ModBlocks.travelAnchor;
+        return player.level().getBlockState(player.blockPosition().immutable().below()).getBlock() == ModBlocks.travelAnchor;
     }
     
     public static boolean elevateUp(Player player) {
         if (!canElevate(player)) {
             return false;
         }
-        Level level = player.getLevel();
+        Level level = player.level();
         BlockPos.MutableBlockPos searchPos = player.blockPosition().immutable().mutable();
         while (!level.isOutsideBuildHeight(searchPos) && (level.getBlockState(searchPos).getBlock() != ModBlocks.travelAnchor || !canTeleportTo(level, searchPos))) {
             searchPos.move(Direction.UP);
@@ -179,7 +179,7 @@ public class TeleportHandler {
         if (!canElevate(player)) {
             return false;
         }
-        Level level = player.getLevel();
+        Level level = player.level();
         BlockPos.MutableBlockPos searchPos = player.blockPosition().immutable().below(2).mutable();
         while (!level.isOutsideBuildHeight(searchPos) && (level.getBlockState(searchPos).getBlock() != ModBlocks.travelAnchor || !canTeleportTo(level, searchPos))) {
             searchPos.move(Direction.DOWN);

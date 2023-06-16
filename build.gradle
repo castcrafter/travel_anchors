@@ -1,15 +1,15 @@
 buildscript {
-    apply from: 'https://moddingx.github.io/ModUtils/v4/buildscript.gradle', to: buildscript
+    apply from: 'https://moddingx.github.io/ModUtils/v5/buildscript.gradle', to: buildscript
 }
 
-apply from: 'https://moddingx.github.io/ModUtils/v4/mod.gradle'
+apply from: 'https://moddingx.github.io/ModUtils/v5/mod.gradle'
 
 repositories {
     maven { url = 'https://maven.melanx.de/' }
 }
 
 dependencies {
-    annotationProcessor fg.deobf("org.moddingx:LibX:1.19.4-4.4.1")
+    annotationProcessor fg.deobf("org.moddingx:LibX:1.20.1-5.0.1")
 
-    implementation fg.deobf("org.moddingx:LibX:1.19.4-4.4.1")
+    implementation fg.deobf("org.moddingx:LibX:1.20.1-5.0.1")
 }

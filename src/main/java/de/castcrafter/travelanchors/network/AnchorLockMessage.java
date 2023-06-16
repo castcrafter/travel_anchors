@@ -26,7 +26,7 @@ public record AnchorLockMessage(BlockPos pos) {
         public boolean handle(AnchorLockMessage msg, Supplier<NetworkEvent.Context> ctx) {
             if (ctx.get().getSender() != null) {
                 //noinspection ConstantConditions
-                ServerLevel level = ctx.get().getSender().getLevel();
+                ServerLevel level = ctx.get().getSender().serverLevel();
                 //noinspection deprecation
                 if (level.hasChunkAt(msg.pos)) {
                     BlockEntity be = level.getBlockEntity(msg.pos);

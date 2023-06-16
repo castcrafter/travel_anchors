@@ -13,9 +13,8 @@ import net.minecraftforge.client.event.MovementInputUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import org.moddingx.libx.event.ClickBlockEmptyHandEvent;
+import org.moddingx.libx.event.InteractBlockEmptyHandEvent;
 
 public class EventListener {
 
@@ -60,7 +59,7 @@ public class EventListener {
     }
 
     @SubscribeEvent
-    public void emptyBlockClick(ClickBlockEmptyHandEvent event) {
+    public void emptyBlockClick(InteractBlockEmptyHandEvent event) {
         if (event.getHand() == InteractionHand.MAIN_HAND) {
             // Empty offhand does not count. In that case the main hand will either produce
             // this event or PlayerInteractEvent.RightClickItem

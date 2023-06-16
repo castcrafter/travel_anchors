@@ -1,11 +1,9 @@
 package de.castcrafter.travelanchors.block;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import de.castcrafter.travelanchors.TravelAnchors;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -43,26 +41,25 @@ public class ScreenTravelAnchor extends AbstractContainerScreen<MenuTravelAnchor
     }
 
     @Override
-    protected void renderBg(@Nonnull PoseStack poseStack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(@Nonnull GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
         RenderHelper.resetColor();
-        RenderSystem.setShaderTexture(0, GUI_TEXTURE);
-        blit(poseStack, (this.width - this.imageWidth) / 2, (this.height - this.imageHeight) / 2, 0, 0, this.imageWidth, this.imageHeight);
+        graphics.blit(GUI_TEXTURE, (this.width - this.imageWidth) / 2, (this.height - this.imageHeight) / 2, 0, 0, this.imageWidth, this.imageHeight);
     }
 
     @Override
-    protected void renderLabels(@Nonnull PoseStack poseStack, int mouseX, int mouseY) {
+    protected void renderLabels(@Nonnull GuiGraphics graphics, int mouseX, int mouseY) {
         String title = this.title.getString();
-        this.font.draw(poseStack, title, (float) (this.imageWidth / 2 - this.font.width(title) / 2), 6.0F, 0x404040);
+        graphics.drawString(this.font, title, this.imageWidth / 2 - this.font.width(title) / 2, 6, 0x404040, false);
         boolean empty = this.textFieldWidget.getValue().trim().isEmpty();
-        this.font.draw(poseStack, empty ? I18n.get("screen.travelanchors.nameless") : this.playerInventoryTitle.getString(), 8, (float) (this.imageHeight - 126), empty ? 0xB31616 : 0x404040);
+        graphics.drawString(this.font, empty ? I18n.get("screen.travelanchors.nameless") : this.playerInventoryTitle.getString(), 8, this.imageHeight - 126, empty ? 0xB31616 : 0x404040, false);
     }
 
     @Override
-    public void render(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(matrixStack);
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-        this.renderTooltip(matrixStack, mouseX, mouseY);
-        this.textFieldWidget.render(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(graphics);
+        super.render(graphics, mouseX, mouseY, partialTicks);
+        this.renderTooltip(graphics, mouseX, mouseY);
+        this.textFieldWidget.render(graphics, mouseX, mouseY, partialTicks);
     }
 
     @Override
