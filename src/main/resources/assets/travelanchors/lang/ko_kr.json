@@ -21,7 +21,7 @@
   "travelanchors.tp.fail": "여행 닻을 찾을 수 없습니다.",
   "travelanchors.hop.fail": "목적지가 막혔습니다.",
   
-  "travelanchors.lock.button": "잠그기",
+  "travelanchors.lock.button": "잠금",
   "travelanchors.lock.locked": "이제 이 닻은 잠겼습니다.",
   "travelanchors.lock.unlocked": "이 닻은 더 이상 잠겨있지 않습니다.",
   "travelanchors.lock.interact": "이 닻은 잠겨 있습니다. 막대기로 오른쪽 클릭하여 잠금을 해제합니다."
