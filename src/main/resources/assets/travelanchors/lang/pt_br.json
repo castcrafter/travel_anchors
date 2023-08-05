@@ -1,21 +1,21 @@
 {
-  "itemGroup.travelanchors": "Travel Anchors (Âncoras de Viangem)",
+  "itemGroup.travelanchors": "Âncoras de Viagem",
 
-  "item.travelanchors.travel_staff": "Bastão de Viangem",
+  "item.travelanchors.travel_staff": "Bastão de Viagem",
 
   "enchantment.travelanchors.range": "Alcance",
   "enchantment.travelanchors.teleportation": "Teletransporte",
 
-  "block.travelanchors.travel_anchor": "Âncora de Viangem",
+  "block.travelanchors.travel_anchor": "Âncora de Viagem",
 
-  "screen.travelanchors.travel_anchor": "Âncora de Viangem",
+  "screen.travelanchors.travel_anchor": "Âncora de Viagem",
   "screen.travelanchors.search": "Procurar",
   "screen.travelanchors.nameless": "Digite um nome para usá-lo",
 
-  "tooltip.travelanchors.travel_anchor_block": "Olhe para isso com um Bastão de Viangem, ou Encantamento Teletransporte para o teleportar.",
-  "tooltip.travelanchors.travel_staff": "Clique [Agachar] + [Botão Direito} para se teletransportar para uma curta distância. Olhe pra a Âncora de Viangem para se teletransportar para ela.",
+  "tooltip.travelanchors.travel_anchor_block": "Olhe para isso com um Bastão de Viagem, ou Encantamento Teletransporte para o teleporte.",
+  "tooltip.travelanchors.travel_staff": "Clique [Agachar] + [Botão Direito} para se teletransportar para uma curta distância. Olhe para a Âncora de Viagem para se teleportar para ela.",
 
-  "travelanchors.tp.success": "Teleportado para %s.",
-  "travelanchors.tp.fail": "Nenhuma Âncora de Viangem encontrada.",
+  "travelanchors.tp.success": "Transportado para %s.",
+  "travelanchors.tp.fail": "Nenhuma Âncora de Viagem encontrada.",
   "travelanchors.hop.fail": "Destino obstruído."
 }
