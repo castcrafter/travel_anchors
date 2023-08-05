@@ -1,6 +1,7 @@
 package de.castcrafter.travel_anchors;
 
 import de.castcrafter.travel_anchors.config.ClientConfig;
+import de.castcrafter.travel_anchors.config.CommonConfig;
 import de.castcrafter.travel_anchors.network.ClientEventSerializer;
 import io.github.noeppi_noeppi.libx.event.ClickBlockEmptyHandEvent;
 import net.minecraft.client.Minecraft;
@@ -38,7 +39,7 @@ public class EventListener {
                 if (TeleportHandler.shortTeleport(level, player, event.getHand())) {
                     event.setResult(Event.Result.DENY);
                     event.setCancellationResult(InteractionResult.SUCCESS);
-                    player.getCooldowns().addCooldown(event.getItemStack().getItem(), 30);
+                    player.getCooldowns().addCooldown(event.getItemStack().getItem(), CommonConfig.cooldown);
                 }
             } else {
                 if (TeleportHandler.anchorTeleport(level, player, player.blockPosition().immutable().below(), event.getHand())) {
